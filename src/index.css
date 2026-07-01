@@ -2,21 +2,60 @@
 
 @theme {
 
+  /* font-size */
   --text-headline: 24px;
-  --text-title: 20px;
-  --text-heading: 18px;
-  --text-body: 16px;
-  --text-base: 14px;
-  --text-caption: 12px;
-  --text-label: 10px;
-  
+  --text-title-01: 20px;
+  --text-title-02: 18px;
+  --text-subtitle: 16px;
+  --text-body-01: 14px;
+  --text-body-02: 12px;
+  --text-caption: 10px;
+
+  /* font-weight */
   --font-weight-light: 300;
   --font-weight-regular: 400;
   --font-weight-medium: 500;
   --font-weight-semibold: 600;
   --font-weight-bold: 700;
 
+  /* color  */
   --color-white: #fff;
+
+  --color-primary-10: #FFF6EB;
+  --color-primary-20: #FFEAD8;
+  --color-primary-30: #FFDCC5;
+  --color-primary-40: #FFCEB7;
+  --color-primary-50: #FFB89F; /* main */
+  --color-primary-60: #DB8774;
+  --color-primary-70: #B75C50;
+  --color-primary-80: #933732;
+  --color-primary-90: #7A1E20;
+  --color-primary-100: #551618;
+
+  --color-secondary-10: #FFF5F0;
+  --color-secondary-20: #FFE9E2;
+  --color-secondary-30: #FFDBD4;
+  --color-secondary-40: #FFCEC9;
+  --color-secondary-50: #FFB8B8;
+  --color-secondary-60: #DB868D;
+
+  --color-gray-10: #F8F8F8;
+  --color-gray-20: #F0F0F0;
+  --color-gray-30: #E6E6E6;
+  --color-gray-40: #D5D5D5;
+  --color-gray-50: #B1B1B1;
+  --color-gray-60: #909090;
+  --color-gray-70: #696969;
+  --color-gray-80: #555555;
+  --color-gray-90: #373737;
+  --color-gray-100: #171717;
+
+  /* rounded */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 20px;
+  --radius-full: 9999px;
+  
 }
 
 @layer base {
