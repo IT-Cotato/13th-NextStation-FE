@@ -1,3 +1,4 @@
+@import "pretendard/dist/web/variable/pretendardvariable.css";
 @import "tailwindcss";
 
 @theme {
@@ -49,13 +50,6 @@
   --color-gray-80: #555555;
   --color-gray-90: #373737;
   --color-gray-100: #171717;
-
-  /* rounded */
-  --radius-sm: 4px;
-  --radius-md: 8px;
-  --radius-lg: 20px;
-  --radius-full: 9999px;
-  
 }
 
 @layer base {
@@ -71,9 +65,10 @@
     --spacing-page-x: 20px; /* 페이지 좌우 기본 여백 */
     --spacing-page-y: 16px; /* 페이지 상하 기본 여백 */
 
-    --radius-sm: 8px; /* 작은 요소의 둥근 모서리. 버튼, 입력창 등에 사용 */
-    --radius-md: 12px; /* 중간 크기 요소의 둥근 모서리. 카드, 리스트 아이템 등에 사용 */
-    --radius-lg: 16px; /* 큰 요소의 둥근 모서리. 큰 패널, 바텀시트 등에 사용 */
+    --radius-sm: 4px; /* 작은 요소의 둥근 모서리. 버튼, 입력창 등에 사용 */
+    --radius-md: 8px; /* 중간 크기 요소의 둥근 모서리. 카드, 리스트 아이템 등에 사용 */
+    --radius-lg: 20px; /* 큰 요소의 둥근 모서리. 큰 패널, 바텀시트 등에 사용 */
+    --radius-full: 9999px;
 
     --header-height: 56px; /* 상단 헤더의 기본 높이 */
     --bottom-nav-height: 64px; /* 하단 네비게이션 바의 기본 높이 */
@@ -90,8 +85,9 @@
     margin: 0;
     min-width: 320px;
     min-height: var(--app-min-height);
+    font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
     font-weight: var(--font-weight-regular);
-    font-size: var(--text-body);
+    font-size: var(--text-body-01);
   }
 
   #root {
