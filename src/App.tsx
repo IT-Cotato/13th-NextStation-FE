@@ -1,9 +1,6 @@
+import MainPage from "./pages/MainPage"
 function App() {
-  return (
-    <main>
-      <h1 className="text-headline font-bold">환승 여행</h1>
-    </main>
-  )
+  return <MainPage />
 }
 
 export default App
