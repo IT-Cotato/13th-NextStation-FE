@@ -43,7 +43,12 @@ function MainPage() {
           <button
             type="button"
             onClick={() => navigate('/draw/loading')}
-            className='absolute left-5 top-[56%] z-10 flex items-center justify-center gap-2 px-6 py-4 rounded-full bg-linear-to-r from-primary-50 to-secondary-50 border-[2px] border-secondary-30 shadow-[0_0_8px_var(--color-secondary-50)]'
+            className='
+              absolute left-5 top-[56%] z-10 flex items-center justify-center gap-2 px-6 py-4 rounded-full 
+              bg-linear-to-r from-primary-50 to-secondary-50 border-[2px] border-secondary-30 
+              shadow-[0_0_8px_var(--color-secondary-50)]
+              active:from-[#EF9E8C] active:to-[#E5989F] active:border-secondary-50
+            '
           >
             <ArrowPrev className='size-[24px]'/>
             <h2 className='whitespace-nowrap text-title-01 font-semibold text-gray-10 leading-none tracking-[-0.025em]'>랜덤뽑기</h2>
@@ -55,7 +60,12 @@ function MainPage() {
           <button
             type="button"
             onClick={() => navigate('/draw/recommend')}
-            className='absolute right-5 top-[56%] z-10 flex items-center justify-center gap-2 px-6 py-4 rounded-full bg-linear-to-r from-secondary-50 to-primary-50 border-[2px] border-secondary-30 shadow-[0_0_8px_var(--color-secondary-50)]'
+            className='
+              absolute right-5 top-[56%] z-10 flex items-center justify-center gap-2 px-6 py-4 rounded-full
+              bg-linear-to-r from-secondary-50 to-primary-50 border-[2px] border-secondary-30
+              shadow-[0_0_8px_var(--color-secondary-50)]
+              active:from-[#EF9E8C] active:to-[#E5989F] active:border-secondary-50
+            '
           >
             <h2 className='whitespace-nowrap text-title-01 font-semibold text-gray-10 leading-none tracking-[-0.025em]'>맞춤추천</h2>
             <ArrowNext className='size-[24px]'/>
