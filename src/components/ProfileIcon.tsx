@@ -20,7 +20,7 @@ function ProfileIcon ({ isLoggedIn, profileImageUrl }: ProfileIconProps) {
         relative flex size-[45px] items-center justify-center overflow-hidden rounded-full p-0
         border border-white bg-white/20
         shadow-[0_0_28px_rgba(118,118,118,0.25)]
-        backdrop-blur-[2px]
+        backdrop-blur-sm
       "
       aria-label={isLoggedIn ? '프로필' : '로그인'}
     >
