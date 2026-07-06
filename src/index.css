@@ -59,7 +59,7 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 
-    --app-max-width: 100%; /* 앱 화면의 최대 너비. iPhone SE 기준 */
+    --app-max-width: 430px; /* 모바일 최대 사이즈 430px */
     --app-min-height: 100dvh; /* 앱의 최소 높이. 모바일 브라우저의 실제 보이는 화면 높이에 맞춤 */
 
     --spacing-page-x: 20px; /* 페이지 좌우 기본 여백 */
