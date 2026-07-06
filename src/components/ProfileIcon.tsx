@@ -11,6 +11,7 @@ function ProfileIcon ({ isLoggedIn, profileImageUrl }: ProfileIconProps) {
         relative flex size-[45px] items-center justify-center overflow-hidden rounded-full p-0
         border border-white bg-white/20
         shadow-[0_0_28px_rgba(118,118,118,0.25)]
+        backdrop-blur-[2px]
       "
       aria-label={isLoggedIn ? '프로필' : '로그인'}
     >
@@ -19,12 +20,12 @@ function ProfileIcon ({ isLoggedIn, profileImageUrl }: ProfileIconProps) {
         <img
           src={profileImageUrl}
           alt=""
-          className="h-full w-full object-cover"
+          className="relative z-10 h-full w-full object-cover"
         />
       ): (
         <svg
           viewBox="0 0 23 24"
-          className="h-[24px] w-[23px] text-gray-70"
+          className="relative z-10 h-[24px] w-[23px] text-gray-70"
           fill="none"
           aria-hidden="true"
         >
