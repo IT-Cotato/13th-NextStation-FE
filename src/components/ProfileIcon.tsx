@@ -1,12 +1,21 @@
+import { useNavigate } from "react-router-dom";
+
 type ProfileIconProps = {
   isLoggedIn: boolean;
   profileImageUrl?: string;
 };
 
 function ProfileIcon ({ isLoggedIn, profileImageUrl }: ProfileIconProps) {
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    navigate(isLoggedIn ? '/mypage' : '/auth');
+  };
+
   return (
     <button
       type="button"
+      onClick={handleClick}
       className="
         relative flex size-[45px] items-center justify-center overflow-hidden rounded-full p-0
         border border-white bg-white/20
