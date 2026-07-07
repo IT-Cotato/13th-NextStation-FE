@@ -1,9 +1,11 @@
 import CloseIcon from '@/assets/close.svg?react';
 import StationTitle from '@/pages/draw/components/StationTitle';
+import ArrowPrev from '@/assets/arrow-prev.svg?react';
+import ArrowNext from '@/assets/arrow-next.svg?react';
 
 function ResultPage() {
   return (
-    <main className="flex flex-col h-dvh overflow-hidden bg-gray-10 gap-8 pt-[calc(var(--safe-top)+12px)]">
+    <main className="relative flex flex-col h-dvh overflow-hidden bg-gray-10 gap-8 pt-[calc(var(--safe-top)+12px)]">
       {/* close */}
       <div className='flex justify-end px-4'>
          <CloseIcon className="size-6" />
@@ -17,6 +19,7 @@ function ResultPage() {
         />
       </section>
 
+      {/* Description */}
       <section className='flex flex-1 justify-center'>
         <div className='flex flex-col w-[355px] self-stretch rounded-t-[48px] px-3 pt-6 gap-6 bg-white'>
           <div className='flex flex-col gap-4 items-center'>
@@ -45,12 +48,36 @@ function ResultPage() {
             </div>
           </div>
         </div>
-
       </section>
-      
 
-
-     
+      {/* CTA 버튼 */}
+      <section className='absolute bottom-[calc(var(--safe-bottom)+64px)] z-10 flex w-full items-center justify-between px-5'>
+        {/* feature/main 머지 후 버튼 컴포넌트로 대체하기 */}
+        <button
+            type="button"
+            className='
+              flex items-center justify-center gap-2 px-6 py-4 rounded-full 
+              bg-linear-to-r from-primary-50 to-secondary-50 border-[2px] border-secondary-30 
+              shadow-[0_0_8px_var(--color-secondary-50)]
+              active:from-[#EF9E8C] active:to-[#E5989F] active:border-secondary-50
+            '
+          >
+            <ArrowPrev className='size-[24px]'/>
+            <h2 className='whitespace-nowrap text-title-01 font-semibold text-gray-10 leading-none tracking-[-0.025em]'>랜덤뽑기</h2>
+          </button>
+          <button
+            type="button"
+            className='
+              flex items-center justify-center gap-2 px-6 py-4 rounded-full
+              bg-linear-to-r from-secondary-50 to-primary-50 border-[2px] border-secondary-30
+              shadow-[0_0_8px_var(--color-secondary-50)]
+              active:from-[#EF9E8C] active:to-[#E5989F] active:border-secondary-50
+            '
+          >
+            <h2 className='whitespace-nowrap text-title-01 font-semibold text-gray-10 leading-none tracking-[-0.025em]'>맞춤추천</h2>
+            <ArrowNext className='size-[24px]'/>
+          </button>
+      </section>     
     </main>
   )
 }
