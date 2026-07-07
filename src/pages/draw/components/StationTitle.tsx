@@ -74,7 +74,7 @@ export default function StationTitle({ line, stationName }: StationTitleProps) {
       >
         <Icon className="size-[52px] shrink-0"/>
 
-        <div className='flex w-[106px] flex-col items-center text-center gap-[5px]'>
+        <div className='flex w-full flex-col items-center text-center gap-[5px]'>
           <p className='whitespace-nowrap text-body-02 text-gray-80 leading-none tracking-[-0.025em]'>Next Station</p>
           <h2 className='whitespace-nowrap text-title-01 font-semibold text-gray-90 leading-none tracking-[-0.025em]'>{stationName}</h2>
         </div>
