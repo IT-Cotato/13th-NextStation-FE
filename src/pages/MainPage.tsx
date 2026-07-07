@@ -12,7 +12,7 @@ function MainPage() {
   const navigate = useNavigate();
 
   return (
-    <main className="flex flex-col h-dvh overflow-hidden bg-gray-10 gap-8 pt-[calc(var(--header-height)+12px)]">
+    <main className="flex flex-col h-dvh overflow-hidden bg-gray-10 gap-8 pt-[calc(var(--safe-top)+12px)]">
 
       {/* 프로필 아이콘 */}
       <div className='flex justify-end px-5'>
