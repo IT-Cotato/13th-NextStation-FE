@@ -3,8 +3,11 @@ import BackVector from '@/assets/BackVector.svg?react';
 import StampGongneung from '@/assets/stamp/stamp-gongneung.svg?react';
 import StampMajang from '@/assets/stamp/stamp-majang.svg?react';
 import StampBomun from '@/assets/stamp/stamp-bomun.svg?react';
+import { useNavigate } from "react-router-dom";
 
 function RecommendPage() {
+  const navigate = useNavigate();
+
   return (
     <main className="flex flex-col h-dvh overflow-hidden bg-white items-center pt-[var(--safe-top)]">
       <BackHeader/>
@@ -33,6 +36,8 @@ function RecommendPage() {
 
       <section className='absolute bottom-[calc(var(--safe-bottom)+50px)] z-10 flex w-full items-center justify-center'>
         <button
+          type="button"
+          onClick={() => navigate('/draw/condition')}
           className='flex items-center justify-center w-[360px] h-[60px] py-3 rounded-lg
               bg-linear-to-r from-secondary-50 to-primary-50
               shadow-[0_0_8px_var(--color-secondary-50)]
