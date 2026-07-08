@@ -3,6 +3,7 @@ import StationTitle from '@/pages/draw/components/StationTitle';
 import ArrowPrev from '@/assets/arrow-prev.svg?react';
 import ArrowNext from '@/assets/arrow-next.svg?react';
 import { useNavigate } from 'react-router-dom';
+import SubwayLineChip from './components/SubwayLineChip';
 
 function ResultPage() {
   const navigate = useNavigate();
@@ -26,10 +27,13 @@ function ResultPage() {
       <section className='flex flex-1 justify-center'>
         <div className='flex flex-col w-[355px] self-stretch rounded-t-[48px] px-3 pt-6 gap-6 bg-white'>
           <div className='flex flex-col gap-4 items-center'>
+            
+            {/* 호선 칩 */}
             <div className='w-full flex px-20 gap-2'>
-              {/* 호선 칩 */}
-
+              <SubwayLineChip label="6호선" />
+              <SubwayLineChip label="우이신설선" />
             </div>
+
             <div className='w-[330px] rounded-lg px-4 py-5 gap-[10px] bg-primary-10'>
               <p className='text-body-01 text-gray-100 leading-[1.4] tracking-[-0.025em] text-start'>
                 성북천을 따라 천천히 걷고, <br />
