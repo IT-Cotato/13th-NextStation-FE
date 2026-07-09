@@ -4,6 +4,7 @@ import LoadingPage from '@/pages/draw/LoadingPage';
 import ResultPage from '@/pages/draw/ResultPage';
 import RecommendPage from './pages/draw/RecommendPage';
 import ConditionPage from './pages/draw/ConditionPage';
+import PreferencePage from './pages/draw/PreferencePage';
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
         <Route path="/draw/result" element={<ResultPage />} />
         <Route path="/draw/recommend" element={<RecommendPage />} />
         <Route path="/draw/condition" element={<ConditionPage />} />
+        <Route path="/draw/preference" element={<PreferencePage />} />
       </Routes>
     </BrowserRouter>
   );

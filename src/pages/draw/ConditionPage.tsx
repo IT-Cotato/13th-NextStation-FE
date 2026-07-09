@@ -71,11 +71,10 @@ function ConditionPage() {
 
       {/* CTA 버튼 */}
       <section className='absolute bottom-[calc(var(--safe-bottom)+50px)] z-10 flex w-full items-center justify-center'>
-        <CTAButton onClick={() => navigate('/draw/')}>
+        <CTAButton onClick={() => navigate('/draw/preference')}>
           다음
         </CTAButton>
       </section>
-
     </main>
   )
 }
