@@ -1,4 +1,4 @@
-import BackHeader from "@/components/BackHeader"
+import Header from "@/components/Header"
 import ChoiceChip from "./components/ChoiceChip"
 import { useState } from "react";
 
@@ -11,7 +11,7 @@ function ConditionPage() {
 
   return (
     <main className="flex flex-col h-dvh overflow-hidden bg-white items-center pt-[var(--safe-top)]">
-      <BackHeader/>
+      <Header showBack/>
 
       <section className="flex flex-col h-full items-center justify-center gap-8">
         <h1 className="text-headline font-semibold text-gray-100 leading-[1.4] tracking-[-0.025em] text-center">

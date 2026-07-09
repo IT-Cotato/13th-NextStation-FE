@@ -1,4 +1,4 @@
-import BackHeader from "@/components/BackHeader"
+import Header from "@/components/Header"
 import BackVector from '@/assets/BackVector.svg?react';
 import StampGongneung from '@/assets/stamp/stamp-gongneung.svg?react';
 import StampMajang from '@/assets/stamp/stamp-majang.svg?react';
@@ -10,7 +10,7 @@ function RecommendPage() {
 
   return (
     <main className="flex flex-col h-dvh overflow-hidden bg-white items-center pt-[var(--safe-top)]">
-      <BackHeader/>
+      <Header showBack />
       <section className='flex flex-col h-full items-center justify-center gap-6'>
         <h1 className="text-headline font-semibold text-gray-100 leading-[1.4] tracking-[-0.025em] text-center">
           00님에게 어울리는 역을 <br />
