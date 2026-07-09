@@ -1,9 +1,14 @@
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import MainPage from '@/pages/MainPage';
+
 function App() {
   return (
-    <main>
-      <h1 className="text-headline font-bold">환승 여행</h1>
-    </main>
-  )
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<MainPage />} />
+      </Routes>
+    </BrowserRouter>
+  );
 }
 
-export default App
+export default App;
