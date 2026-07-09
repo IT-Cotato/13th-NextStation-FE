@@ -1,11 +1,14 @@
 import Header from "@/components/Header"
-import ChoiceChip from "./components/ChoiceChip"
+import ChoiceChip from "@/pages/draw/components/ChoiceChip"
+import CTAButton from "@/components/CTAButton"
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const timeOptions = ['30분 이내', '1시간 이내', '상관 없음'];
 const companionOptions = ['혼자', '친구와', '연인과', '부모님과', '아이와'];
 
 function ConditionPage() {
+  const navigate = useNavigate();
   const [selectedTime, setSelectedTime] = useState<string |null>(null);
   const [selectedCompanion, setSelectedCompanion] = useState<string | null>(null);
 
@@ -68,16 +71,9 @@ function ConditionPage() {
 
       {/* CTA 버튼 */}
       <section className='absolute bottom-[calc(var(--safe-bottom)+50px)] z-10 flex w-full items-center justify-center'>
-        <button
-          type="button"
-          className='flex items-center justify-center w-[360px] h-[60px] py-3 rounded-lg
-              bg-linear-to-r from-secondary-50 to-primary-50
-              shadow-[0_0_8px_var(--color-secondary-50)]
-              active:from-[#EF9E8C] active:to-[#E5989F]
-            '
-        >
-          <h2 className='whitespace-nowrap text-title-02 font-semibold text-gray-10 leading-none tracking-[-0.025em]'>다음</h2>
-        </button>
+        <CTAButton onClick={() => navigate('/draw/')}>
+          다음
+        </CTAButton>
       </section>
 
     </main>
