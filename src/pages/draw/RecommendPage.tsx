@@ -12,7 +12,7 @@ function RecommendPage() {
   return (
     <main className="flex flex-col h-dvh overflow-hidden bg-white items-center pt-[var(--safe-top)]">
       <Header showBack />
-      <section className='flex flex-col h-full items-center justify-center gap-6'>
+      <section className='flex flex-col h-full items-center pt-[100px] gap-6'>
         <h1 className="text-headline font-semibold text-gray-100 leading-[1.4] tracking-[-0.025em] text-center">
           00님에게 어울리는 역을 <br />
           추천해 드려요!

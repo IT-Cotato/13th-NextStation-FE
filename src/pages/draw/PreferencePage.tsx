@@ -32,10 +32,10 @@ function PreferencePage() {
   };
 
   return (
-    <main className="flex flex-col h-dvh overflow-hidden bg-white items-center pt-[var(--safe-top)] gap-10">
+    <main className="flex flex-col h-dvh overflow-hidden bg-white items-center pt-[var(--safe-top)]">
       <Header showBack />
 
-      <section className="flex flex-col h-full items-center gap-8">
+      <section className="flex flex-col h-full items-center pt-10 gap-[50px]">
         <div className="flex flex-col items-center gap-4">
           <h1 className="text-headline font-semibold text-gray-100 leading-[1.4] tracking-[-0.025em] text-center">
             어떤 여행을 하고 싶나요?
