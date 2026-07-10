@@ -3,6 +3,7 @@ import ChoiceChip from "@/pages/draw/components/ChoiceChip"
 import CTAButton from "@/components/CTAButton"
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import SearchBar from "./components/SearchBar";
 
 const timeOptions = ['30분 이내', '1시간 이내', '상관 없음'];
 const companionOptions = ['혼자', '친구와', '연인과', '부모님과', '아이와'];
@@ -16,7 +17,7 @@ function ConditionPage() {
     <main className="flex flex-col h-dvh overflow-hidden bg-white items-center pt-[var(--safe-top)]">
       <Header showBack/>
 
-      <section className="flex flex-col h-full items-center justify-center gap-8">
+      <section className="flex flex-col h-full items-center pt-10 gap-8">
         <h1 className="text-headline font-semibold text-gray-100 leading-[1.4] tracking-[-0.025em] text-center">
           어디서, 얼마나, 누구와 <br />
           갈 계획인가요?
@@ -28,6 +29,7 @@ function ConditionPage() {
             <p className="text-subtitle text-gray-100 leading-[1.4] tracking-[-0.025em]">
               출발역은 어디인가요?
             </p>
+            <SearchBar/>
           </div>
 
           {/* 시간 */}
