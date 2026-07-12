@@ -16,12 +16,12 @@ export default function LoginPage() {
   };
 
   return (
-    <main className="relative mx-auto h-[844px] min-h-screen w-[390px] max-w-full overflow-hidden bg-white text-gray-100">
+    <main className="relative h-dvh overflow-hidden bg-white text-gray-100">
       <div className="absolute left-0 top-[40px] w-full">
         <AuthTopBar title="이메일로 로그인" onBack={() => navigate(-1)} />
       </div>
 
-      <section className="absolute left-[15px] top-[130px] flex w-[360px] max-w-[calc(100%-30px)] flex-col gap-[30px]">
+      <section className="absolute left-[15px] right-[15px] top-[130px] flex flex-col gap-[30px]">
         <AuthInput
           label="이메일"
           type="email"

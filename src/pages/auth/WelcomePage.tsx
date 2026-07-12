@@ -109,11 +109,11 @@ export default function WelcomePage() {
           <span className="h-px w-20 bg-gray-40" />
         </div>
 
-        <div className="absolute bottom-[50px] left-[15px] right-[15px]">
+        <section className="absolute bottom-[calc(var(--safe-bottom)+50px)] left-[15px] right-[15px] z-10">
           <AuthButton onClick={() => navigate('/auth/login')}>
             이메일로 이어가기
           </AuthButton>
-        </div>
+        </section>
       </section>
     </main>
   );
