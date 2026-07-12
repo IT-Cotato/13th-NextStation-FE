@@ -11,7 +11,7 @@ import cloudSmall from '@/assets/auth/welcome-cloud-small.svg';
 import cloudRight from '@/assets/auth/welcome-cloud-right.svg';
 import appleImage from '@/assets/auth/welcome-apple.svg';
 import kakaoImage from '@/assets/auth/welcome-kakao.svg';
-import AuthButton from './components/AuthButton';
+import AuthButton from './components/auth/AuthButton';
 
 export default function WelcomePage() {
   const navigate = useNavigate();
