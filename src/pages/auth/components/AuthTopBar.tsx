@@ -1,4 +1,4 @@
-﻿import ArrowPrev from '@/assets/arrow-prev.svg?react';
+import ArrowPrev from '@/assets/arrow-prev.svg?react';
 
 interface AuthTopBarProps {
   title: string;

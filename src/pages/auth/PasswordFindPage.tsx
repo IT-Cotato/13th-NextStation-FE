@@ -4,7 +4,6 @@ import AuthButton from './components/AuthButton';
 import AuthCodeInput from './components/AuthCodeInput';
 import AuthEmailCertificationInput from './components/AuthEmailCertificationInput';
 import AuthPasswordInput from './components/AuthPasswordInput';
-import AuthProgressBar from './components/AuthProgressBar';
 import AuthTopBar from './components/AuthTopBar';
 
 const CERTIFICATION_LIMIT_SECONDS = 180;
@@ -16,7 +15,7 @@ function formatTimer(seconds: number) {
   return `${minutes}:${String(remainingSeconds).padStart(2, '0')}`;
 }
 
-export default function SignUpPage() {
+export default function PasswordFindPage() {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [certificationSeconds, setCertificationSeconds] = useState<number | null>(
@@ -40,7 +39,7 @@ export default function SignUpPage() {
       return;
     }
 
-    navigate('/auth');
+    navigate('/auth/login');
   };
 
   useEffect(() => {
@@ -74,8 +73,6 @@ export default function SignUpPage() {
 
     if (!emailPattern.test(email)) {
       nextErrors.email = '이메일 형식이 잘못되었습니다.';
-    } else if (email === 'user@example.com') {
-      nextErrors.email = '이미 가입된 이메일입니다.';
     }
 
     if (!/^\d{6}$/.test(code)) {
@@ -93,7 +90,7 @@ export default function SignUpPage() {
     setErrors(nextErrors);
 
     if (Object.values(nextErrors).every((message) => !message)) {
-      navigate('/auth/profile');
+      navigate('/auth/login');
     }
   };
 
@@ -115,17 +112,13 @@ export default function SignUpPage() {
   return (
     <main className="relative h-dvh overflow-hidden bg-white text-gray-100">
       <div className="absolute left-0 top-[40px] w-full">
-        <AuthTopBar title="이메일로 회원가입" onBack={handleBack} />
-      </div>
-
-      <div className="absolute left-[15px] right-[15px] top-[87px]">
-        <AuthProgressBar step={1} />
+        <AuthTopBar title="비밀번호 찾기" onBack={handleBack} />
       </div>
 
       <section className="absolute left-[15px] right-[15px] top-[130px] flex flex-col gap-[30px]">
         <section className="flex flex-col gap-[30px]">
           <h2 className="text-subtitle font-semibold leading-[1.4] text-gray-100">
-            이메일을 입력해주세요
+            가입한 이메일을 입력해주세요
           </h2>
           <div className="flex flex-col gap-2">
             <AuthEmailCertificationInput
@@ -159,7 +152,7 @@ export default function SignUpPage() {
 
         <section className="flex flex-col gap-[30px]">
           <h2 className="text-subtitle font-semibold leading-[1.4] text-gray-100">
-            비밀번호를 입력해주세요
+            새로운 비밀번호를 입력해주세요
           </h2>
           <div className="flex flex-col gap-2">
             <AuthPasswordInput

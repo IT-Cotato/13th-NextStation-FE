@@ -17,7 +17,6 @@ export default function AuthButton({
         bg-linear-to-r from-secondary-50 to-primary-50 px-4 py-3
         text-title-02 font-semibold text-gray-10 shadow-[0_0_4px_var(--color-secondary-50)]
         active:scale-[0.98]
-        disabled:cursor-not-allowed disabled:opacity-60
         ${className}
       `}
       {...props}

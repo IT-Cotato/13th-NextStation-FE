@@ -1,4 +1,4 @@
-﻿import { useState } from 'react';
+import { useState } from 'react';
 import type { InputHTMLAttributes } from 'react';
 import EyeClose from '@/assets/auth/eye-close.svg?react';
 
@@ -40,7 +40,14 @@ export default function AuthPasswordInput({
           className="absolute right-4 top-1/2 flex size-5 -translate-y-1/2 items-center justify-center"
           aria-label={isVisible ? '비밀번호 숨기기' : '비밀번호 보기'}
         >
-          <EyeClose className="size-5" aria-hidden="true" />
+          <EyeClose
+            className={`size-5 ${
+              isVisible
+                ? '[--fill-0:var(--color-primary-60)]'
+                : '[--fill-0:var(--color-gray-60)]'
+            }`}
+            aria-hidden="true"
+          />
         </button>
       </span>
       {errorMessage && (

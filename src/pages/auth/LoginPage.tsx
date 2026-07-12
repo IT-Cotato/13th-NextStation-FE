@@ -1,15 +1,24 @@
 ﻿import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import AuthButton from './components/auth/AuthButton';
-import AuthInput from './components/auth/AuthInput';
-import AuthPasswordInput from './components/auth/AuthPasswordInput';
-import AuthTopBar from './components/auth/AuthTopBar';
+import AuthButton from './components/AuthButton';
+import AuthInput from './components/AuthInput';
+import AuthPasswordInput from './components/AuthPasswordInput';
+import AuthTopBar from './components/AuthTopBar';
 
 export default function LoginPage() {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [passwordError, setPasswordError] = useState('');
+
+  const handleBack = () => {
+    if (window.history.length > 1) {
+      navigate(-1);
+      return;
+    }
+
+    navigate('/auth');
+  };
 
   const handleLogin = () => {
     setPasswordError('비밀번호가 일치하지 않습니다.');
@@ -18,7 +27,7 @@ export default function LoginPage() {
   return (
     <main className="relative h-dvh overflow-hidden bg-white text-gray-100">
       <div className="absolute left-0 top-[40px] w-full">
-        <AuthTopBar title="이메일로 로그인" onBack={() => navigate(-1)} />
+        <AuthTopBar title="이메일로 로그인" onBack={handleBack} />
       </div>
 
       <section className="absolute left-[15px] right-[15px] top-[130px] flex flex-col gap-[30px]">
@@ -64,7 +73,7 @@ export default function LoginPage() {
         </button>
       </section>
 
-      <div className="absolute bottom-[50px] left-[15px] right-[15px]">
+      <div className="absolute bottom-[calc(var(--safe-bottom)+50px)] left-[15px] right-[15px]">
         <AuthButton onClick={handleLogin}>다음</AuthButton>
       </div>
     </main>
