@@ -3,7 +3,6 @@ import SearchIcon from '@/assets/search.svg?react';
 import CloseIcon from '@/assets/close.svg?react';
 import LineBadge from "./LineBadge";
 
-
 interface Station {
   id: number
   name: string
@@ -44,6 +43,7 @@ export default function SearchBar() {
     suggestions.length > 0 &&
     selectedStation?.name !== query
 
+  const isSelected = selectedStation !== null
 
   return (
     <div className={[
@@ -54,22 +54,37 @@ export default function SearchBar() {
       <div className="relative z-10 ">
         <div className={[
             "flex h-[50px] w-full items-center justify-between rounded-[20px] px-4 py-3",
-            "bg-gray-20",
-            showSuggestions
+            isSelected
               ? "border border-primary-50 bg-white"
-              : "border border-transparent focus-within:border-primary-50 focus-within:bg-white"
+              : showSuggestions
+              ? "border border-primary-50 bg-white"
+              : "border border-transparent bg-gray-20 focus-within:border-primary-50 focus-within:bg-white"
           ].join(" ")}
         >
-        <input 
-          value={query}
-          onChange={(e) => {
-            setQuery(e.target.value)
-            setSelectedStation(null)
-          }}
-          placeholder="나와 가장 가까운 지하철역 찾아보기"
-          className="flex w-full outline-none text-body-01 text-gray-70 leading-[1.4] tracking-[-0.025em] "
-        />
-        {query.length > 0 ? (
+          <div className="flex min-w-0 flex-1 items-center gap-2">
+            {isSelected && (
+              <div className="flex shrink-0 items-center gap-1">
+                {selectedStation.lines.map((line) => (
+                  <LineBadge key={`${selectedStation.id}-${line}`} line={line} />
+                ))}
+              </div>
+            )}
+
+            <input
+              value={query}
+              onChange={(e) => {
+                setQuery(e.target.value)
+                setSelectedStation(null)
+              }}
+              placeholder="나와 가장 가까운 지하철역 찾아보기"
+              className={[
+                "min-w-0 flex-1 bg-transparent outline-none text-body-01 leading-[1.4] tracking-[-0.025em]",
+                isSelected ? "text-gray-100" : "text-gray-70"
+              ].join(" ")}
+            />
+          </div>
+
+          {query.length > 0 ? (
             <button
               type="button"
               onClick={handleClear}
