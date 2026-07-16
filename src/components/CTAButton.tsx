@@ -44,7 +44,7 @@ export default function CTAButton({
       <span className="whitespace-nowrap text-title-02 font-semibold leading-none tracking-[-0.025em]"
       >
         {children}
-    </span>
+      </span>
     </button>
   );
 }
