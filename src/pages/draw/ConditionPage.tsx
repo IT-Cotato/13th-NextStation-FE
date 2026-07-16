@@ -3,15 +3,21 @@ import ChoiceChip from "@/pages/draw/components/ChoiceChip"
 import CTAButton from "@/components/CTAButton"
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import SearchBar from "./components/SearchBar";
+import SearchBar, { type Station} from "./components/SearchBar";
 
 const timeOptions = ['30분 이내', '1시간 이내', '상관 없음'];
 const companionOptions = ['혼자', '친구와', '연인과', '부모님과', '아이와'];
 
 function ConditionPage() {
   const navigate = useNavigate();
+  const [selectedStation, setSelectedStation] = useState<Station | null>(null);
   const [selectedTime, setSelectedTime] = useState<string |null>(null);
   const [selectedCompanion, setSelectedCompanion] = useState<string | null>(null);
+
+  const isFormValid =
+  selectedStation !== null &&
+  selectedTime !== null &&
+  selectedCompanion !== null;
 
   return (
     <main className="flex flex-col h-dvh overflow-hidden bg-white items-center pt-[var(--safe-top)]">
@@ -29,7 +35,10 @@ function ConditionPage() {
             <p className="text-subtitle text-gray-100 leading-[1.4] tracking-[-0.025em]">
               출발역은 어디인가요?
             </p>
-            <SearchBar/>
+            <SearchBar
+              selectedStation={selectedStation}
+              onSelectStation={setSelectedStation}
+            />
           </div>
 
           {/* 시간 */}
@@ -73,7 +82,10 @@ function ConditionPage() {
 
       {/* CTA 버튼 */}
       <section className='absolute bottom-[calc(var(--safe-bottom)+50px)] z-10 flex w-full items-center justify-center'>
-        <CTAButton onClick={() => navigate('/draw/preference')}>
+        <CTAButton 
+          disabled={!isFormValid}
+          onClick={() => navigate('/draw/preference')}
+        >
           다음
         </CTAButton>
       </section>
