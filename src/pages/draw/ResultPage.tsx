@@ -1,6 +1,6 @@
 import StationTitle from '@/components/StationTitle';
 import { useNavigate } from 'react-router-dom';
-import SubwayLineChip from './components/SubwayLineChip';
+import SubwayLineChip from '@/components/SubwayLineChip';
 import Button from '@/components/Button';
 import Header from '@/components/Header';
 

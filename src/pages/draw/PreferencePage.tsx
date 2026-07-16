@@ -31,6 +31,8 @@ function PreferencePage() {
     });
   };
 
+  const isFormValid = selectedTags.length > 0;
+
   return (
     <main className="flex flex-col h-dvh overflow-hidden bg-white items-center pt-[var(--safe-top)]">
       <Header showBack />
@@ -64,7 +66,10 @@ function PreferencePage() {
 
       {/* CTA 버튼 */}
       <section className='absolute bottom-[calc(var(--safe-bottom)+50px)] z-10 flex w-full items-center justify-center'>
-        <CTAButton onClick={() => navigate('/draw/loading')}>
+        <CTAButton 
+          disabled={!isFormValid}
+          onClick={() => navigate('/draw/loading')}
+        >
           나만의 환승역 찾기
         </CTAButton>
       </section>

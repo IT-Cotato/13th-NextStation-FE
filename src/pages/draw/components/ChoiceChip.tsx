@@ -9,7 +9,7 @@ export default function ChoiceChip({ label, selected = false, onClick }: ChoiceC
       type="button"
       onClick={onClick}
       className={`
-        flex w-[110px] items-center justify-center px-6 py-3 rounded-lg border
+        flex w-[110px] items-center justify-center px-6 py-3 rounded-lg border outline-none
         ${
           selected
            ? 'bg-secondary-20 border-secondary-40'
