@@ -20,7 +20,7 @@ export default function CourseCard({
   return (
     <div
       style={{ width }}
-      className={`flex items-center gap-3 px-3 py-3 border rounded-[20px] ${isActive ? "border-primary-50 bg-secondary-10" : "border-gray-40 bg-white"}`}
+      className={`flex items-center gap-3 px-3 py-3 border rounded-lg ${isActive ? "border-primary-50 bg-secondary-10" : "border-gray-40 bg-white"}`}
     >
       <div className="flex items-center justify-center w-[67px] h-[50px] bg-gray-30 rounded-md">
         {category === "culturalSpace" ? (

@@ -25,7 +25,7 @@ export default function ModalButton({
     <button
       type="button"
       className={`
-        flex h-[50px] w-[150px] items-center justify-center rounded-[20px] py-3
+        flex h-[50px] w-[150px] items-center justify-center rounded-lg py-3
         ${variantStyles[variant]}
         ${className}
       `}

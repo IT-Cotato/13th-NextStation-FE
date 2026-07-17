@@ -1,4 +1,4 @@
-const CATEGORIES = ["문화공간", "식당", "카페", "산책 포인트"];
+const CATEGORIES = ["문화 공간", "식당", "카페", "산책 포인트"];
 
 const categoryColorMap: Record<string, string> = {
   active: "bg-primary-50 border border-white text-gray-10 font-semibold",
@@ -23,7 +23,7 @@ export default function CourseCategory({
         return (
           <label
             key={cat}
-            className={`px-4 py-2 text-body-02 rounded-[20px] ${currentClass}`}
+            className={`px-4 py-2 text-body-02 rounded-lg ${currentClass}`}
           >
             {" "}
             <input
