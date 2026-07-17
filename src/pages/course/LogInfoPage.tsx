@@ -6,6 +6,8 @@ import TimeChip from "./components/TimeChip";
 import LogPhotoUploader from "./components/LogPhotoUploader";
 import LogDatePickerModal from "./components/date-picker/LogDatePickerModal";
 import CalendarIcon from '@/assets/calendar.svg?react';
+import LogConfirmModal from "./components/LogConfirmModal";
+import NameEditInput from "./components/NameEditInput";
 
 const timeOptions = ['3~4시간', '반나절', '하루종일'];
 
@@ -14,18 +16,39 @@ function LogInfoPage() {
   const { courseId } = useParams();
 
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
-  const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const [isLogConfirmOpen, setIsLogConfirmOpen] = useState(false);
 
+  const [logName, setLogName] = useState("보문역 환승여행 코스");
+  const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [selectedTime, setSelectedTime] = useState<string |null>(null);
   const [review, setReview] = useState("");
 
-  return (
-    <main className="flex flex-col h-dvh bg-gray-10 items-center pt-[var(--safe-top)]">
-      {/* 수정사항이 있을경우 경고 모달이 떠야함 */}
-      <Header showClose onCloseClick={() => navigate('/course')} />
-      {/* 코스 제목 */}
-      <section>
+  const isDirty =
+    logName !== "보문역 환승여행 코스" ||
+    selectedDate !== null ||
+    selectedTime !== null ||
+    review.trim() !== "";
 
+  return (
+    <main className="flex flex-col h-dvh overflow-y-auto bg-gray-10 items-center pt-[var(--safe-top)] [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+      {/* 수정사항이 있을경우 경고 모달이 떠야함 */}
+      <Header 
+        showClose
+        onCloseClick={() => {
+          if (isDirty) {
+            setIsLogConfirmOpen(true);
+            return;
+          }
+
+          navigate("/course");
+        }}
+      />
+      {isLogConfirmOpen && (
+        <LogConfirmModal onClose={() => setIsLogConfirmOpen(false)} />
+      )}
+      {/* 코스 제목 */}
+       <section className="flex flex-col w-[390px] p-5">
+          <NameEditInput value={logName} onChange={setLogName} className="border-none"/>
       </section>
 
       <section className="flex flex-col w-[360px] items-start gap-8">
@@ -117,7 +140,7 @@ function LogInfoPage() {
 
       </section>
 
-      <section className="absolute bottom-[calc(var(--safe-bottom)+50px)] z-10 flex w-full items-center justify-center">
+      <section className="flex w-full mt-[25px] mb-[calc(var(--safe-bottom)+50px)] items-center justify-center">
         <CTAButton onClick={() => navigate(`/course/${courseId}/log/place`)}>
           다음
         </CTAButton>
