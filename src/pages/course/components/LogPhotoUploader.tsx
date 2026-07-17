@@ -1,5 +1,6 @@
 import { useRef, useState } from "react";
 import PlusIcon from '@/assets/photoPlus.svg?react';
+import DeleteIcon from '@/assets/delete.svg?react';
 
 export default function LogPhotoUploader() {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -8,11 +9,16 @@ export default function LogPhotoUploader() {
   const handleAddPhoto = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files ?? []);
     if (files.length === 0) return;
+
     const nextPhotos = files.map((file) => URL.createObjectURL(file));
     setPhotos((prev) => [...prev, ...nextPhotos]);
 
     e.target.value = "";
   }
+
+  const handleDeletePhoto = (targetIndex: number) => {
+    setPhotos((prev) => prev.filter((_, index) => index !== targetIndex));
+  };
 
   return (
     <>
@@ -28,13 +34,22 @@ export default function LogPhotoUploader() {
         {photos.map((photo, index) => (
           <div
             key={`${photo}-${index}`}
-            className="h-[108px] w-[108px] shrink-0 overflow-hidden rounded-lg"
+            className="relative h-[108px] w-[108px] shrink-0 overflow-hidden rounded-lg"
           >
             <img
               src={photo}
               alt={`upload-${index + 1}`}
               className="h-full w-full object-cover"
             />
+
+            <button
+              type="button"
+              onClick={() => handleDeletePhoto(index)}
+              className="absolute top-[10px] right-2"
+            >
+              <DeleteIcon className="size-5"/>
+            </button>
+
           </div>
         ))}
       </div>
