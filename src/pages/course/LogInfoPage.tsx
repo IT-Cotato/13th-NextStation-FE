@@ -4,12 +4,17 @@ import CTAButton from "@/components/CTAButton";
 import Header from "@/components/Header"
 import TimeChip from "./components/TimeChip";
 import LogPhotoUploader from "./components/LogPhotoUploader";
+import LogDatePickerModal from "./components/date-picker/LogDatePickerModal";
+import CalendarIcon from '@/assets/calendar.svg?react';
 
 const timeOptions = ['3~4시간', '반나절', '하루종일'];
 
 function LogInfoPage() {
   const navigate = useNavigate();
   const { courseId } = useParams();
+
+  const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
+  const [selectedDate, setSelectedDate] = useState<string | null>(null);
 
   const [selectedTime, setSelectedTime] = useState<string |null>(null);
   const [review, setReview] = useState("");
@@ -26,10 +31,36 @@ function LogInfoPage() {
       <section className="flex flex-col w-[360px] items-start gap-8">
         {/* 방문 날짜 */}
         <div className="flex flex-col w-full items-start gap-4">
-          <p className="text-subtitle font-semibold text-gray-100  leading-[1.4] tracking-[-0.025em]">
+          <p className="text-subtitle font-semibold text-gray-100 leading-[1.4] tracking-[-0.025em]">
             방문 날짜
           </p>
           {/* 날짜 picker */}
+          <div className="flex flex-col w-full gap-2">
+            <button
+              type="button"
+              onClick={() => setIsDatePickerOpen(true)}
+              className="flex w-full rounded-lg items-center justify-between px-[10px] py-2 bg-white"
+            >
+              <span 
+                className={`
+                  text-body-01 leading-[1.4] tracking-[-0.025em]
+                  ${selectedDate ? "text-gray-100" : "text-gray-70"}
+                `}
+              >{selectedDate ?? "2026.07.12"}</span>
+              <CalendarIcon className="size-6" />
+            </button>
+
+            {isDatePickerOpen && (
+              <LogDatePickerModal
+                selectedDate={selectedDate}
+                onClose={() => setIsDatePickerOpen(false)}
+                onConfirm={(date) => {
+                  setSelectedDate(date);
+                  setIsDatePickerOpen(false);
+                }}
+              />
+            )}
+          </div>
         </div>
 
         {/* 코스 시간 */}
