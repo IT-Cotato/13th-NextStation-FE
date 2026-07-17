@@ -1,15 +1,90 @@
 import { useNavigate, useParams } from "react-router-dom";
+import { useState } from "react";
 import CTAButton from "@/components/CTAButton";
 import Header from "@/components/Header"
+import TimeChip from "./components/TimeChip";
+import LogPhotoUploader from "./components/LogPhotoUploader";
+
+const timeOptions = ['3~4시간', '반나절', '하루종일'];
 
 function LogInfoPage() {
   const navigate = useNavigate();
   const { courseId } = useParams();
 
+  const [selectedTime, setSelectedTime] = useState<string |null>(null);
+  const [review, setReview] = useState("");
+
   return (
-    <main className="flex flex-col bg-white items-center pt-[var(--safe-top)]">
+    <main className="flex flex-col h-dvh bg-gray-10 items-center pt-[var(--safe-top)]">
       {/* 수정사항이 있을경우 경고 모달이 떠야함 */}
       <Header showClose onCloseClick={() => navigate('/course')} />
+      {/* 코스 제목 */}
+      <section>
+
+      </section>
+
+      <section className="flex flex-col w-[360px] items-start gap-8">
+        {/* 방문 날짜 */}
+        <div className="flex flex-col w-full items-start gap-4">
+          <p className="text-subtitle font-semibold text-gray-100  leading-[1.4] tracking-[-0.025em]">
+            방문 날짜
+          </p>
+          {/* 날짜 picker */}
+        </div>
+
+        {/* 코스 시간 */}
+        <div className="flex flex-col w-full items-start gap-4">
+          <div className="flex flex-col items-start gap-2">
+            <p className="text-subtitle font-semibold text-gray-100 leading-[1.4] tracking-[-0.025em]">
+              코스 시간
+            </p>
+            <p className="text-body-02 text-gray-70 leading-[1.4] tracking-[-0.025em]">
+              이 코스의 소요 시간은 얼마나 걸렸나요?
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            {timeOptions.map((option) => (
+              <TimeChip
+                key={option}
+                label={option}
+                selected={selectedTime === option}
+                onClick={() => setSelectedTime(option)}
+              />
+            ))}
+          </div>
+        </div>
+
+        {/* 여행 대표 사진 추가 */}
+        <div className="flex flex-col w-full items-start gap-4">
+          <div className="flex flex-col items-start gap-2">
+            <p className="text-subtitle font-semibold text-gray-100 leading-[1.4] tracking-[-0.025em]">
+              여행 대표 사진 추가
+            </p>
+            <p className="text-body-02 text-gray-70 leading-[1.4] tracking-[-0.025em]">
+              이 여행을 기억할 수 있는 대표 사진을 추가해보세요.
+            </p>
+          </div>
+
+          {/* 사진 추가 아이콘 */}
+          <LogPhotoUploader />
+        </div>
+
+        {/* 내 여행 돌아보기 */}
+        <div className="flex flex-col w-full items-start gap-4">
+          <p className="text-subtitle font-semibold text-gray-100  leading-[1.4] tracking-[-0.025em]">
+            내 여행 돌아보기
+          </p>
+          <div className="flex w-full h-[200px] rounded-lg p-4 gap-[10px] bg-white">
+            <textarea
+              value={review}
+              onChange={(e) => setReview(e.target.value)}
+              placeholder="오늘 보문역 여행은 어땠나요?"
+              className="w-full h-full resize-none bg-transparent caret-primary-50 text-body-01 text-gray-100 placeholder:text-gray-50 focus:outline-none"
+            />
+          </div>
+        </div>
+
+      </section>
 
       <section className="absolute bottom-[calc(var(--safe-bottom)+50px)] z-10 flex w-full items-center justify-center">
         <CTAButton onClick={() => navigate(`/course/${courseId}/log/place`)}>
