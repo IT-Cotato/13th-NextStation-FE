@@ -3,11 +3,11 @@ import OptionButton from "@/components/ModalButton";
 import type { ComponentPropsWithoutRef } from "react";
 import { useNavigate } from "react-router-dom";
 
-interface ExitConfirmModalProps extends ComponentPropsWithoutRef<"div"> {
+interface LogConfirmModalProps extends ComponentPropsWithoutRef<"div"> {
   onClose: () => void;
 }
 
-export default function ExitConfirmModal({ onClose }: ExitConfirmModalProps) {
+export default function LogConfirmModal({ onClose }: LogConfirmModalProps) {
   const navigate = useNavigate();
 
   return (

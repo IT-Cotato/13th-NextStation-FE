@@ -47,8 +47,8 @@ function LogInfoPage() {
         <LogConfirmModal onClose={() => setIsLogConfirmOpen(false)} />
       )}
       {/* 코스 제목 */}
-       <section className="flex flex-col w-[390px] p-5">
-          <NameEditInput value={logName} onChange={setLogName} className="border-none"/>
+      <section className="flex flex-col w-[390px] p-5">
+        <NameEditInput value={logName} onChange={setLogName} className="border-none"/>
       </section>
 
       <section className="flex flex-col w-[360px] items-start gap-8">
@@ -141,7 +141,10 @@ function LogInfoPage() {
       </section>
 
       <section className="absolute bottom-[calc(var(--safe-bottom)+50px)] z-10 flex flex-col w-full items-center justify-center ">
-        <CTAButton onClick={() => navigate(`/course/${courseId}/log/place`)}>
+        <CTAButton 
+          disabled={!isDirty}
+          onClick={() => navigate(`/course/${courseId}/log/place`)}
+        >
           다음
         </CTAButton>
       </section>
