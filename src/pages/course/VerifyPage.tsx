@@ -1,4 +1,3 @@
-import EditPen from "@/assets/edit-pen.svg?react";
 import MapIcon from "@/assets/map-icon.svg?react";
 import Button from "@/components/Button";
 import CourseCard from "@/pages/course/components/CourseCard";
@@ -6,38 +5,21 @@ import CourseNumber from "@/pages/course/components/CourseNumber";
 import Header from "@/components/Header";
 import StationTitle from "@/components/StationTitle";
 import { mockCourses } from "@/mocks/mockCourses";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { CustomOverlayMap, Map, useKakaoLoader } from "react-kakao-maps-sdk";
 import MapMarker from "./components/MapMarker";
 import { Reorder } from "motion/react";
 import ExitConfirmModal from "./components/ExitConfirmModal";
+import NameEditInput from "./components/NameEditInput";
 
 export default function VerifyPage() {
   const navigate = useNavigate();
-  const [isNameEditing, setIsNameEditing] = useState(false);
   const [courseName, setCourseName] = useState("보문역 환승여행 코스");
-  const [namePlaceholder, setNamePlaceholder] = useState("");
-  const nameInputRef = useRef<HTMLInputElement>(null);
   const courseListRef = useRef<HTMLUListElement>(null);
   const [courses, setCourses] = useState(mockCourses); // 초기값 : mockCourses
   const [pressedId, setPressedId] = useState<number | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const handleNameEdit = () => {
-    setIsNameEditing((prev) => {
-      const next = !prev;
-      if (next) setNamePlaceholder(courseName);
-      return next;
-    });
-  };
-
-  useEffect(() => {
-    if (isNameEditing) {
-      nameInputRef.current?.focus();
-      nameInputRef.current?.select();
-    }
-  }, [isNameEditing]);
 
   const [loading, error] = useKakaoLoader({
     appkey: import.meta.env.VITE_KAKAO_API,
@@ -66,23 +48,9 @@ export default function VerifyPage() {
       {/* 지도 */}
       <section className="flex justify-center">
         <div className="flex flex-col gap-2.5 w-[360px]">
-          <div className="flex relative items-center border border-gray-40 bg-white rounded-[20px] p-2.5 caret-primary-50">
-            <input
-              className="w-full text-center outline-none text-subtitle font-semibold placeholder:text-gray-50"
-              ref={nameInputRef}
-              value={courseName}
-              placeholder={namePlaceholder}
-              onChange={(e) => setCourseName(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") setIsNameEditing(false);
-              }}
-            />
-            <div className="absolute right-3" onClick={handleNameEdit}>
-              <EditPen className="w-6 h-6 text-gray-70" />
-            </div>
-          </div>
+          <NameEditInput value={courseName} onChange={setCourseName} />
 
-          <div className="flex flex-col border h-[357px] border-gray-40 bg-white rounded-[20px] overflow-hidden">
+          <div className="flex flex-col border h-[357px] border-gray-40 bg-white rounded-lg overflow-hidden">
             <div className="flex items-center justify-between px-4 py-4">
               <p className="text-title-02 font-semibold">내 코스 지도</p>
               <MapIcon className="w-6 h-6 text-gray-70 cursor-pointer" />
@@ -154,13 +122,13 @@ export default function VerifyPage() {
         <div className="flex w-[360px] justify-between">
           <Button
             direction="left" // 왼쪽 화살표가 있는 버튼
-            onClick={() => navigate("/~")}
+            onClick={() => navigate("/draw/loading")}
           >
             다시 뽑기
           </Button>
           <Button
             direction="right" // 오른쪽 화살표가 있는 버튼
-            onClick={() => navigate("/")}
+            onClick={() => navigate("/course/saved")}
           >
             코스 저장
           </Button>
