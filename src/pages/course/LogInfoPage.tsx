@@ -30,7 +30,7 @@ function LogInfoPage() {
     review.trim() !== "";
 
   return (
-    <main className="flex flex-col h-dvh overflow-y-auto bg-gray-10 items-center pt-[var(--safe-top)] [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+    <main className="flex flex-col h-dvh overflow-y-auto bg-gray-10 items-center pt-[var(--safe-top)] pb-[calc(var(--safe-bottom)+140px)] [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
       {/* 수정사항이 있을경우 경고 모달이 떠야함 */}
       <Header 
         showClose
@@ -140,7 +140,7 @@ function LogInfoPage() {
 
       </section>
 
-      <section className="flex w-full mt-[25px] mb-[calc(var(--safe-bottom)+50px)] items-center justify-center">
+      <section className="absolute bottom-[calc(var(--safe-bottom)+50px)] z-10 flex flex-col w-full items-center justify-center ">
         <CTAButton onClick={() => navigate(`/course/${courseId}/log/place`)}>
           다음
         </CTAButton>
