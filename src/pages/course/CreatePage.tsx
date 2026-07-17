@@ -10,7 +10,7 @@ import CourseCategory from "./components/CourseCategory";
 
 const CATEGORY_KEY_MAP: Record<string, string> = {
   // 매핑
-  문화공간: "culturalSpace",
+  "문화 공간": "culturalSpace",
   식당: "restaurant",
   카페: "cafe",
   "산책 포인트": "walk",
@@ -18,7 +18,7 @@ const CATEGORY_KEY_MAP: Record<string, string> = {
 
 export default function CreatePage() {
   const navigate = useNavigate();
-  const [filterCateogry, setFilterCategory] = useState("문화공간");
+  const [filterCateogry, setFilterCategory] = useState("문화 공간");
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
 
   const handleSelected = (id: number) => {
@@ -45,7 +45,7 @@ export default function CreatePage() {
 
       {/* 설명 */}
       <section className="flex flex-col items-center pt-8">
-        <div className="flex flex-col w-[360px] rounded-[20px] p-[15px] bg-white gap-4">
+        <div className="flex flex-col w-[360px] rounded-lg p-[15px] bg-white gap-4">
           {/* 호선 칩 */}
           <div className="w-full flex px-20 gap-2 justify-center">
             <SubwayLineChip variant="secondary" label="6호선" />
@@ -75,7 +75,7 @@ export default function CreatePage() {
         {/* 코스 목록 */}
         <div className="flex flex-col gap-3 self-start">
           <p className="flex text-black font-semibold text-subtitle">
-            가볼 만한 문화 공간
+            가볼 만한 {filterCateogry}
           </p>
           <div className="flex flex-col gap-2.5">
             {filteredCourses.map((course) => (
