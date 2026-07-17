@@ -1,9 +1,13 @@
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import PrevIcon from '@/assets/arrow-prev(gray).svg?react';
 import NextIcon from '@/assets/arrow-next(gray).svg?react';
 
 type CalendarDayViewProps = {
-  selectedDate: string | null;
+  displayYear: number;
+  displayMonth: number;
+  selectedDay: number;
+  onChangeYear: (year: number) => void;
+  onChangeMonth: (month: number) => void;
   onClickYear: () => void;
   onClickMonth: () => void;
   onSelectDate: (date: string) => void;
@@ -11,33 +15,16 @@ type CalendarDayViewProps = {
 
 const weekDays = ["일", "월", "화", "수", "목", "금", "토"];
 
-function parseSelectedDate(selectedDate: string | null) {
-  const today = new Date();
-
-  if (!selectedDate) {
-    return {
-      year: today.getFullYear(),
-      month: today.getMonth() + 1,
-      day: today.getDate(),
-    };
-  }
-
-  const [year, month, day] = selectedDate.split(".").map(Number);
-  return { year, month, day };
-}
-
 export default function CalendarDayView({
-  selectedDate,
+  displayYear,
+  displayMonth,
+  selectedDay,
+  onChangeYear,
+  onChangeMonth,
   onClickYear,
   onClickMonth,
   onSelectDate,
 }: CalendarDayViewProps) {
-  const initialDate = parseSelectedDate(selectedDate);
-
-  const [displayYear, setDisplayYear] = useState(initialDate.year);
-  const [displayMonth, setDisplayMonth] = useState(initialDate.month);
-  const [selectedDay, setSelectedDay] = useState(initialDate.day);
-
   const today = new Date();
   const todayYear = today.getFullYear();
   const todayMonth = today.getMonth() + 1;
@@ -55,22 +42,22 @@ export default function CalendarDayView({
 
   const handlePrevMonth = () => {
     if (displayMonth === 1) {
-      setDisplayYear((prev) => prev - 1);
-      setDisplayMonth(12);
+      onChangeYear(displayYear - 1);
+      onChangeMonth(12);
       return;
     }
 
-    setDisplayMonth((prev) => prev - 1);
+    onChangeMonth(displayMonth - 1);
   };
 
   const handleNextMonth = () => {
     if (displayMonth === 12) {
-      setDisplayYear((prev) => prev + 1);
-      setDisplayMonth(1);
+      onChangeYear(displayYear + 1);
+      onChangeMonth(1);
       return;
     }
 
-    setDisplayMonth((prev) => prev + 1);
+    onChangeMonth(displayMonth + 1);
   };
 
   return (
@@ -104,7 +91,7 @@ export default function CalendarDayView({
         {weekDays.map((day, index) => (
           <div
             key={day}
-            className={`flex h-6 w-7 items-center justify-center text-body-01 font-semibold leading-[1.4] tracking-[-0.025em] text-center ${
+            className={`flex h-6 w-7 items-center justify-center text-body-01 font-semibold leading-[1.4] tracking-[-0.025em] text-center outline-none ${
               index === 0 ? "text-primary-60" : "text-gray-60"
             }`}
           >
@@ -136,7 +123,6 @@ export default function CalendarDayView({
               type="button"
               onClick={() => {
                 const nextDate = `${displayYear}.${String(displayMonth).padStart(2, "0")}.${String(date).padStart(2, "0")}`;
-                setSelectedDay(date);
                 onSelectDate(nextDate);
               }}
               className={`flex w-7 h-6 items-center justify-center rounded-[50px] text-body-01 leading-[1.4] tracking-[-0.025em] text-center ${
