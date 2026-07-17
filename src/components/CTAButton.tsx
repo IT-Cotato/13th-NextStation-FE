@@ -1,4 +1,4 @@
-import type { ButtonHTMLAttributes, ReactNode } from 'react';
+import type { ButtonHTMLAttributes, ReactNode } from "react";
 
 type CTAButtonVariant = "primary" | "secondary";
 interface CTAButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
@@ -25,11 +25,10 @@ const variantStyles: Record<CTAButtonVariant, string> = {
 export default function CTAButton({
   children,
   variant = "primary",
-  className = '',
+  className = "",
   disabled = false,
   ...props
 }: CTAButtonProps) {
-
   return (
     <button
       type="button"
@@ -41,8 +40,7 @@ export default function CTAButton({
       `}
       {...props}
     >
-      <span className="whitespace-nowrap text-title-02 font-semibold leading-none tracking-[-0.025em]"
-      >
+      <span className="whitespace-nowrap text-title-02 font-semibold leading-none tracking-[-0.025em]">
         {children}
       </span>
     </button>
