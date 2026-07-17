@@ -1,9 +1,10 @@
+import { useNavigate, useParams } from "react-router-dom"
 import CTAButton from "@/components/CTAButton"
-import { useNavigate } from "react-router-dom"
 import LogIcon from '@/assets/log.svg?react';
 
 function LogIntroPage() {
   const navigate = useNavigate();
+  const { courseId } = useParams();
 
   return (
     <main className="flex flex-col h-dvh overflow-hidden bg-white items-center pt-[var(--safe-top)]">
@@ -25,7 +26,7 @@ function LogIntroPage() {
 
       {/* CTA Button */}
       <section className="absolute bottom-[calc(var(--safe-bottom)+50px)] z-10 flex flex-col w-full items-center justify-center gap-[10px]">
-        <CTAButton onClick={() => navigate('info')}>
+        <CTAButton onClick={() => navigate(`/course/${courseId}/log/info`)}>
           환승여행 기록하기
         </CTAButton>
         <CTAButton variant="secondary" onClick={() => navigate('/course')}>
