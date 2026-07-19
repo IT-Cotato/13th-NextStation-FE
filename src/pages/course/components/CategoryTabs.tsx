@@ -1,20 +1,22 @@
-const CATEGORIES = ["문화 공간", "식당", "카페", "산책 포인트"];
+// 장소/역 카테고리 (필터 탭)
 
 const categoryColorMap: Record<string, string> = {
   active: "bg-primary-50 border border-white text-gray-10 font-semibold",
-  inactive: "border border-gray-50 text-gray-90 ",
+  inactive: "border border-gray-50 text-gray-90",
 };
 
-export default function CourseCategory({
+export default function CategoryTabs({
+  categories,
   selected,
   onSelect,
 }: {
+  categories: string[];
   selected: string;
   onSelect: (category: string) => void;
 }) {
   return (
-    <div className="flex items-center gap-2">
-      {CATEGORIES.map((cat) => {
+    <div className="flex items-center gap-2 overflow-x-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+      {categories.map((cat) => {
         const isChecked = selected === cat;
         const currentClass = isChecked
           ? categoryColorMap["active"]
@@ -23,7 +25,7 @@ export default function CourseCategory({
         return (
           <label
             key={cat}
-            className={`px-4 py-2 text-body-02 rounded-lg ${currentClass}`}
+            className={`shrink-0 px-4 py-2 text-body-02 rounded-lg whitespace-nowrap ${currentClass}`}
           >
             {" "}
             <input
