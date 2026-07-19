@@ -79,7 +79,7 @@ export default function CreatePage() {
         </div>
 
         {/* 카테고리 + 코스 목록 */}
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-3 self-start">
           <div className="flex self-start">
             <CategoryTabs
               categories={CATEGORIES}
