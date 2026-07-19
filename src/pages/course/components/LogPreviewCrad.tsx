@@ -1,7 +1,7 @@
 
 import { useLogDraft } from "../contexts/logDraft";
 
-export default function ReviewPreviewCard() {
+export default function LogPreviewCard() {
   const { draft } = useLogDraft();
 
   const placeLabels = draft.placeReviews.map((place) => place.label);

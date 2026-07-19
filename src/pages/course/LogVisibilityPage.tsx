@@ -3,7 +3,7 @@ import { useState } from "react";
 import Header from "@/components/Header";
 import CTAButton from "@/components/CTAButton";
 import LogConfirmModal from "./components/LogConfirmModal";
-import ReviewPreviewCard from "./components/ReviewPreviewCrad";
+import LogPreviewCard from "./components/LogPreviewCrad";
 import VisibilityCard from "./components/VisibilityCard";
 import { useLogDraft } from "./contexts/logDraft";
 
@@ -31,7 +31,7 @@ function LogVisibilityPage() {
       )}
 
       <section className="flex flex-col mt-5 items-center">
-        <ReviewPreviewCard />
+        <LogPreviewCard />
 
         <div className="flex flex-col w-[360px] items-start justify-center gap-4 mt-5">
           <p className="text-subtitle font-semibold text-gray-100 leading-[1.4] tracking-[-0.025em]">
