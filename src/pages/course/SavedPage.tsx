@@ -8,7 +8,7 @@ import { showToast } from "./components/ShowToast";
 export default function SavedPage() {
   const navigate = useNavigate();
 
-  const handleShareClikc = async () => {
+  const handleShareClick = async () => {
     const result = await share({
       title: "환승여행",
       text: "보문역 환승여행 코스를 확인해보세요!",
@@ -43,7 +43,7 @@ export default function SavedPage() {
           같이 떠날 친구에게 코스를 공유해 보세요!
         </span>
         <div className="flex flex-col gap-[10px]">
-          <CTAButton onClick={handleShareClikc}>공유하기</CTAButton>
+          <CTAButton onClick={handleShareClick}>공유하기</CTAButton>
           <CTAButton variant="secondary" onClick={() => navigate("/course")}>
             보관함으로 이동하기
           </CTAButton>
