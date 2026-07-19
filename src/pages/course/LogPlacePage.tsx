@@ -4,19 +4,18 @@ import Header from "@/components/Header";
 import CTAButton from "@/components/CTAButton";
 import LogConfirmModal from "./components/LogConfirmModal";
 import NameEditInput from "./components/NameEditInput";
+import PlaceReviewCard from "./components/PlaceReviewCard";
+import { useLogDraft } from "./contexts/logDraft";
 
 function LogPlacePage() {
   const navigate = useNavigate();
   const { courseId } = useParams();
+  const { draft, setLogName, updatePlaceReview, isDirty } = useLogDraft();
 
   const [isLogConfirmOpen, setIsLogConfirmOpen] = useState(false);
-  
-  const [logName, setLogName] = useState("보문역 환승여행 코스");
-
-  const isDirty =logName !== "보문역 환승여행 코스";
 
   return (
-    <main className="flex flex-col h-dvh overflow-hidden bg-gray-10 items-center pt-[var(--safe-top)]">
+    <main className="flex flex-col h-dvh overflow-y-auto bg-gray-10 items-center pt-[var(--safe-top)] pb-[calc(var(--safe-bottom)+140px)] [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
       <Header 
         showBack
         showClose
@@ -34,7 +33,41 @@ function LogPlacePage() {
       )}
 
       <section className="flex flex-col w-[390px] p-5">
-        <NameEditInput value={logName} onChange={setLogName} className="border-none"/>
+        <NameEditInput value={draft.logName} onChange={setLogName} className="border-none"/>
+      </section>
+
+      <section className="flex flex-col w-[360px] gap-4">
+        <div className="flex flex-col items-start gap-2">
+          <div className="flex justify-center gap-1">
+            <p className="text-subtitle font-semibold text-gray-100 leading-[1.4] tracking-[-0.025em]">
+              다녀온 장소 후기
+            </p>
+            <p className="text-body-01 text-gray-50 leading-[1.4] tracking-[-0.025em]">
+              (선택)
+            </p>
+          </div>
+          <p className="text-body-02 text-gray-70 leading-[1.4] tracking-[-0.025em]">
+            장소를 선택하고, 짧은 후기와 사진을 남겨보세요.
+          </p>
+        </div>
+        <div className="flex flex-col gap-4">
+            {draft.placeReviews.map((place) => (
+              <PlaceReviewCard
+                key={place.id}
+                id={place.id}
+                label={place.label}
+                review={place.review}
+                photo={place.photo}
+                onChangeReview={(value) =>
+                  updatePlaceReview(place.id, { review: value })
+                }
+                onChangePhoto={(value) =>
+                  updatePlaceReview(place.id, { photo: value })
+                }
+              />
+            ))}
+        </div>
+        
       </section>
 
       <section className="absolute bottom-[calc(var(--safe-bottom)+50px)] z-10 flex w-full items-center justify-center">

@@ -3,21 +3,59 @@ import { useState } from "react";
 import Header from "@/components/Header";
 import CTAButton from "@/components/CTAButton";
 import LogConfirmModal from "./components/LogConfirmModal";
+import ReviewPreviewCard from "./components/ReviewPreviewCrad";
+import VisibilityCard from "./components/VisibilityCard";
+import { useLogDraft } from "./contexts/logDraft";
 
 function LogVisibilityPage() {
   const navigate = useNavigate();
   const [isLogConfirmOpen, setIsLogConfirmOpen] = useState(false);
+  const { draft, setVisibility, isDirty } = useLogDraft();
 
   return (
-    <main className="flex flex-col h-dvh overflow-hidden bg-gray-10 items-center pt-[var(--safe-top)]">
+    <main className="flex flex-col h-dvh overflow-y-auto bg-gray-10 items-center pt-[var(--safe-top)] pb-[calc(var(--safe-bottom)+140px)] [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
       <Header 
         showBack
         showClose
-        onCloseClick={() => setIsLogConfirmOpen(true)}
+        onCloseClick={() => {
+          if (isDirty) {
+            setIsLogConfirmOpen(true);
+            return;
+          }
+
+          navigate("/course");
+        }}
       />
       {isLogConfirmOpen && (
         <LogConfirmModal onClose={() => setIsLogConfirmOpen(false)} />
       )}
+
+      <section className="flex flex-col mt-5 items-center">
+        <ReviewPreviewCard />
+
+        <div className="flex flex-col w-[360px] items-start justify-center gap-4 mt-5">
+          <p className="text-subtitle font-semibold text-gray-100 leading-[1.4] tracking-[-0.025em]">
+            공개 범위 설정
+          </p>
+          <VisibilityCard 
+            type="private"
+            selected={draft.visibility === 'private'}
+            onClick={() => setVisibility('private')}
+          />
+          <VisibilityCard
+            type="public"
+            selected={draft.visibility === 'public'}
+            onClick={() => setVisibility('public')}
+          />
+        </div>
+
+        <div className="flex items-center justify-center p-10">
+          <p className="text-body-02 text-gray-60 leading-[1.4] tracking-[-0.025em] text-center">
+            공유한 장소 후기와 사진은 보문역 코스와 장소 상세화면에서 다른 사용자에게<br />
+            보여질 수 있어요. 공개 범위는 언제든 변경 가능해요.
+          </p>
+        </div>
+      </section>
 
       <section className="absolute bottom-[calc(var(--safe-bottom)+50px)] z-10 flex w-full items-center justify-center">
         <CTAButton onClick={() => navigate(`/course`)}>

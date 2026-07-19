@@ -1,23 +1,30 @@
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import PlusIcon from '@/assets/photoPlus.svg?react';
 import DeleteIcon from '@/assets/delete.svg?react';
 
-export default function LogPhotoUploader() {
+interface LogPhotoUploaderProps {
+  photos: string[];
+  onChange: (photos: string[]) => void;
+}
+
+export default function LogPhotoUploader({
+  photos,
+  onChange,
+}: LogPhotoUploaderProps) {
   const inputRef = useRef<HTMLInputElement>(null);
-  const [photos, setPhotos] = useState<string[]>([]);
 
   const handleAddPhoto = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files ?? []);
     if (files.length === 0) return;
 
     const nextPhotos = files.map((file) => URL.createObjectURL(file));
-    setPhotos((prev) => [...prev, ...nextPhotos]);
+    onChange([...photos, ...nextPhotos]);
 
     e.target.value = "";
   }
 
   const handleDeletePhoto = (targetIndex: number) => {
-    setPhotos((prev) => prev.filter((_, index) => index !== targetIndex));
+    onChange(photos.filter((_, index) => index !== targetIndex));
   };
 
   return (

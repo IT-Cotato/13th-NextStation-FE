@@ -8,26 +8,25 @@ import LogDatePickerModal from "./components/date-picker/LogDatePickerModal";
 import CalendarIcon from '@/assets/calendar.svg?react';
 import LogConfirmModal from "./components/LogConfirmModal";
 import NameEditInput from "./components/NameEditInput";
+import { useLogDraft } from "./contexts/logDraft";
 
 const timeOptions = ['3~4시간', '반나절', '하루종일'];
 
 function LogInfoPage() {
   const navigate = useNavigate();
   const { courseId } = useParams();
+  const {
+    draft,
+    setLogName,
+    setSelectedDate,
+    setSelectedTime,
+    setReview,
+    setPhotos,
+    isDirty,
+  } = useLogDraft();
 
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
   const [isLogConfirmOpen, setIsLogConfirmOpen] = useState(false);
-
-  const [logName, setLogName] = useState("보문역 환승여행 코스");
-  const [selectedDate, setSelectedDate] = useState<string | null>(null);
-  const [selectedTime, setSelectedTime] = useState<string |null>(null);
-  const [review, setReview] = useState("");
-
-  const isDirty =
-    logName !== "보문역 환승여행 코스" ||
-    selectedDate !== null ||
-    selectedTime !== null ||
-    review.trim() !== "";
 
   return (
     <main className="flex flex-col h-dvh overflow-y-auto bg-gray-10 items-center pt-[var(--safe-top)] pb-[calc(var(--safe-bottom)+140px)] [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
@@ -48,7 +47,7 @@ function LogInfoPage() {
       )}
       {/* 코스 제목 */}
       <section className="flex flex-col w-[390px] p-5">
-        <NameEditInput value={logName} onChange={setLogName} className="border-none"/>
+        <NameEditInput value={draft.logName} onChange={setLogName} className="border-none"/>
       </section>
 
       <section className="flex flex-col w-[360px] items-start gap-8">
@@ -67,15 +66,15 @@ function LogInfoPage() {
               <span 
                 className={`
                   text-body-01 leading-[1.4] tracking-[-0.025em]
-                  ${selectedDate ? "text-gray-100" : "text-gray-70"}
+                  ${draft.selectedDate ? "text-gray-100" : "text-gray-70"}
                 `}
-              >{selectedDate ?? "2026.07.12"}</span>
+              >{draft.selectedDate ?? "2026.07.12"}</span>
               <CalendarIcon className="size-6" />
             </button>
 
             {isDatePickerOpen && (
               <LogDatePickerModal
-                selectedDate={selectedDate}
+                selectedDate={draft.selectedDate}
                 onClose={() => setIsDatePickerOpen(false)}
                 onConfirm={(date) => {
                   setSelectedDate(date);
@@ -101,7 +100,7 @@ function LogInfoPage() {
               <TimeChip
                 key={option}
                 label={option}
-                selected={selectedTime === option}
+                selected={draft.selectedTime === option}
                 onClick={() => setSelectedTime(option)}
               />
             ))}
@@ -120,7 +119,7 @@ function LogInfoPage() {
           </div>
 
           {/* 사진 추가 아이콘 */}
-          <LogPhotoUploader />
+          <LogPhotoUploader photos={draft.photos} onChange={setPhotos} />
         </div>
 
         {/* 내 여행 돌아보기 */}
@@ -130,7 +129,7 @@ function LogInfoPage() {
           </p>
           <div className="flex w-full h-[200px] rounded-lg p-4 gap-[10px] bg-white">
             <textarea
-              value={review}
+              value={draft.review}
               onChange={(e) => setReview(e.target.value)}
               placeholder="오늘 보문역 여행은 어땠나요?"
               className="w-full h-full resize-none bg-transparent caret-primary-50 text-body-01 text-gray-100 placeholder:text-gray-50 focus:outline-none"
