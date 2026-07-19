@@ -6,7 +6,9 @@ import CourseCard from "./components/CourseCard";
 import { mockCourses } from "@/mocks/mockCourses";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-import CourseCategory from "./components/CourseCategory";
+import CategoryTabs from "./components/CategoryTabs";
+
+const CATEGORIES = ["문화 공간", "식당", "카페", "산책 포인트"];
 
 const CATEGORY_KEY_MAP: Record<string, string> = {
   // 매핑
@@ -62,21 +64,30 @@ export default function CreatePage() {
         </div>
       </section>
 
-      {/* 카테고리 + 코스 목록 */}
-      <section className="flex flex-col w-[360px] items-center gap-6 py-4 pt-6 mx-auto">
-        {/* 카테고리 */}
-        <div className="flex self-start">
-          <CourseCategory
-            selected={filterCateogry}
-            onSelect={setFilterCategory}
-          />
+      {/* 코스 목록 + 카테고리 */}
+      <section className="flex flex-col w-[360px] items-center gap-4.5 py-4 pt-6 mx-auto">
+        {/* 텍스트 */}
+        <div className="flex flex-col self-start">
+          <div className="flex flex-col gap-1">
+            <span className="flex text-black font-semibold text-subtitle">
+              코스 장소 선택
+            </span>
+            <span className="flex text-gray-70 text-body-02">
+              나만의 코스를 만들기 위해 장소를 선택해 주세요! (최소 3개)
+            </span>
+          </div>
         </div>
 
-        {/* 코스 목록 */}
-        <div className="flex flex-col gap-3 self-start">
-          <p className="flex text-black font-semibold text-subtitle">
-            가볼 만한 {filterCateogry}
-          </p>
+        {/* 카테고리 + 코스 목록 */}
+        <div className="flex flex-col gap-3">
+          <div className="flex self-start">
+            <CategoryTabs
+              categories={CATEGORIES}
+              selected={filterCateogry}
+              onSelect={setFilterCategory}
+            />
+          </div>
+
           <div className="flex flex-col gap-2.5">
             {filteredCourses.map((course) => (
               <div
@@ -99,7 +110,11 @@ export default function CreatePage() {
 
       {/* 하단 버튼 */}
       <section className="flex flex-col px-[15px] justify-center items-center pt-3">
-        <CTAButton variant="primary" onClick={() => navigate("/course/verify")}>
+        <CTAButton
+          disabled={selectedIds.length >= 3 ? false : true}
+          variant="primary"
+          onClick={() => navigate("/course/verify")}
+        >
           나만의 여행 코스 만들기
         </CTAButton>
       </section>
