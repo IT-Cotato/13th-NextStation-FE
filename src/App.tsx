@@ -14,6 +14,7 @@ import LogInfoPage from '@/pages/course/LogInfoPage';
 import LogPlacePage from '@/pages/course/LogPlacePage';
 import LogVisibilityPage from '@/pages/course/LogVisibilityPage';
 import { LogDraftProvider } from '@/pages/course/contexts/LogDraftContext';
+import StampAcquiredPage from '@/pages/course/StampAcquiredPage';
 import 'react-toastify/dist/ReactToastify.css';
 import Toast from './pages/course/components/Toast';
 
@@ -32,6 +33,7 @@ function App() {
           <Route path="/course/create" element={<CreatePage />} />
           <Route path="/course/verify" element={<CourseVerifyPage />} />
           <Route path="/course/saved" element={<SavedPage />} />
+          <Route path="/course/:courseId/stamp" element={<StampAcquiredPage />} />
           <Route path="/course/:courseId/log" element={<LogIntroPage />} />
           <Route path="/course/:courseId/log/info" element={<LogInfoPage />} />
           <Route path="/course/:courseId/log/place" element={<LogPlacePage />} />
