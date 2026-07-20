@@ -6,6 +6,7 @@ type CalendarDayViewProps = {
   displayYear: number;
   displayMonth: number;
   selectedDay: number;
+  highlightDate: string | null;
   onChangeYear: (year: number) => void;
   onChangeMonth: (month: number) => void;
   onClickYear: () => void;
@@ -19,19 +20,17 @@ export default function CalendarDayView({
   displayYear,
   displayMonth,
   selectedDay,
+  highlightDate,
   onChangeYear,
   onChangeMonth,
   onClickYear,
   onClickMonth,
   onSelectDate,
 }: CalendarDayViewProps) {
-  const today = new Date();
-  const todayYear = today.getFullYear();
-  const todayMonth = today.getMonth() + 1;
-  const todayDate = today.getDate();
-
   const firstDayOfMonth = new Date(displayYear, displayMonth - 1, 1).getDay();
   const daysInMonth = new Date(displayYear, displayMonth, 0).getDate();
+  const [highlightYear, highlightMonth, highlightDay] =
+    highlightDate?.split(".").map(Number) ?? [];
 
   const dateCells = useMemo(() => {
     return [
@@ -104,18 +103,13 @@ export default function CalendarDayView({
             return <div key={`empty-${index}`} className="h-6" />;
           }
 
-          const dayOfWeek = (firstDayOfMonth + index) % 7;
+          const dayOfWeek = index % 7;
 
           const isSelected = date === selectedDay;
-          const isToday =
-            displayYear === todayYear &&
-            displayMonth === todayMonth &&
-            date === todayDate;
-
-          const isPastDate =
-            new Date(displayYear, displayMonth - 1, date) <
-            new Date(todayYear, todayMonth - 1, todayDate);
-
+          const isHighlightDate =
+            displayYear === highlightYear &&
+            displayMonth === highlightMonth &&
+            date === highlightDay;
 
           return (
             <button
@@ -128,10 +122,8 @@ export default function CalendarDayView({
               className={`flex w-7 h-6 items-center justify-center rounded-[50px] text-body-01 leading-[1.4] tracking-[-0.025em] text-center ${
                 isSelected
                   ? "bg-primary-50 text-white"
-                  : isToday
+                  : isHighlightDate
                     ? "bg-gray-20 text-gray-100"
-                    : isPastDate
-                      ? "text-gray-50"
                       : dayOfWeek === 0
                         ? "text-primary-70"
                         : "text-gray-90"

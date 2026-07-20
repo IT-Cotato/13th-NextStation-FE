@@ -17,6 +17,10 @@ export function LogDraftProvider({ children }: PropsWithChildren) {
       setDraft((prev) => ({ ...prev, logName: value }));
     };
 
+    const setAcquiredDate = (value: string | null) => {
+      setDraft((prev) => ({ ...prev, acquiredDate: value }));
+    };
+
     const setSelectedDate = (value: string | null) => {
       setDraft((prev) => ({ ...prev, selectedDate: value }));
     };
@@ -63,6 +67,7 @@ export function LogDraftProvider({ children }: PropsWithChildren) {
     return {
       draft,
       setLogName,
+      setAcquiredDate,
       setSelectedDate,
       setSelectedTime,
       setReview,

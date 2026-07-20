@@ -11,6 +11,7 @@ export interface PlaceReviewDraft {
 
 export interface LogDraft {
   logName: string;
+  acquiredDate: string | null;
   selectedDate: string | null;
   selectedTime: string | null;
   review: string;
@@ -30,6 +31,7 @@ const DEFAULT_PLACE_REVIEWS: PlaceReviewDraft[] = [
 
 export const INITIAL_LOG_DRAFT: LogDraft = {
   logName: DEFAULT_LOG_NAME,
+  acquiredDate: null,
   selectedDate: null,
   selectedTime: null,
   review: '',
@@ -41,6 +43,7 @@ export const INITIAL_LOG_DRAFT: LogDraft = {
 export interface LogDraftContextValue {
   draft: LogDraft;
   setLogName: (value: string) => void;
+  setAcquiredDate: (value: string | null) => void;
   setSelectedDate: (value: string | null) => void;
   setSelectedTime: (value: string | null) => void;
   setReview: (value: string) => void;

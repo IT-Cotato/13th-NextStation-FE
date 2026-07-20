@@ -3,6 +3,7 @@ import { useLogDraft } from "../contexts/logDraft";
 
 export default function LogPreviewCard() {
   const { draft } = useLogDraft();
+  const displayDate = draft.selectedDate ?? draft.acquiredDate;
 
   const placeLabels = draft.placeReviews.map((place) => place.label);
   const previewImage = draft.photos[0];
@@ -36,7 +37,7 @@ export default function LogPreviewCard() {
             </div>
           </div>
           <div className="flex gap-2 items-center justify-center text-body-02 text-gray-70 leading-[1.4] tracking-[-0.025em]">
-            <p>{draft.selectedDate ?? '날짜 미입력'}</p>
+            <p>{displayDate ?? '날짜 미입력'}</p>
             <div className="w-1 h-1 rounded-full bg-gray-50"/>
             <p>{draft.selectedTime ? `${draft.selectedTime} 소요` : '시간 미입력'}</p>
           </div>

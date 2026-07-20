@@ -2,39 +2,37 @@ import { useState } from "react";
 import CalendarDayView from "./CalendarDayView";
 import CalendarYearView from "./CalendarYearView";
 import CalendarMonthView from "./CalendarMonthView";
+import { getDisplayDateParts } from "@/utils/logDate";
 
 type CalendarMode = "date" | "year" | "month";
 
 type LogDatePickerModalProps = {
+  defaultDate: string | null;
   selectedDate: string | null;
   onClose: () => void;
   onConfirm: (date: string) => void;
 }
 
 export default function LogDatePickerModal({
+  defaultDate,
   selectedDate,
   onClose,
   onConfirm,
 }: LogDatePickerModalProps) {
   const [mode, setMode] = useState<CalendarMode>("date");
-
+  const baseDate = selectedDate ?? defaultDate;
   const today = new Date();
+  const initialDate = baseDate
+    ? getDisplayDateParts(baseDate)
+    : {
+        year: today.getFullYear(),
+        month: today.getMonth() + 1,
+        day: today.getDate(),
+      };
 
-  const initialYear = selectedDate
-    ? Number(selectedDate.split(".")[0])
-    : today.getFullYear();
-
-  const initialMonth = selectedDate
-    ? Number(selectedDate.split(".")[1])
-    : today.getMonth() + 1;
-
-  const initialDay = selectedDate
-    ? Number(selectedDate.split(".")[2])
-    : today.getDate();
-
-  const [draftYear, setDraftYear] = useState(initialYear);
-  const [draftMonth, setDraftMonth] = useState(initialMonth);
-  const [draftDay, setDraftDay] = useState(initialDay);
+  const [draftYear, setDraftYear] = useState(initialDate.year);
+  const [draftMonth, setDraftMonth] = useState(initialDate.month);
+  const [draftDay, setDraftDay] = useState(initialDate.day);
 
   return (
     <div className="flex w-[360px] px-[10px] py-4 gap-[10px] bg-white border border-primary-50 rounded-lg">
@@ -43,6 +41,7 @@ export default function LogDatePickerModal({
           displayYear={draftYear}
           displayMonth={draftMonth}
           selectedDay={draftDay}
+          highlightDate={defaultDate}
           onChangeYear={setDraftYear}
           onChangeMonth={setDraftMonth}
           onClickYear={() => setMode("year")}

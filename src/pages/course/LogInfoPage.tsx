@@ -24,6 +24,12 @@ function LogInfoPage() {
     setPhotos,
     isDirty,
   } = useLogDraft();
+  const displayDate = draft.selectedDate ?? draft.acquiredDate;
+  const isInfoComplete =
+    draft.logName.trim() !== "" &&
+    displayDate !== null &&
+    draft.selectedTime !== null &&
+    draft.review.trim() !== "";
 
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
   const [isLogConfirmOpen, setIsLogConfirmOpen] = useState(false);
@@ -61,19 +67,20 @@ function LogInfoPage() {
             <button
               type="button"
               onClick={() => setIsDatePickerOpen(true)}
-              className="flex w-full rounded-lg items-center justify-between px-[10px] py-2 bg-white"
+              className="flex w-full rounded-lg items-center justify-between px-[10px] py-2 bg-white outline-none"
             >
               <span 
                 className={`
                   text-body-01 leading-[1.4] tracking-[-0.025em]
-                  ${draft.selectedDate ? "text-gray-100" : "text-gray-70"}
+                  ${displayDate ? "text-gray-100" : "text-gray-70"}
                 `}
-              >{draft.selectedDate ?? "2026.07.12"}</span>
+              >{displayDate ?? "날짜를 선택해주세요"}</span>
               <CalendarIcon className="size-6" />
             </button>
 
             {isDatePickerOpen && (
               <LogDatePickerModal
+                defaultDate={draft.acquiredDate}
                 selectedDate={draft.selectedDate}
                 onClose={() => setIsDatePickerOpen(false)}
                 onConfirm={(date) => {
@@ -141,7 +148,7 @@ function LogInfoPage() {
 
       <section className="absolute bottom-[calc(var(--safe-bottom)+50px)] z-10 flex flex-col w-full items-center justify-center ">
         <CTAButton 
-          disabled={!isDirty}
+          disabled={!isInfoComplete}
           onClick={() => navigate(`/course/${courseId}/log/place`)}
         >
           다음

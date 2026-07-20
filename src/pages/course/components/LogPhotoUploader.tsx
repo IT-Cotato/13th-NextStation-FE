@@ -2,6 +2,8 @@ import { useRef } from "react";
 import PlusIcon from '@/assets/photoPlus.svg?react';
 import DeleteIcon from '@/assets/delete.svg?react';
 
+const MAX_PHOTO_COUNT = 3;
+
 interface LogPhotoUploaderProps {
   photos: string[];
   onChange: (photos: string[]) => void;
@@ -17,8 +19,14 @@ export default function LogPhotoUploader({
     const files = Array.from(e.target.files ?? []);
     if (files.length === 0) return;
 
+    const remainingCount = MAX_PHOTO_COUNT - photos.length;
+    if (remainingCount <= 0) {
+      e.target.value = "";
+      return;
+    }
+
     const nextPhotos = files.map((file) => URL.createObjectURL(file));
-    onChange([...photos, ...nextPhotos]);
+    onChange([...photos, ...nextPhotos].slice(0, MAX_PHOTO_COUNT));
 
     e.target.value = "";
   }
@@ -30,13 +38,15 @@ export default function LogPhotoUploader({
   return (
     <>
       <div className="flex w-full items-center gap-4 overflow-x-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
-        <button
-          type="button"
-          onClick={() => inputRef.current?.click()}
-          className="flex w-[108px] h-[108px] cursor-pointer items-center justify-center rounded-lg bg-secondary-10 border border-dashed border-secondary-40 outline-none"
-        >
-          <PlusIcon className="size-3"/>
-        </button>
+        {photos.length < MAX_PHOTO_COUNT ? (
+          <button
+            type="button"
+            onClick={() => inputRef.current?.click()}
+            className="flex w-[108px] h-[108px] cursor-pointer items-center justify-center rounded-lg bg-secondary-10 border border-dashed border-secondary-40 outline-none"
+          >
+            <PlusIcon className="size-3"/>
+          </button>
+        ) : null}
 
         {photos.map((photo, index) => (
           <div
