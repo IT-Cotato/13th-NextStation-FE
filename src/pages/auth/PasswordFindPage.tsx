@@ -60,6 +60,16 @@ export default function PasswordFindPage() {
     return () => window.clearInterval(timerId);
   }, [certificationSeconds]);
 
+  const validateEmail = () => {
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const emailError = emailPattern.test(email)
+      ? ''
+      : '이메일 형식이 올바르지 않습니다.';
+
+    setErrors((value) => ({ ...value, email: emailError }));
+    return !emailError;
+  };
+
   const handleNext = () => {
     const nextErrors = {
       email: '',
@@ -83,7 +93,9 @@ export default function PasswordFindPage() {
       nextErrors.password = '영문 ∙ 숫자 ∙ 특수기호 ∙ 8-20자 포함해서 설정해주세요.';
     }
 
-    if (passwordConfirm && password !== passwordConfirm) {
+    if (!passwordConfirm) {
+      nextErrors.passwordConfirm = '비밀번호를 다시 입력해주세요.';
+    } else if (password !== passwordConfirm) {
       nextErrors.passwordConfirm = '비밀번호가 일치하지 않습니다.';
     }
 
@@ -110,12 +122,12 @@ export default function PasswordFindPage() {
   };
 
   return (
-    <main className="relative h-dvh overflow-hidden bg-white text-gray-100">
+    <main className="relative h-dvh overflow-y-auto bg-white text-gray-100">
       <div className="absolute left-0 top-[40px] w-full">
-        <AuthTopBar title="비밀번호 찾기" onBack={handleBack} />
+        <AuthTopBar title="비밀번호 재설정" onBack={handleBack} />
       </div>
 
-      <section className="absolute left-[15px] right-[15px] top-[130px] flex flex-col gap-[30px]">
+      <section className="flex flex-col gap-[30px] px-[15px] pb-[150px] pt-[130px]">
         <section className="flex flex-col gap-[30px]">
           <h2 className="text-subtitle font-semibold leading-[1.4] text-gray-100">
             가입한 이메일을 입력해주세요
@@ -129,10 +141,11 @@ export default function PasswordFindPage() {
                 setCertificationSeconds(null);
                 setErrors((value) => ({ ...value, email: '' }));
               }}
+              onBlur={validateEmail}
               placeholder="user@example.com"
               autoComplete="email"
               buttonLabel={isCertificationActive ? '재요청' : '인증하기'}
-              buttonTone={isCertificationActive ? 'dark' : 'default'}
+              buttonTone={email || isCertificationActive ? 'dark' : 'default'}
               errorMessage={errors.email}
               onCertificationClick={handleCertificationClick}
             />
@@ -179,7 +192,7 @@ export default function PasswordFindPage() {
         </section>
       </section>
 
-      <section className="absolute bottom-[calc(var(--safe-bottom)+50px)] left-[15px] right-[15px] z-10">
+      <section className="fixed bottom-[calc(var(--safe-bottom)+50px)] left-1/2 z-30 w-full max-w-[var(--app-max-width)] -translate-x-1/2 px-[15px]">
         <AuthButton onClick={handleNext}>다음</AuthButton>
       </section>
     </main>

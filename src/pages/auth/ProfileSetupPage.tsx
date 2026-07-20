@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { type ReactNode, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AuthButton from './components/AuthButton';
 import AuthInput from './components/AuthInput';
@@ -51,7 +51,7 @@ const validateBirthday = (value: string) => {
 
 interface CheckItemProps {
   checked: boolean;
-  children: React.ReactNode;
+  children: ReactNode;
   onChange: () => void;
 }
 
@@ -59,6 +59,8 @@ function CheckItem({ checked, children, onChange }: CheckItemProps) {
   return (
     <button
       type="button"
+      role="checkbox"
+      aria-checked={checked}
       onClick={onChange}
       className="flex items-center gap-[10px] text-left"
     >
@@ -83,6 +85,7 @@ export default function ProfileSetupPage() {
   const [gender, setGender] = useState<Gender | ''>('');
   const [termsAgreed, setTermsAgreed] = useState(false);
   const [marketingAgreed, setMarketingAgreed] = useState(false);
+  const [termsError, setTermsError] = useState(false);
   const [errors, setErrors] = useState({
     nickname: '',
     birthday: '',
@@ -103,6 +106,7 @@ export default function ProfileSetupPage() {
     const nextValue = !isAllAgreed;
     setTermsAgreed(nextValue);
     setMarketingAgreed(nextValue);
+    setTermsError(false);
   };
 
   const handleNext = () => {
@@ -112,8 +116,9 @@ export default function ProfileSetupPage() {
     };
 
     setErrors(nextErrors);
+    setTermsError(!termsAgreed);
 
-    if (Object.values(nextErrors).every((message) => !message)) {
+    if (termsAgreed && Object.values(nextErrors).every((message) => !message)) {
       navigate('/auth/finish');
     }
   };
@@ -213,12 +218,33 @@ export default function ProfileSetupPage() {
           <div className="flex flex-col gap-[15px] px-[25px] py-5">
             <CheckItem
               checked={termsAgreed}
-              onChange={() => setTermsAgreed((value) => !value)}
+              onChange={() => {
+                setTermsAgreed((value) => {
+                  const nextValue = !value;
+
+                  if (nextValue) {
+                    setTermsError(false);
+                  }
+
+                  return nextValue;
+                });
+              }}
             >
               <span className="text-body-01 font-regular leading-[1.4] text-gray-80 underline underline-offset-2">
                 서비스 이용약관 및 개인정보 취급 방침 동의
               </span>
             </CheckItem>
+            {termsError && (
+              <p className="flex items-center gap-1 pl-7 text-body-02 font-regular leading-[1.4] text-primary-60">
+                <span
+                  className="flex size-3 items-center justify-center rounded-full border border-primary-60 text-[9px] leading-none"
+                  aria-hidden="true"
+                >
+                  !
+                </span>
+                <span>필수 이용약관에 동의해주세요.</span>
+              </p>
+            )}
             <CheckItem
               checked={marketingAgreed}
               onChange={() => setMarketingAgreed((value) => !value)}
@@ -232,7 +258,7 @@ export default function ProfileSetupPage() {
       </section>
 
       <section className="fixed bottom-[calc(var(--safe-bottom)+50px)] left-1/2 z-30 w-full max-w-[var(--app-max-width)] -translate-x-1/2 px-[15px]">
-        <AuthButton disabled={!termsAgreed} onClick={handleNext}>
+        <AuthButton onClick={handleNext}>
           다음
         </AuthButton>
       </section>

@@ -9,6 +9,7 @@ export default function LoginPage() {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
 
   const handleBack = () => {
@@ -20,7 +21,32 @@ export default function LoginPage() {
     navigate('/auth');
   };
 
+  const validateEmail = () => {
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const nextError = emailPattern.test(email)
+      ? ''
+      : '이메일 형식이 올바르지 않습니다.';
+
+    setEmailError(nextError);
+    return !nextError;
+  };
+
+  const validatePassword = () => {
+    const nextError =
+      password.length >= 8 ? '' : '비밀번호는 8자 이상 입력해주세요.';
+
+    setPasswordError(nextError);
+    return !nextError;
+  };
+
   const handleLogin = () => {
+    const isEmailValid = validateEmail();
+    const isPasswordValid = validatePassword();
+
+    if (!isEmailValid || !isPasswordValid) {
+      return;
+    }
+
     setPasswordError('비밀번호가 일치하지 않습니다.');
   };
 
@@ -35,8 +61,13 @@ export default function LoginPage() {
           label="이메일"
           type="email"
           value={email}
-          onChange={(event) => setEmail(event.target.value)}
+          onChange={(event) => {
+            setEmail(event.target.value);
+            setEmailError('');
+          }}
+          onBlur={validateEmail}
           autoComplete="email"
+          errorMessage={emailError}
         />
 
         <div className="flex w-full flex-col gap-2">
@@ -47,6 +78,7 @@ export default function LoginPage() {
               setPassword(event.target.value);
               setPasswordError('');
             }}
+            onBlur={validatePassword}
             autoComplete="current-password"
             errorMessage={passwordError}
           />
@@ -74,7 +106,7 @@ export default function LoginPage() {
       </section>
 
       <div className="absolute bottom-[calc(var(--safe-bottom)+50px)] left-[15px] right-[15px]">
-        <AuthButton onClick={handleLogin}>다음</AuthButton>
+        <AuthButton onClick={handleLogin}>로그인하기</AuthButton>
       </div>
     </main>
   );

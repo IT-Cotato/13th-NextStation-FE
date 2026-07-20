@@ -40,14 +40,29 @@ export default function AuthPasswordInput({
           className="absolute right-4 top-1/2 flex size-5 -translate-y-1/2 items-center justify-center"
           aria-label={isVisible ? '비밀번호 숨기기' : '비밀번호 보기'}
         >
-          <EyeClose
-            className={`size-5 ${
-              isVisible
-                ? '[--fill-0:var(--color-primary-60)]'
-                : '[--fill-0:var(--color-gray-60)]'
-            }`}
-            aria-hidden="true"
-          />
+          {isVisible ? (
+            <svg
+              viewBox="0 0 20 20"
+              className="size-5 text-gray-60"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              aria-hidden="true"
+            >
+              <path
+                d="M2.25 10C3.92 6.92 6.73 5 10 5s6.08 1.92 7.75 5c-1.67 3.08-4.48 5-7.75 5s-6.08-1.92-7.75-5Z"
+                stroke="currentColor"
+                strokeWidth="1.4"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+              <circle cx="10" cy="10" r="2.35" fill="currentColor" />
+            </svg>
+          ) : (
+            <EyeClose
+              className="size-5 [--fill-0:var(--color-gray-60)]"
+              aria-hidden="true"
+            />
+          )}
         </button>
       </span>
       {errorMessage && (

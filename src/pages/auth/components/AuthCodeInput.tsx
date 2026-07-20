@@ -16,7 +16,7 @@ export default function AuthCodeInput({
   return (
     <div className="flex w-full flex-col gap-2">
       <div
-        className={`flex h-[50px] w-full items-center rounded-[20px] border px-4 py-3 ${
+        className={`flex h-[50px] w-full items-center rounded-[20px] border px-4 py-3 focus-within:border-primary-50 focus-within:bg-white ${
           hasValue || errorMessage
             ? 'border-primary-50 bg-white'
             : 'border-transparent bg-gray-20'
