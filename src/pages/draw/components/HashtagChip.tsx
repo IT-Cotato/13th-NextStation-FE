@@ -9,7 +9,7 @@ export default function HashtagChip({ label, selected = false, onClick }: Hashta
       type="button"
       onClick={onClick}
       className={`
-        flex items-center justify-center px-4 py-2 rounded-lg border
+        flex items-center justify-center px-4 py-2 rounded-lg border outline-none
         ${
           selected
            ? 'bg-secondary-20 border-secondary-40'

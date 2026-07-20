@@ -3,7 +3,7 @@ import SearchIcon from '@/assets/search.svg?react';
 import CloseIcon from '@/assets/close.svg?react';
 import LineBadge from "./LineBadge";
 
-interface Station {
+export interface Station {
   id: number
   name: string
   lines: string[]
@@ -15,10 +15,13 @@ const stationList: Station[] = [
   { id: 3, name: '선릉역', lines: ['2'] },
 ]
 
+interface SearchBarProps {
+  selectedStation: Station | null;
+  onSelectStation: (station: Station | null ) => void;
+}
 
-export default function SearchBar() {
+export default function SearchBar({ selectedStation, onSelectStation }: SearchBarProps) {
   const [query, setQuery] = useState('');
-  const [selectedStation, setSelectedStation] = useState<Station | null>(null);
 
   const suggestions = useMemo(() => {
     if (!query.trim()) return []
@@ -29,13 +32,13 @@ export default function SearchBar() {
   }, [query])
 
   const handleSelectStation = (station: Station) => {
-    setSelectedStation(station)
     setQuery(station.name)
+    onSelectStation(station);
   }
 
   const handleClear = () => {
-    setSelectedStation(null)
     setQuery('')
+    onSelectStation(null);
   }
 
   const showSuggestions =
@@ -74,7 +77,7 @@ export default function SearchBar() {
               value={query}
               onChange={(e) => {
                 setQuery(e.target.value)
-                setSelectedStation(null)
+                onSelectStation(null);
               }}
               placeholder="나와 가장 가까운 지하철역 찾아보기"
               className={[

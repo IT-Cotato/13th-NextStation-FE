@@ -1,10 +1,16 @@
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import MainPage from '@/pages/MainPage';
-import LoadingPage from '@/pages/draw/LoadingPage';
-import ResultPage from '@/pages/draw/ResultPage';
-import RecommendPage from './pages/draw/RecommendPage';
-import ConditionPage from './pages/draw/ConditionPage';
-import PreferencePage from './pages/draw/PreferencePage';
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import MainPage from "@/pages/MainPage";
+import LoadingPage from "@/pages/draw/LoadingPage";
+import ResultPage from "@/pages/draw/ResultPage";
+import RecommendPage from "./pages/draw/RecommendPage";
+import ConditionPage from "./pages/draw/ConditionPage";
+import PreferencePage from "./pages/draw/PreferencePage";
+import CourseMainPage from "@/pages/course/MainPage";
+import CourseVerifyPage from "@/pages/course/VerifyPage";
+import SavedPage from "@/pages/course/SavedPage";
+import CreatePage from "@/pages/course/CreatePage";
+import "react-toastify/dist/ReactToastify.css";
+import Toast from "./pages/course/components/Toast";
 
 function App() {
   return (
@@ -16,7 +22,13 @@ function App() {
         <Route path="/draw/recommend" element={<RecommendPage />} />
         <Route path="/draw/condition" element={<ConditionPage />} />
         <Route path="/draw/preference" element={<PreferencePage />} />
+        <Route path="/course" element={<CourseMainPage />} />
+        <Route path="/course/create" element={<CreatePage />} />
+        <Route path="/course/verify" element={<CourseVerifyPage />} />
+        <Route path="/course/saved" element={<SavedPage />} />
       </Routes>
+
+      <Toast />
     </BrowserRouter>
   );
 }
