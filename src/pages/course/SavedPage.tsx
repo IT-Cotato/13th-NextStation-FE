@@ -28,8 +28,8 @@ export default function SavedPage() {
       <Header showClose onCloseClick={() => navigate("/")} />
 
       <section className="flex flex-1 items-center">
-        <div className="flex flex-col items-center justify-center gap-[32.27px]">
-          <CourseSaved className="w-[129.73px] h-[129.73px]" />
+        <div className="flex flex-col items-center justify-center gap-8">
+          <CourseSaved className="w-[130px] h-[130px]" />
           <p className="text-gray-100 text-headline font-semibold text-center">
             보관함에
             <br />

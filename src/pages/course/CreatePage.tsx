@@ -22,6 +22,7 @@ export default function CreatePage() {
   const navigate = useNavigate();
   const [filterCateogry, setFilterCategory] = useState("문화 공간");
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
+  const isDisabled = selectedIds.length < 3; // 버튼 활성화 여부
 
   const handleSelected = (id: number) => {
     setSelectedIds((prev) =>
@@ -111,7 +112,7 @@ export default function CreatePage() {
       {/* 하단 버튼 */}
       <section className="flex flex-col px-[15px] justify-center items-center pt-3">
         <CTAButton
-          disabled={selectedIds.length >= 3 ? false : true}
+          disabled={isDisabled ? true : false}
           variant="primary"
           onClick={() => navigate("/course/verify")}
         >
