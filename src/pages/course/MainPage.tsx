@@ -4,7 +4,7 @@ import { useState } from "react";
 import CompleteConfirmModal from "./components/CompleteConfirmModal";
 import StationCategory from "./components/StationCategory";
 import { mockSavedCourses } from "@/mocks/mockSavedCourses";
-import DeleteConfirmModal from "./components/DeleteConfirmModal";
+import ConfirmModal from "@/components/ConfirmModal";
 
 export default function MainPage() {
   const [savedCourses, setSavedCourses] = useState(mockSavedCourses);
@@ -65,7 +65,8 @@ export default function MainPage() {
 
       {/* 삭제 확인 모달 */}
       {isDeleteModalOpen && selectedIds.length > 0 && (
-        <DeleteConfirmModal
+        <ConfirmModal
+          message="저장한 코스를 삭제하시겠습니까?"
           onClose={handleCancelDelete}
           onConfirm={handleConfirmDelete}
         />
