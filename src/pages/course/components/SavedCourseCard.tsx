@@ -59,9 +59,9 @@ export default function SavedCourseCard({
         </div>
       </div>
       {isDeleteMode && (
-        <div className="flex items-center">
+        <button className="flex items-center justify-center outline-none">
           {isSelect ? <Checked /> : <Unchecked />}
-        </div>
+        </button>
       )}
     </div>
   );
