@@ -45,7 +45,7 @@ export default function StationCategory({
               {/* 탭 메뉴 밑의 밑줄 */}
               {item === selectedLine ? (
                 <motion.div
-                  className="flex items-center left-0 -translate-x-1/2] absolute -bottom-[0.5px] right-0 h-0.5 bg-secondary-60"
+                  className="flex items-center absolute left-0 right-0 -bottom-[0.5px] h-0.5 bg-secondary-60"
                   layoutId="underline"
                   id="underline"
                 />
