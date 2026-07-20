@@ -9,6 +9,8 @@ import CourseMainPage from "@/pages/course/MainPage";
 import CourseVerifyPage from "@/pages/course/VerifyPage";
 import SavedPage from "@/pages/course/SavedPage";
 import CreatePage from "@/pages/course/CreatePage";
+import "react-toastify/dist/ReactToastify.css";
+import Toast from "./pages/course/components/Toast";
 
 function App() {
   return (
@@ -25,6 +27,8 @@ function App() {
         <Route path="/course/verify" element={<CourseVerifyPage />} />
         <Route path="/course/saved" element={<SavedPage />} />
       </Routes>
+
+      <Toast />
     </BrowserRouter>
   );
 }

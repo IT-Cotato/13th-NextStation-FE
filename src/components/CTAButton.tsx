@@ -4,6 +4,7 @@ type CTAButtonVariant = "primary" | "secondary";
 interface CTAButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   children: ReactNode;
   variant?: CTAButtonVariant;
+  width?: number;
 }
 
 const variantStyles: Record<CTAButtonVariant, string> = {
@@ -27,14 +28,16 @@ export default function CTAButton({
   variant = "primary",
   className = "",
   disabled = false,
+  width = 360, // 디폴트 값
   ...props
 }: CTAButtonProps) {
   return (
     <button
       type="button"
       disabled={disabled}
+      style={{ width }}
       className={`
-        flex h-[60px] w-[360px] items-center justify-center rounded-lg py-3
+        flex h-[60px] items-center justify-center rounded-lg py-3
         ${variantStyles[variant]}
         ${className}
       `}
