@@ -25,13 +25,13 @@ export default function BottomNav({ mode, activeTab = 'save' }: BottomNavProps) 
       {mode === 'main' ? (
         <div className={`${glassPillClassName} gap-1 p-1`}>
           <div className="pointer-events-none absolute inset-x-3 top-1 h-[16px] rounded-full bg-white/25 blur-md" />
-          <button className={`relative flex flex-col items-center gap-1 rounded-[38px] px-10 py-2 text-body-02 font-semibold leading-none tracking-[-0.025em] text-center outline-none ${activeTabClassName}`}>
+          <button className={`relative flex flex-col items-center gap-1 rounded-[38px] px-10 py-2 text-body-02 font-semibold leading-none whitespace-nowrap tracking-[-0.025em] text-center outline-none ${activeTabClassName}`}>
             <DrawIcon className="size-[30px]"/>
             뽑기
           </button>
           <button
             onClick={() => navigate(`/course`)}
-            className={`relative flex flex-col items-center gap-1 rounded-[38px] px-10 py-2 text-body-02 font-semibold leading-none tracking-[-0.025em] text-center outline-none ${inactiveTabClassName}`}
+            className={`relative flex flex-col items-center gap-1 rounded-[38px] px-10 py-2 text-body-02 font-semibold leading-none whitespace-nowrap tracking-[-0.025em] text-center outline-none ${inactiveTabClassName}`}
           >
             <CourseIcon className="size-[30px]"/>
             코스
@@ -53,7 +53,7 @@ export default function BottomNav({ mode, activeTab = 'save' }: BottomNavProps) 
             <div className="pointer-events-none absolute inset-x-3 top-1 h-[16px] rounded-full bg-white/25 blur-md" />
             <button
               onClick={() => navigate(`/course`)}
-              className={`relative flex flex-col items-center rounded-[38px] px-6 py-2 gap-1 text-body-02 font-semibold leading-none tracking-[-0.025em] text-center outline-none
+              className={`relative flex flex-col items-center rounded-[38px] px-6 py-2 gap-1 text-body-02 font-semibold leading-none whitespace-nowrap tracking-[-0.025em] text-center outline-none
                 ${activeTab === 'save'
                   ? activeTabClassName
                   : inactiveTabClassName
@@ -69,7 +69,7 @@ export default function BottomNav({ mode, activeTab = 'save' }: BottomNavProps) 
 
             <button
               onClick={() => navigate(`/explore`)}
-              className={`relative flex flex-col items-center rounded-[38px] px-6 py-2 gap-1 text-body-02 font-semibold leading-none tracking-[-0.025em] text-center outline-none
+              className={`relative flex flex-col items-center rounded-[38px] px-6 py-2 gap-1 text-body-02 font-semibold leading-none whitespace-nowrap tracking-[-0.025em] text-center outline-none
                 ${activeTab === 'explore'
                   ? activeTabClassName
                   : inactiveTabClassName
@@ -84,7 +84,7 @@ export default function BottomNav({ mode, activeTab = 'save' }: BottomNavProps) 
             </button>
             <button
               onClick={() => navigate(`/mypage`)}
-              className={`relative flex flex-col items-center rounded-[38px] px-6 py-2 gap-1 text-body-02 font-semibold leading-none tracking-[-0.025em] text-center outline-none
+              className={`relative flex flex-col items-center rounded-[38px] px-6 py-2 gap-1 text-body-02 font-semibold leading-none whitespace-nowrap tracking-[-0.025em] text-center outline-none
                 ${activeTab === 'profile'
                   ? activeTabClassName
                   : inactiveTabClassName
