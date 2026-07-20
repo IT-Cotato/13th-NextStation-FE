@@ -5,6 +5,7 @@ import CompleteConfirmModal from "./components/CompleteConfirmModal";
 import StationCategory from "./components/StationCategory";
 import { mockSavedCourses } from "@/mocks/mockSavedCourses";
 import ConfirmModal from "@/components/ConfirmModal";
+import BottomNav from "@/components/BottomNav";
 
 export default function MainPage() {
   const [savedCourses, setSavedCourses] = useState(mockSavedCourses);
@@ -122,6 +123,8 @@ export default function MainPage() {
           ))}
         </div>
       </section>
+      
+      <BottomNav mode="course" />
     </main>
   );
 }
