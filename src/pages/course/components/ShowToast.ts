@@ -7,7 +7,7 @@ interface ToastProps {
 export const showToast = ({ message }: ToastProps) => {
   toast(message, {
     position: "top-center",
-    autoClose: 2000,
+    autoClose: 1200,
     hideProgressBar: true,
     closeOnClick: true,
   });
