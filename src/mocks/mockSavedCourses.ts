@@ -20,4 +20,18 @@ export const mockSavedCourses = [
     station: "잠실나루역",
     isCompleted: false,
   },
+  {
+    id: 4,
+    name: "학교 끝나고 둘러보는 수유 코스",
+    line: "4호선",
+    station: "수유역",
+    isCompleted: true,
+  },
+  {
+    id: 5,
+    name: "아이랑 어린이대공원 코스",
+    line: "7호선",
+    station: "어린이대공원역",
+    isCompleted: false,
+  },
 ];
