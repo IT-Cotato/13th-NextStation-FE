@@ -6,7 +6,7 @@ import TimeChip from "./components/TimeChip";
 import LogPhotoUploader from "./components/LogPhotoUploader";
 import LogDatePickerModal from "./components/date-picker/LogDatePickerModal";
 import CalendarIcon from '@/assets/calendar.svg?react';
-import LogConfirmModal from "./components/LogConfirmModal";
+import ConfirmModal from "@/components/ConfirmModal";
 import NameEditInput from "./components/NameEditInput";
 import { useLogDraft } from "./contexts/logDraft";
 
@@ -49,7 +49,11 @@ function LogInfoPage() {
         }}
       />
       {isLogConfirmOpen && (
-        <LogConfirmModal onClose={() => setIsLogConfirmOpen(false)} />
+        <ConfirmModal 
+          message={"해당 기록은 저장되지 않았습니다.\n저장하지 않고 나가시겠습니까?"}
+          onClose={() => setIsLogConfirmOpen(false)} 
+          onConfirm={() => navigate(`/course`)}
+        />
       )}
       {/* 코스 제목 */}
       <section className="flex flex-col w-[390px] p-5">

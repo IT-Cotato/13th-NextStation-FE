@@ -31,7 +31,7 @@ export default function VisibilityCard({
     <button
       type="button"
       onClick={onClick}
-      className={`flex w-[360px] rounded-lg items-center justify-between px-5 py-3 text-left ${
+      className={`flex w-[360px] rounded-lg items-center justify-between px-5 py-3 text-left outline-none ${
         selected ? 'border border-primary-50 bg-secondary-10' : 'bg-white'
       }`}
     >

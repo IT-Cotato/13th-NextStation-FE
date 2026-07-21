@@ -2,7 +2,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useState } from "react";
 import Header from "@/components/Header";
 import CTAButton from "@/components/CTAButton";
-import LogConfirmModal from "./components/LogConfirmModal";
+import ConfirmModal from "@/components/ConfirmModal";
 import NameEditInput from "./components/NameEditInput";
 import PlaceReviewCard from "./components/PlaceReviewCard";
 import { useLogDraft } from "./contexts/logDraft";
@@ -29,7 +29,11 @@ function LogPlacePage() {
         }}
       />
       {isLogConfirmOpen && (
-        <LogConfirmModal onClose={() => setIsLogConfirmOpen(false)} />
+        <ConfirmModal 
+          message={"해당 기록은 저장되지 않았습니다.\n저장하지 않고 나가시겠습니까?"}
+          onClose={() => setIsLogConfirmOpen(false)} 
+          onConfirm={() => navigate(`/course`)}
+        />
       )}
 
       <section className="flex flex-col w-[390px] p-5">
