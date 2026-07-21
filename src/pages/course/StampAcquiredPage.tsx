@@ -34,7 +34,7 @@ function StampAcquiredPage() {
         <h1 className="text-headline font-semibold text-gray-90 leading-[1.4] tracking-[-0.025em] text-center">
           {stationName} 스탬프 획득!
         </h1>
-        <p className="text-body-01 text-gray-70 leading-[1.4] tracking-[-0.025em] text center">
+        <p className="text-body-01 text-gray-70 leading-[1.4] tracking-[-0.025em] text-center">
           오늘의 환승여행이 내 기록에 저장되었어요
         </p>
       </div>

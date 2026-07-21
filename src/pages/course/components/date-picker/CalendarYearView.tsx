@@ -25,7 +25,8 @@ export default function CalendarYearView({
         <div className="grid grid-cols-4 gap-4">
           {YEAR_OPTIONS.map((year) => {
             const isSelected = year === selectedYear;
-            const isCurrentYear = year === 2026;
+            const currentYear = new Date().getFullYear();
+            const isCurrentYear = year === currentYear;
 
             return (
               <button
