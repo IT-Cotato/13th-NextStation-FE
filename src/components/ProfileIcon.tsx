@@ -18,12 +18,13 @@ function ProfileIcon ({ isLoggedIn, profileImageUrl }: ProfileIconProps) {
       onClick={handleClick}
       className="
         relative flex size-[45px] items-center justify-center overflow-hidden rounded-full p-0
-        border border-white bg-white/20
-        shadow-[0_0_28px_rgba(118,118,118,0.25)]
-        backdrop-blur-sm
+        border border-white/70 bg-linear-to-b from-white/30 to-white/10
+        shadow-[0_0_28px_rgba(118,118,118,0.14),inset_0_1px_0_rgba(255,255,255,0.9)]
+        backdrop-blur-[22px]
       "
       aria-label={isLoggedIn ? '프로필' : '로그인'}
     >
+      <div className="pointer-events-none absolute inset-x-[6px] top-[4px] h-[10px] rounded-full bg-white/25 blur-sm" />
       {isLoggedIn && profileImageUrl ? (
         /* 임시로 가득 채우는 것으로 세팅 */
         <img
