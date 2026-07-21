@@ -1,7 +1,7 @@
 import CardActionButton from "./CardActionButton";
 import { useNavigate } from "react-router-dom";
-import Checked from "@/assets/checked.svg?react";
-import Unchecked from "@/assets/unchecked.svg?react";
+import Selected from "@/assets/selected.svg?react";
+import Unselected from "@/assets/unselected.svg?react";
 import { STATION_STAMP_MAP } from "@/constants/stationStampMap";
 import { DISABLED_LINE_STAMP_MAP } from "@/constants/disabledLineStampMap";
 
@@ -60,7 +60,7 @@ export default function SavedCourseCard({
       </div>
       {isDeleteMode && (
         <button className="flex items-center justify-center outline-none">
-          {isSelect ? <Checked /> : <Unchecked />}
+          {isSelect ? <Selected /> : <Unselected />}
         </button>
       )}
     </div>
