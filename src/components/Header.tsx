@@ -36,7 +36,7 @@ export default function Header({
           type="button"
           onClick={handleBackClick}
           aria-label='뒤로가기'
-          className="flex size-6 items-center justify-center"
+          className="flex size-6 items-center justify-center outline-none"
         >
           <BackIcon className='size-6' />
         </button>
@@ -57,7 +57,7 @@ export default function Header({
           type="button"
           onClick={onCloseClick}
           aria-label='닫기'
-          className="flex size-6 items-center justify-center"
+          className="flex size-6 items-center justify-center outline-none"
         >
           <CloseIcon className='size-6' />
         </button>
