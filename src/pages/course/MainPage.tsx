@@ -54,7 +54,7 @@ export default function MainPage() {
       <section className="flex justify-center">
         <div className="flex w-[390px] px-[15px] items-center justify-between">
           <span className="text-title-02 font-semibold">내가 만든 코스</span>
-          {/* 둘러보기 경로 나오면 연결 */}
+          {/* 스크랩 페이지 경로 나오면 연결 */}
           <Heart />
         </div>
       </section>
