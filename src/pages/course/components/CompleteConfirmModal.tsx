@@ -1,15 +1,17 @@
 import CTAButton from "@/components/CTAButton";
 import type { ComponentPropsWithoutRef } from "react";
-// import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 interface CompleteConfirmModalProps extends ComponentPropsWithoutRef<"div"> {
   onClose: () => void;
+  courseId: number;
 }
 
 export default function CompleteConfirmModal({
   onClose,
+  courseId,
 }: CompleteConfirmModalProps) {
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
 
   return (
     <div
@@ -33,7 +35,12 @@ export default function CompleteConfirmModal({
 
         {/* button */}
         <div className="flex flex-col gap-2">
-          <CTAButton variant="primary" width={300} className="w-[300px]">
+          <CTAButton
+            variant="primary"
+            width={300}
+            className="w-[300px]"
+            onClick={() => navigate(`/course/${courseId}/stamp`)}
+          >
             네, 다녀왔어요
           </CTAButton>
           <CTAButton variant="secondary" width={300} onClick={onClose}>

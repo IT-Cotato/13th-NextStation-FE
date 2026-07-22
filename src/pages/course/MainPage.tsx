@@ -15,6 +15,7 @@ export default function MainPage() {
   const [selectedStation, setSelectedStation] = useState("전체"); // 역
   const [isDeleteMode, setIsDeleteMode] = useState(false);
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
+  const courseId = 2; // 임시 하드코딩 --> 추후 id 수정
 
   const toggleCompleteModal = () => setIsCompleteModalOpen((prev) => !prev);
 
@@ -49,19 +50,22 @@ export default function MainPage() {
   };
 
   return (
-    <main className="flex flex-col h-dvh overflow-hidden bg-gray-10 pt-[calc(var(--safe-top)+12px)]">
+    <main className="flex flex-col h-dvh  bg-gray-10 pt-[calc(var(--safe-top)+12px)] overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
       {/* Header */}
       <section className="flex justify-center">
         <div className="flex w-[390px] px-[15px] items-center justify-between">
           <span className="text-title-02 font-semibold">내가 만든 코스</span>
-          {/* 둘러보기 경로 나오면 연결 */}
+          {/* 스크랩 페이지 경로 나오면 연결 */}
           <Heart />
         </div>
       </section>
 
       {/* 여행 확인 모달 */}
       {isCompleteModalOpen && (
-        <CompleteConfirmModal onClose={toggleCompleteModal} />
+        <CompleteConfirmModal
+          onClose={toggleCompleteModal}
+          courseId={courseId}
+        />
       )}
 
       {/* 삭제 확인 모달 */}
@@ -123,7 +127,7 @@ export default function MainPage() {
           ))}
         </div>
       </section>
-      
+
       <BottomNav mode="course" />
     </main>
   );
