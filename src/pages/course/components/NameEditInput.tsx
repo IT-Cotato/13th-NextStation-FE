@@ -4,9 +4,11 @@ import { useEffect, useRef, useState } from "react";
 export default function NameEditInput({
   value,
   onChange,
+  className = "",
 }: {
   value: string;
   onChange: (value: string) => void;
+  className?: string;
 }) {
   const [isEditing, setIsEditing] = useState(false);
   const [placeholder, setPlaceholder] = useState("");
@@ -28,7 +30,7 @@ export default function NameEditInput({
   }, [isEditing]);
 
   return (
-    <div className="flex relative items-center rounded-lg p-2.5 bg-white border border-gray-40 font-semibold placeholder:text-gray-50">
+    <div className={`flex relative items-center rounded-lg p-2.5 bg-white border border-gray-40 font-semibold placeholder:text-gray-50 ${className} `}>
       <input
         className="w-full text-center outline-none text-subtitle font-semibold placeholder:text-gray-50 caret-primary-50"
         readOnly={!isEditing}

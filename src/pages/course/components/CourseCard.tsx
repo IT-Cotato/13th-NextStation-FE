@@ -2,7 +2,7 @@ import CulturalSpace from "@/assets/category/cultural-space.svg?react";
 import Cafe from "@/assets/category/cafe.svg?react";
 import Restaurant from "@/assets/category/restaurant.svg?react";
 import Walk from "@/assets/category/walk.svg?react";
-import Arrow from "@/assets/arrow.svg?react";
+import ArrowNext from "@/assets/arrow-next(gray).svg?react";
 
 export default function CourseCard({
   name,
@@ -40,7 +40,7 @@ export default function CourseCard({
         </p>
       </div>
       <div className="px-1.5">
-        <Arrow />
+        <ArrowNext />
       </div>
     </div>
   );

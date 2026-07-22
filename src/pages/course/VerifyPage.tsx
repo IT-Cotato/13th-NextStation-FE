@@ -10,8 +10,8 @@ import { useNavigate } from "react-router-dom";
 import { CustomOverlayMap, Map, useKakaoLoader } from "react-kakao-maps-sdk";
 import MapMarker from "./components/MapMarker";
 import { Reorder } from "motion/react";
-import ExitConfirmModal from "./components/ExitConfirmModal";
 import NameEditInput from "./components/NameEditInput";
+import ConfirmModal from "@/components/ConfirmModal";
 
 export default function VerifyPage() {
   const navigate = useNavigate();
@@ -32,13 +32,24 @@ export default function VerifyPage() {
   }
 
   const toggleModal = () => setIsModalOpen((prev) => !prev);
+  const handleConfirm = () => {
+    navigate("/");
+  };
 
   return (
-    <main className="flex flex-col h-dvh overflow-hidden bg-gray-10 gap-8 pt-[calc(var(--safe-top)+12px)]">
+    <main className="flex flex-col h-dvh  bg-gray-10 gap-8 pt-[calc(var(--safe-top)+12px)] overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
       <Header showBack showClose onCloseClick={toggleModal} />
 
       {/* 경고 모달 */}
-      {isModalOpen && <ExitConfirmModal onClose={toggleModal} />}
+      {isModalOpen && (
+        <ConfirmModal
+          message={
+            "해당 코스는 저장되지 않습니다.\n저장하지 않고 나가시겠습니까?"
+          }
+          onClose={toggleModal}
+          onConfirm={handleConfirm}
+        />
+      )}
 
       {/* 역명 */}
       <section className="flex justify-center">

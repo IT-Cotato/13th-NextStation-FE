@@ -6,6 +6,7 @@ import DoorRight from '@/assets/door_R.svg?react';
 import ProfileIcon from '@/components/ProfileIcon';
 import { useNavigate } from 'react-router-dom';
 import Button from '@/components/Button';
+import BottomNav from '@/components/BottomNav';
 
 function MainPage() {
   const navigate = useNavigate();
@@ -60,10 +61,10 @@ function MainPage() {
         </div>
       </div>      
     </section>
-      
+
+    <BottomNav mode="main"/>
     </main>
   )
-
 }
 
 export default MainPage

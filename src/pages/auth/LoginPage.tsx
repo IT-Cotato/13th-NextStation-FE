@@ -84,7 +84,7 @@ export default function LoginPage() {
           />
           <button
             type="button"
-            onClick={() => navigate('/auth/find')}
+            onClick={() => navigate('/auth/reset-password')}
             className="self-end text-body-02 font-regular leading-[1.4] text-gray-80 underline underline-offset-2"
           >
             비밀번호 찾기
