@@ -4,10 +4,12 @@ import { useNavigate } from "react-router-dom";
 
 interface CompleteConfirmModalProps extends ComponentPropsWithoutRef<"div"> {
   onClose: () => void;
+  courseId: number;
 }
 
 export default function CompleteConfirmModal({
   onClose,
+  courseId,
 }: CompleteConfirmModalProps) {
   const navigate = useNavigate();
 
@@ -37,7 +39,7 @@ export default function CompleteConfirmModal({
             variant="primary"
             width={300}
             className="w-[300px]"
-            onClick={() => navigate("/course/${courseId}/stamp")}
+            onClick={() => navigate(`/course/${courseId}/stamp`)}
           >
             네, 다녀왔어요
           </CTAButton>

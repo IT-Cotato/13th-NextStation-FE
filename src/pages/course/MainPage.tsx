@@ -15,6 +15,7 @@ export default function MainPage() {
   const [selectedStation, setSelectedStation] = useState("전체"); // 역
   const [isDeleteMode, setIsDeleteMode] = useState(false);
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
+  const courseId = 2; // 임시 하드코딩 --> 추후 id 수정
 
   const toggleCompleteModal = () => setIsCompleteModalOpen((prev) => !prev);
 
@@ -61,7 +62,10 @@ export default function MainPage() {
 
       {/* 여행 확인 모달 */}
       {isCompleteModalOpen && (
-        <CompleteConfirmModal onClose={toggleCompleteModal} />
+        <CompleteConfirmModal
+          onClose={toggleCompleteModal}
+          courseId={courseId}
+        />
       )}
 
       {/* 삭제 확인 모달 */}
