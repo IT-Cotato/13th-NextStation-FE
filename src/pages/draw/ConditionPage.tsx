@@ -23,71 +23,69 @@ function ConditionPage() {
     <main className="flex flex-col h-dvh overflow-hidden bg-white items-center pt-[var(--safe-top)]">
       <Header showBack/>
 
-      <section className="flex flex-col h-full items-center pt-10 gap-8">
-        <h1 className="text-headline font-semibold text-gray-100 leading-[1.4] tracking-[-0.025em] text-center">
-          어디서, 얼마나, 누구와 <br />
-          갈 계획인가요?
-        </h1>
-        <div className="flex flex-col w-[360px] items-center justify-center gap-10">
-          
-          {/* 출발역 */}
-          <div className="flex flex-col w-full gap-4 items-start">
-            <p className="text-subtitle text-gray-100 leading-[1.4] tracking-[-0.025em]">
-              출발역은 어디인가요?
-            </p>
-            <SearchBar
-              selectedStation={selectedStation}
-              onSelectStation={setSelectedStation}
-            />
-          </div>
+      <section className="flex h-full flex-col items-center justify-between pt-10 pb-[calc(var(--safe-bottom)+10px)]">
+        <div className="flex flex-col items-center gap-8">
+          <h1 className="text-headline font-semibold text-gray-100 leading-[1.4] tracking-[-0.025em] text-center">
+            어디서, 얼마나, 누구와 <br />
+            갈 계획인가요?
+          </h1>
+          <div className="flex flex-col w-[360px] items-center justify-center gap-10">
+            
+            {/* 출발역 */}
+            <div className="flex flex-col w-full gap-4 items-start">
+              <p className="text-subtitle text-gray-100 leading-[1.4] tracking-[-0.025em]">
+                출발역은 어디인가요?
+              </p>
+              <SearchBar
+                selectedStation={selectedStation}
+                onSelectStation={setSelectedStation}
+              />
+            </div>
 
-          {/* 시간 */}
-          <div className="flex flex-col w-full gap-4 items-start">
-            <p className="text-subtitle text-gray-100 leading-[1.4] tracking-[-0.025em]">
-              얼마나 걸렸으면 좋겠나요?
-            </p>
-            <div className="flex w-full items-center gap-[15px]">
-              {timeOptions.map((option) => (
-                <ChoiceChip
-                  key={option}
-                  label={option}
-                  selected={selectedTime === option}
-                  onClick={() => setSelectedTime(option)}
-                />
-              ))}
+            {/* 시간 */}
+            <div className="flex flex-col w-full gap-4 items-start">
+              <p className="text-subtitle text-gray-100 leading-[1.4] tracking-[-0.025em]">
+                얼마나 걸렸으면 좋겠나요?
+              </p>
+              <div className="flex w-full items-center gap-[15px]">
+                {timeOptions.map((option) => (
+                  <ChoiceChip
+                    key={option}
+                    label={option}
+                    selected={selectedTime === option}
+                    onClick={() => setSelectedTime(option)}
+                  />
+                ))}
+              </div>
+            </div>
+
+            {/* 누구와 */}
+            <div className="flex flex-col w-full gap-4 items-start">
+              <p className="text-subtitle text-gray-100 leading-[1.4] tracking-[-0.025em]">
+                누구와 가나요?
+              </p>
+              <div className="flex flex-wrap w-full items-center justify-center gap-[15px]">
+                {companionOptions.map((option) => (
+                  <ChoiceChip
+                    key={option}
+                    label={option}
+                    selected={selectedCompanion === option}
+                    onClick={() => setSelectedCompanion(option)}
+                  />
+                ))}
+              </div>
             </div>
           </div>
-
-          {/* 누구와 */}
-          <div className="flex flex-col w-full gap-4 items-start">
-            <p className="text-subtitle text-gray-100 leading-[1.4] tracking-[-0.025em]">
-              누구와 가나요?
-            </p>
-            <div className="flex flex-wrap w-full items-center justify-center gap-[15px]">
-              {companionOptions.map((option) => (
-                <ChoiceChip
-                  key={option}
-                  label={option}
-                  selected={selectedCompanion === option}
-                  onClick={() => setSelectedCompanion(option)}
-                />
-              ))}
-            </div>
-          </div>
-
         </div>
 
-
-      </section>
-
-      {/* CTA 버튼 */}
-      <section className='absolute bottom-[calc(var(--safe-bottom)+50px)] z-10 flex w-full items-center justify-center'>
-        <CTAButton 
-          disabled={!isFormValid}
-          onClick={() => navigate('/draw/preference')}
-        >
-          다음
-        </CTAButton>
+        <section className='flex w-full items-center justify-center'>
+          <CTAButton 
+            disabled={!isFormValid}
+            onClick={() => navigate('/draw/preference')}
+          >
+            다음
+          </CTAButton>
+        </section>
       </section>
     </main>
   )

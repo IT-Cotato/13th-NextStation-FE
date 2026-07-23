@@ -50,11 +50,10 @@ export default function SearchBar({ selectedStation, onSelectStation }: SearchBa
 
   return (
     <div className={[
-        "w-[360px] rounded-lg ",
-        showSuggestions ? "bg-white shadow-[0_0_28px_0_rgba(118,118,118,0.25)]" : ""
+        "relative w-[360px] rounded-lg"
       ].join("")}
     >
-      <div className="relative z-10 ">
+      <div className="relative z-10">
         <div className={[
             "flex h-[50px] w-full items-center justify-between rounded-[20px] px-4 py-3",
             isSelected
@@ -105,7 +104,7 @@ export default function SearchBar({ selectedStation, onSelectStation }: SearchBa
       </div>
 
       {showSuggestions && (
-        <ul className="pb-2">
+        <ul className="absolute inset-x-0 top-[calc(100%-20px)] z-0 rounded-b-[20px] bg-white pt-[20px] pb-2 shadow-[0_0_28px_0_rgba(118,118,118,0.25)]">
           {suggestions.map((station) => (
             <li key={station.id}>
               <button
