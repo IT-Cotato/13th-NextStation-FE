@@ -1,18 +1,65 @@
 import Header from "@/components/Header"
 import ChoiceChip from "@/pages/draw/components/ChoiceChip"
 import CTAButton from "@/components/CTAButton"
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import SearchBar, { type Station} from "./components/SearchBar";
+import RecentStationChip from "./components/RecentStationChip";
+import {
+  createDepartureStation,
+  deleteDepartureStation,
+  getDepartureStations,
+  type DepartureStation,
+} from "@/api/stations";
 
 const timeOptions = ['30분 이내', '1시간 이내', '상관 없음'];
 const companionOptions = ['혼자', '친구와', '연인과', '부모님과', '아이와'];
 
 function ConditionPage() {
   const navigate = useNavigate();
+  const [query, setQuery] = useState('');
+  const [recentStations, setRecentStations] = useState<DepartureStation[]>([]);
   const [selectedStation, setSelectedStation] = useState<Station | null>(null);
   const [selectedTime, setSelectedTime] = useState<string |null>(null);
   const [selectedCompanion, setSelectedCompanion] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchDepartureStations = async () => {
+      try {
+        const data = await getDepartureStations();
+        setRecentStations(data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchDepartureStations();
+  }, []);
+
+  const handleSelectStation = async (station: Station | null) => {
+    setSelectedStation(station);
+
+    if (!station) return;
+
+    try {
+      await createDepartureStation(station.id);
+      const updated = await getDepartureStations();
+      setRecentStations(updated);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleRemoveRecent = async (departureStationId: number) => {
+    try {
+      await deleteDepartureStation(departureStationId);
+      setRecentStations((prev) =>
+        prev.filter((station) => station.departureStationId !== departureStationId)
+      );
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const isFormValid =
   selectedStation !== null &&
@@ -36,10 +83,28 @@ function ConditionPage() {
               <p className="text-subtitle text-gray-100 leading-[1.4] tracking-[-0.025em]">
                 출발역은 어디인가요?
               </p>
-              <SearchBar
-                selectedStation={selectedStation}
-                onSelectStation={setSelectedStation}
-              />
+              <div className="flex flex-col w-full gap-2">
+                <SearchBar
+                  query={query}
+                  onQueryChange={setQuery}
+                  selectedStation={selectedStation}
+                  onSelectStation={handleSelectStation}
+                />
+
+                {!query.trim() && recentStations.length > 0 && (
+                <div className="flex gap-2 overflow-x-auto whitespace-nowrap">
+                  {recentStations.map((station) => (
+                    <RecentStationChip
+                      key={station.departureStationId}
+                      name={station.name}
+                      lines={station.lines}
+                      onRemove={() => handleRemoveRecent(station.departureStationId)}
+                    />
+                  ))}
+                </div>
+              )}
+              </div>
+              
             </div>
 
             {/* 시간 */}
