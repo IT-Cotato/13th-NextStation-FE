@@ -12,15 +12,16 @@ function MainPage() {
   const navigate = useNavigate();
 
   return (
-    <main className="flex flex-col h-dvh overflow-hidden bg-gray-10 gap-8 pt-[calc(var(--safe-top)+12px)]">
+    <main className="relative flex flex-col h-dvh overflow-hidden bg-gray-10 gap-8 pt-[calc(var(--safe-top)+12px)]">
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-[var(--safe-top)] bg-gray-10" />
 
       {/* 프로필 아이콘 */}
-      <div className='flex justify-end px-5'>
+      <div className='relative flex justify-end px-5'>
         <ProfileIcon isLoggedIn={false} />
       </div>
 
       {/* title */}
-      <section className='flex justify-center'>
+      <section className='relative flex justify-center'>
         <div className="h-[95px] w-[calc(100vw-40px)] max-w-[350px] rounded-full bg-linear-to-r from-secondary-30 to-primary-10 p-[10px] shadow-[0_0_20px_var(--color-primary-30)]">
           <div className="h-full w-full rounded-full bg-white flex items-center justify-center gap-[26px]">
             <Badge className="size-[52px]"/>
@@ -35,7 +36,7 @@ function MainPage() {
       </section>
 
     {/* Door */}
-    <section className='flex justify-center'>
+    <section className='relative flex justify-center'>
       <div className='flex w-full'>
         {/* 왼쪽 문 */}
         <div className="relative h-full w-1/2">
