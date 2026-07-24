@@ -16,7 +16,7 @@ const sortOptions: Option[] = [
 ];
 
 export default function ReviewListPage() {
-  const reviews = mockPlaceReviews.reviews;
+  const [reviews, setReviews] = useState(mockPlaceReviews.reviews);
   const isEmpty = reviews.length === 0;
   const [selectedOption, setSelectedOption] = useState<Option>(sortOptions[0]);
 
@@ -29,6 +29,20 @@ export default function ReviewListPage() {
       return b.likeCount - a.likeCount;
     }
   });
+
+  const toggleLike = (targetId: number) => {
+    setReviews((prev) =>
+      prev.map((r) =>
+        r.reviewId === targetId
+          ? {
+              ...r,
+              isLike: !r.isLike,
+              likeCount: r.isLike ? r.likeCount - 1 : r.likeCount + 1,
+            }
+          : r,
+      ),
+    );
+  };
 
   return (
     <main className="flex flex-col h-dvh bg-gray-10 pt-[calc(var(--safe-top)+12px)] overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden gap-4">
@@ -54,10 +68,10 @@ export default function ReviewListPage() {
             <div className="flex flex-col items-center gap-[34px]">
               <Empty />
               <div className="flex flex-col gap-2">
-                <span className="text-title-02 text-gray-70 font-semibold text-center">
+                <span className="text-title-02 text-gray-70 font-semibold text-center leading-[1.4] tracking-[-0.45px]">
                   아직 등록된 리뷰가 없어요!
                 </span>
-                <p className="text-body-02 text-gray-60 text-center">
+                <p className="text-body-02 text-gray-60 text-center leading-[1.4] tracking-[-0.3px]">
                   혹시 이 장소에 다녀오셨나요?
                   <br />
                   다녀오셨다면 여행 기록을 작성해보시면 어때요?
@@ -73,8 +87,9 @@ export default function ReviewListPage() {
                   writerProfileImageUrl={review.writerProfileImageUrl}
                   content={review.content}
                   imageUrl={review.imageUrl}
-                  initialLikeCount={review.likeCount}
-                  initialIsLike={review.isLike}
+                  likeCount={review.likeCount}
+                  isLike={review.isLike}
+                  onToggleLike={() => toggleLike(review.reviewId)}
                   createdAt={review.createdAt}
                 />
               ))}

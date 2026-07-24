@@ -7,30 +7,25 @@ export default function ReviewCard({
   writerProfileImageUrl,
   content,
   imageUrl,
-  initialLikeCount,
-  initialIsLike,
+  likeCount,
+  isLike,
+  onToggleLike,
   createdAt,
 }: {
   writerNickname: string;
   writerProfileImageUrl: string;
   content: string;
   imageUrl: string | null;
-  initialLikeCount: number;
-  initialIsLike: boolean;
+  likeCount: number;
+  isLike: boolean;
+  onToggleLike: () => void;
   createdAt: string;
 }) {
-  const [likeCount, setLikeCount] = useState(initialLikeCount);
-  const [isLike, setIsLike] = useState(initialIsLike);
   const [now] = useState(() => Date.now());
   const diffDays = Math.floor(
     (now - new Date(createdAt).getTime()) / (1000 * 60 * 60 * 24),
   );
   const isImageEmpty = imageUrl === null;
-
-  const toggleLike = () => {
-    setIsLike((prev) => !prev);
-    setLikeCount((prev) => (isLike ? prev - 1 : prev + 1));
-  };
 
   return (
     <div className="flex flex-col w-[360px] p-4 gap-4 rounded-lg bg-white items-center">
@@ -39,13 +34,17 @@ export default function ReviewCard({
         <div className="flex gap-3 items-center">
           {/* 프로필 사진 */}
           <div className="flex w-11 h-11 shrink-0 rounded-full border border-primary-20 overflow-hidden">
-            <img src={writerProfileImageUrl} className="object-cover" />
+            <img
+              src={writerProfileImageUrl}
+              className="object-cover"
+              alt={`${writerNickname} 프로필 사진`}
+            />
           </div>
           <div className="flex flex-col gap-1">
-            <span className="flex text-body-01 font-semibold">
+            <span className="flex text-body-01 font-semibold leading-[1.4] tracking-[-0.35px]">
               {writerNickname}
             </span>
-            <span className="flex text-caption text-gray-70">
+            <span className="flex text-caption text-gray-70 leading-none tracking-[-0.25px]">
               {diffDays}일 전
             </span>
           </div>
@@ -55,10 +54,12 @@ export default function ReviewCard({
       {/* place info */}
       <section className="flex w-full">
         <div className="flex flex-col gap-4">
-          <p className="flex text-body-01 text-gray-70">{content}</p>
+          <p className="flex text-body-01 text-gray-70 leading-[1.4] tracking-[-0.35px]">
+            {content}
+          </p>
           {/* image */}
           {!isImageEmpty && (
-            <div className="flex w-[90px] h-[67px] rounded-[8px] overflow-hidden">
+            <div className="flex w-[90px] h-[67px] rounded-md overflow-hidden">
               <img src={imageUrl} className="w-full h-full object-cover" />
             </div>
           )}
@@ -68,12 +69,14 @@ export default function ReviewCard({
       {/* like */}
       <section className="flex gap-1 items-center w-full">
         <button
-          onClick={toggleLike}
+          onClick={onToggleLike}
           className="items-center justify-center w-4 h-4"
         >
           {isLike ? <LikeActive /> : <LikeDefault />}
         </button>
-        <span className="text-body-01 text-gray-60">{likeCount}</span>
+        <span className="text-body-01 text-gray-60 leading-[1.4] tracking-[-0.35px]">
+          {likeCount}
+        </span>
       </section>
     </div>
   );
