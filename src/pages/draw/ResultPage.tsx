@@ -54,7 +54,7 @@ function ResultPage() {
       </section>
 
       {/* CTA 버튼 */}
-      <section className='absolute bottom-[calc(var(--safe-bottom)+64px)] z-10 flex w-full items-center justify-between px-5'>
+      <section className='absolute bottom-[calc(var(--safe-bottom)+10px)] z-10 flex w-full items-center justify-between px-5'>
         <Button
           direction="left"
           onClick={() => navigate('/draw/loading')}

@@ -5,10 +5,9 @@ import { useNavigate } from "react-router-dom"
 import { useState } from "react";
 
 const hashtagRows = [
-  ['자연과함께', '문화공간', '동네탐색'],
-  ['골목여행', '시장구경', '핫플레이스'],
-  ['사진찍기좋은', '쇼핑', '체험'],
-  ['카페투어', '가성비', '실내위주'],
+  ['자연과함께', '골목여행', '시장구경' ],
+  ['핫플레이스', '사진찍기좋은', '쇼핑'],
+  ['체험', '가성비', '실내위주'],
 ];
 
 function PreferencePage() {
@@ -37,41 +36,42 @@ function PreferencePage() {
     <main className="flex flex-col h-dvh overflow-hidden bg-white items-center pt-[var(--safe-top)]">
       <Header showBack />
 
-      <section className="flex flex-col h-full items-center pt-10 gap-[50px]">
-        <div className="flex flex-col items-center gap-4">
-          <h1 className="text-headline font-semibold text-gray-100 leading-[1.4] tracking-[-0.025em] text-center">
-            어떤 여행을 하고 싶나요?
-          </h1>
-          <p className="text-body-01 text-primary-60 leading-[1.4] tracking-[-0.025em] text-center">
-            해시태그는 최대 3개까지<br />
-            선택할 수 있어요.
-          </p>
+      <section className="flex h-full flex-col items-center justify-between pt-10 pb-[calc(var(--safe-bottom)+10px)]">
+        <div className="flex flex-col items-center gap-[50px]">
+          <div className="flex flex-col items-center gap-4">
+            <h1 className="text-headline font-semibold text-gray-100 leading-[1.4] tracking-[-0.025em] text-center">
+              어떤 여행을 하고 싶나요?
+            </h1>
+            <p className="text-body-01 text-primary-60 leading-[1.4] tracking-[-0.025em] text-center">
+              해시태그는 최대 3개까지<br />
+              선택할 수 있어요.
+            </p>
+          </div>
+
+          <div className="flex flex-wrap items-center justify-center gap-4">
+            {hashtagRows.map((row) => (
+              <div key={row.join('-')} className="flex justify-center gap-2">
+                {row.map((tag) => (
+                  <HashtagChip
+                    key={tag}
+                    label={tag}
+                    selected={selectedTags.includes(tag)}
+                    onClick={() => toggleTag(tag)}
+                  />
+                ))}
+              </div>
+            ))}
+          </div>
         </div>
 
-        <div className="flex flex-wrap items-center justify-center gap-4">
-          {hashtagRows.map((row) => (
-            <div key={row.join('-')} className="flex justify-center gap-2">
-              {row.map((tag) => (
-                <HashtagChip
-                  key={tag}
-                  label={tag}
-                  selected={selectedTags.includes(tag)}
-                  onClick={() => toggleTag(tag)}
-                />
-              ))}
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* CTA 버튼 */}
-      <section className='absolute bottom-[calc(var(--safe-bottom)+50px)] z-10 flex w-full items-center justify-center'>
-        <CTAButton 
-          disabled={!isFormValid}
-          onClick={() => navigate('/draw/loading')}
-        >
-          나만의 환승역 찾기
-        </CTAButton>
+        <section className='flex w-full items-center justify-center'>
+          <CTAButton 
+            disabled={!isFormValid}
+            onClick={() => navigate('/draw/loading')}
+          >
+            나만의 환승역 찾기
+          </CTAButton>
+        </section>
       </section>
     </main>
   )
