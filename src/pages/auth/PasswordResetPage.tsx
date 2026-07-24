@@ -7,6 +7,8 @@ import AuthEmailCertificationInput from './components/AuthEmailCertificationInpu
 import AuthPasswordInput from './components/AuthPasswordInput';
 
 const CERTIFICATION_LIMIT_SECONDS = 180;
+const PASSWORD_PATTERN =
+  /^(?=.*[A-Za-z])(?=.*\d)(?=.*[^A-Za-z\d\s]).{8,20}$/;
 
 function formatTimer(seconds: number) {
   const minutes = Math.floor(seconds / 60);
@@ -34,7 +36,11 @@ export default function PasswordResetPage() {
     certificationSeconds !== null && certificationSeconds > 0;
   const isEmailCertified = isCertificationActive && /^\d{6}$/.test(code);
   const isNextDisabled =
-    !isEmailCertified || !password || !passwordConfirm;
+    !isEmailCertified ||
+    !password ||
+    !passwordConfirm ||
+    !PASSWORD_PATTERN.test(password) ||
+    password !== passwordConfirm;
 
   useEffect(() => {
     if (certificationSeconds === null) {
@@ -72,9 +78,6 @@ export default function PasswordResetPage() {
       passwordConfirm: '',
     };
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    const passwordPattern =
-      /^(?=.*[A-Za-z])(?=.*\d)(?=.*[^A-Za-z\d\s]).{8,20}$/;
-
     if (!emailPattern.test(email)) {
       nextErrors.email = '이메일 형식이 잘못되었습니다.';
     }
@@ -83,7 +86,7 @@ export default function PasswordResetPage() {
       nextErrors.code = '잘못된 인증번호입니다.';
     }
 
-    if (!passwordPattern.test(password)) {
+    if (!PASSWORD_PATTERN.test(password)) {
       nextErrors.password = '영문 ∙ 숫자 ∙ 특수기호 ∙ 8-20자 포함해서 설정해주세요.';
     }
 
@@ -171,8 +174,19 @@ export default function PasswordResetPage() {
             <AuthPasswordInput
               value={password}
               onChange={(event) => {
-                setPassword(event.target.value);
-                setErrors((value) => ({ ...value, password: '' }));
+                const nextPassword = event.target.value;
+                setPassword(nextPassword);
+                setErrors((value) => ({
+                  ...value,
+                  password:
+                    nextPassword && !PASSWORD_PATTERN.test(nextPassword)
+                      ? '영문 ∙ 숫자 ∙ 특수기호 ∙ 8-20자 포함해서 설정해주세요.'
+                      : '',
+                  passwordConfirm:
+                    passwordConfirm && nextPassword !== passwordConfirm
+                      ? '비밀번호가 일치하지 않습니다.'
+                      : '',
+                }));
               }}
               placeholder="영문 ∙ 숫자 ∙ 특수기호 ∙ 8-20자를 포함해주세요"
               autoComplete="new-password"
@@ -181,8 +195,15 @@ export default function PasswordResetPage() {
             <AuthPasswordInput
               value={passwordConfirm}
               onChange={(event) => {
-                setPasswordConfirm(event.target.value);
-                setErrors((value) => ({ ...value, passwordConfirm: '' }));
+                const nextPasswordConfirm = event.target.value;
+                setPasswordConfirm(nextPasswordConfirm);
+                setErrors((value) => ({
+                  ...value,
+                  passwordConfirm:
+                    nextPasswordConfirm && password !== nextPasswordConfirm
+                      ? '비밀번호가 일치하지 않습니다.'
+                      : '',
+                }));
               }}
               placeholder="비밀번호를 다시 입력해주세요"
               autoComplete="new-password"
