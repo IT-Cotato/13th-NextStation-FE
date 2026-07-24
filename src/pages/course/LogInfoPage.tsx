@@ -150,7 +150,7 @@ function LogInfoPage() {
 
       </section>
 
-      <section className="absolute bottom-[calc(var(--safe-bottom)+50px)] z-10 flex flex-col w-full items-center justify-center ">
+      <section className="absolute bottom-[calc(var(--safe-bottom)+10px)] z-10 flex flex-col w-full items-center justify-center ">
         <CTAButton 
           disabled={!isInfoComplete}
           onClick={() => navigate(`/course/${courseId}/log/place`)}

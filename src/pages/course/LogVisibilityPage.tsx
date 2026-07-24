@@ -61,7 +61,7 @@ function LogVisibilityPage() {
         </div>
       </section>
 
-      <section className="absolute bottom-[calc(var(--safe-bottom)+50px)] z-10 flex w-full items-center justify-center">
+      <section className="absolute bottom-[calc(var(--safe-bottom)+10px)] z-10 flex w-full items-center justify-center">
         <CTAButton onClick={() => navigate(`/course`)}>
           저장하기
         </CTAButton>
