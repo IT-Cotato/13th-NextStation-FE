@@ -32,7 +32,7 @@ export default function Dropdown({ options, onSelect }: DropdownProps) {
         className="inline-flex items-end px-5 py-2 gap-3 rounded-lg border border-white bg-white/50 focus:outline-none"
         onClick={toggleDropdown}
       >
-        <span className="text-gray-70 text-body-01 font-semibold">
+        <span className="text-gray-70 text-body-01 font-semibold leading-[1.4] tracking-[-0.35px]">
           {selectedOption?.label}
         </span>
         <ArrowDown
@@ -45,7 +45,7 @@ export default function Dropdown({ options, onSelect }: DropdownProps) {
             <li
               key={option.value}
               onClick={() => handleSelect(option)}
-              className="text-gray-70 text-body-01 font-semibold"
+              className="text-gray-70 text-body-01 font-semibold leading-[1.4] tracking-[-0.35px]"
             >
               {option.label}
             </li>

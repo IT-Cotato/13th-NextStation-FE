@@ -26,10 +26,10 @@ export default function CoursePreviewCard({
 
           {/* course info */}
           <div className="flex flex-col gap-2">
-            <p className="text-subtitle font-semibold line-clamp-2 break-keep">
+            <p className="text-subtitle font-semibold line-clamp-2 break-keep leading-[1.4] tracking-[-0.4px]">
               {name}
             </p>
-            <span className="text-caption text-gray-80">
+            <span className="text-caption text-gray-80 leading-none tracking-[-0.25px]">
               장소 {placeCount}곳 ∙ 2~3시간
             </span>
             <div className="flex gap-1">

@@ -98,12 +98,14 @@ export default function DetailPage() {
         <div className="flex flex-col gap-2.5 w-[360px]">
           <div className="flex flex-col gap-2">
             <div className="flex flex-col gap-1">
-              <span className="text-title-02 font-semibold">{place.name}</span>
-              <span className="text-body-02 text-gray-70">
+              <span className="text-title-02 font-semibold leading-[1.4] tracking-[-0.5px]">
+                {place.name}
+              </span>
+              <span className="text-body-02 text-gray-70 leading-[1.4] tracking-[-0.3px]">
                 {place.description}
               </span>
             </div>
-            <div className="flex self-start px-3 py-1.5 bg-primary-50 text-gray-10 text-caption rounded-lg">
+            <div className="flex self-start px-3 py-1.5 bg-primary-50 text-gray-10 text-caption rounded-lg leading-none tracking-[-0.25px]">
               {place.category}
             </div>
           </div>
@@ -138,7 +140,7 @@ export default function DetailPage() {
                   >
                     <img
                       src={image}
-                      alt={image}
+                      alt={`${place.name} 사진 ${i + 1}`}
                       className="rounded-lg w-full h-full object-cover"
                     />
                   </div>
@@ -170,9 +172,11 @@ export default function DetailPage() {
             <div className="flex gap-2">
               <Marker className="w-6 h-6" />
               <div className="flex gap-1">
-                <span>{place.address}</span>
+                <span className="text-body-01 leading-[1.4] tracking-[-0.35px]">
+                  {place.address}
+                </span>
                 <button
-                  className="flex text-body-01 text-primary-70"
+                  className="flex text-body-01 text-primary-70 leading-[1.4] tracking-[-0.35px]"
                   onClick={() => handleCopy(place.address)}
                 >
                   복사
@@ -182,9 +186,11 @@ export default function DetailPage() {
             <div className="flex gap-2">
               <Phone className="w-6 h-6" />
               <div className="flex gap-1">
-                <span>{place.contactNumber}</span>
+                <span className="text-body-01 leading-[1.4] tracking-[-0.35px]">
+                  {place.contactNumber}
+                </span>
                 <button
-                  className="flex text-body-01 text-primary-70"
+                  className="flex text-body-01 text-primary-70 leading-[1.4] tracking-[-0.35px]"
                   onClick={() => handleCopy(place.contactNumber)}
                 >
                   복사
@@ -193,7 +199,7 @@ export default function DetailPage() {
             </div>
           </div>
           <button
-            className="flex justify-end gap-0.5 text-body-02 font-semibold text-gray-60"
+            className="flex justify-end gap-0.5 text-body-02 font-semibold text-gray-60 leading-none tracking-[-0.3px]"
             onClick={handleNavigate}
           >
             카카오맵에서 확인하기
@@ -207,17 +213,17 @@ export default function DetailPage() {
         <div className="flex flex-col w-[360px] gap-3">
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-0.5">
-              <span className="flex font-semibold text-title-02">
+              <span className="flex font-semibold text-title-02 leading-[1.4] tracking-[-0.45px]">
                 다른 사람들이 남긴 리뷰
               </span>
-              <span className="flex text-subtitle text-gray-70">
+              <span className="flex text-subtitle text-gray-70 leading-[1.4] tracking-[-0.4px]">
                 {isReviewEmpty ? "" : `(${reviews.length})`}
               </span>
             </div>
 
             <button
-              className="flex gap-0.5 items-center text-gray-60 font-semibold text-body-02"
-              onClick={() => navigate("/place/:placeId/reviews")}
+              className="flex gap-0.5 items-center text-gray-60 font-semibold text-body-02 leading-none tracking-[-0.3px]"
+              onClick={() => navigate(`/place/${place.placeId}/reviews`)}
             >
               더보기
               <Arrow className="w-4 h-4" />
@@ -249,7 +255,7 @@ export default function DetailPage() {
       <section className="flex justify-center pt-7">
         <div className="flex flex-col w-[360px]">
           <div className="flex pt-3">
-            <span className="flex font-semibold text-title-02">
+            <span className="flex font-semibold text-title-02 leading-[1.4] tracking-[-0.45px]">
               이 장소를 포함한 코스
             </span>
           </div>
