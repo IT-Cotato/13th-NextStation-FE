@@ -66,7 +66,7 @@ export const mockPlaceReviews: PlaceReviewsResponse = {
       imageUrl:
         "https://noblesse.com/shop/data/m/editor_new/2024/07/24/b31e0d3edb2feca8image1.jpg",
       likeCount: 1,
-      isLike: true,
+      isLike: false,
       createdAt: "2026-07-01T10:00:00",
     },
   ],
