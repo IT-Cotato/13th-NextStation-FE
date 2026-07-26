@@ -1,14 +1,29 @@
 export interface PlaceReview {
+  // ReviewPreviewCard에서 사용됨
   reviewId: number;
   writerId: number;
   writerNickname: string;
   writerProfileImageUrl: string;
   content: string;
-  imageUrl: string;
+  imageUrls: string[];
   createdAt: string;
 }
 
 export interface PlaceResponseItem {
+  // 백으로부터의 응답 형태
+  placeId: number;
+  placeName: string;
+  description: string;
+  category: string;
+  address: string;
+  contactNumber: string;
+  kakaoPlaceUrl: string;
+  images: string[] | null;
+  reviews: PlaceReview[] | null;
+}
+
+export interface Place {
+  // 프론트에서의 변수 형태
   placeId: number;
   placeName: string;
   description: string;
@@ -20,27 +35,45 @@ export interface PlaceResponseItem {
   reviews: PlaceReview[];
 }
 
-export interface Place {
+export interface CourseLine {
   id: number;
   name: string;
-  description: string;
-  category: string;
-  address: string;
-  contactNumber: string;
-  kakaoPlaceUrl: string;
-  images: string[];
-  reviews: PlaceReview[];
+  code: string;
+}
+
+export interface CourseResponseItem {
+  // 백으로부터의 응답 형태
+  courseId: number;
+  name: string;
+  stationId: number;
+  stationName: string;
+  line: CourseLine;
+  placeCount: number;
+  travelDuration: string;
+  tags: string[];
+  imageUrl: string | null;
+}
+
+export interface Course {
+  // 프론트에서의 변수 형태
+  courseId: number;
+  courseName: string;
+  lineId: number;
+  placeCount: number;
+  travelDuration: string;
+  tags: string[];
+  imageUrl: string | null;
 }
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-const Member_Id = 1;
+const MEMBER_ID = 1;
 
 // 장소 상세 조회
 export async function getPlaceDetail(placeId: number): Promise<Place> {
   const response = await fetch(`${API_BASE_URL}/api/v1/places/${placeId}`, {
     headers: {
-      "X-Member-Id": String(Member_Id),
+      "X-Member-Id": String(MEMBER_ID),
     },
   });
 
@@ -53,14 +86,42 @@ export async function getPlaceDetail(placeId: number): Promise<Place> {
   const item: PlaceResponseItem = json.data;
 
   return {
-    id: item.placeId,
-    name: item.placeName,
+    placeId: item.placeId,
+    placeName: item.placeName,
     description: item.description,
     category: item.category,
     address: item.address,
     contactNumber: item.contactNumber,
     kakaoPlaceUrl: item.kakaoPlaceUrl,
-    images: item.images,
-    reviews: item.reviews,
+    images: item.images ?? [],
+    reviews: item.reviews ?? [],
   };
+}
+
+// 장소를 포함한 코스 조회
+export async function getPlaceCourses(placeId: number): Promise<Course[]> {
+  const response = await fetch(
+    `${API_BASE_URL}/api/v1/places/${placeId}/courses`,
+    {
+      headers: {
+        "X-Member-Id": String(MEMBER_ID),
+      },
+    },
+  );
+
+  if (!response.ok) {
+    throw new Error("장소를 포함한 코스 목록 조회 실패");
+  }
+
+  const json = await response.json();
+
+  return (json.data ?? []).map((item: CourseResponseItem) => ({
+    courseId: item.courseId,
+    courseName: item.name,
+    lineId: item.line.id,
+    placeCount: item.placeCount,
+    travelDuration: item.travelDuration,
+    tags: item.tags,
+    imageUrl: item.imageUrl,
+  }));
 }

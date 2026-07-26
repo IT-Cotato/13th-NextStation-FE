@@ -8,57 +8,80 @@ import CulturalSpace from "@/assets/category/cultural-space.svg?react";
 import Cafe from "@/assets/category/cafe.svg?react";
 import Restaurant from "@/assets/category/restaurant.svg?react";
 import Walk from "@/assets/category/walk.svg?react";
-import { useNavigate } from "react-router-dom";
-import { useState, useRef } from "react";
-// import { useNavigate, useParams } from "react-router-dom";
-// import { useEffect, useRef, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
 import ReviewPreviewCard from "./components/ReviewPreviewCard";
 import CoursePreviewCard from "./components/CoursePreviewCard";
 import { showToast } from "../course/components/ShowToast";
 import copyToClipboard from "@/utils/copyToClipBoard";
-import { mockPlaceCourses } from "@/mocks/mockPlaceCourses";
-// import { getPlaceDetail, type Place } from "@/api/place";
-import { mockPlaceDetail } from "@/mocks/mockPlaceDetail";
+import {
+  getPlaceCourses,
+  getPlaceDetail,
+  type Course,
+  type Place,
+} from "@/api/place";
 
 export default function DetailPage() {
-  // const { placeId } = useParams();
+  const { placeId } = useParams();
   const navigate = useNavigate();
-  const place = mockPlaceDetail;
-  // const [place, setPlace] = useState<Place | null>(null);
-  // const [isLoading, setIsLoading] = useState(true);
-  // const [error, setError] = useState<string | null>(null);
+  const [place, setPlace] = useState<Place | null>(null); // place
+  const [isPlaceLoading, setIsPlaceLoading] = useState(true);
+  const [placeError, setPlaceError] = useState<string | null>(null);
+  const [courses, setCourses] = useState<Course[] | null>([]); // 장소를 포함한 코스
+  const [isCoursesLoading, setIsCoursesLoading] = useState(true);
+  const [coursesError, setCoursesError] = useState<string | null>(null);
   const [index, setIndex] = useState(0);
   const sliderRef = useRef<HTMLDivElement>(null);
 
-  // useEffect(() => {
-  //   if (!placeId) return;
+  useEffect(() => {
+    if (!placeId) return;
 
-  //   const fetchPlaceDetail = async () => {
-  //     try {
-  //       setIsLoading(true);
-  //       const data = await getPlaceDetail(Number(placeId));
-  //       setPlace(data);
-  //     } catch (e) {
-  //       console.error(e);
-  //       setError("장소 정보를 불러오지 못했습니다.");
-  //     } finally {
-  //       setIsLoading(false);
-  //     }
-  //   };
-  //   fetchPlaceDetail();
-  // }, [placeId]);
+    const fetchPlaceDetail = async () => {
+      try {
+        setIsPlaceLoading(true);
+        const data = await getPlaceDetail(Number(placeId));
+        setPlace(data);
+      } catch (e) {
+        console.error(e);
+        setPlaceError("장소 정보를 불러오지 못했습니다.");
+      } finally {
+        setIsPlaceLoading(false);
+      }
+    };
+    fetchPlaceDetail();
+  }, [placeId]);
 
-  // if (isLoading) return <p>로딩 중...</p>;
-  // if (error) return <p>{error}</p>;
-  // if (!place) return null;
+  useEffect(() => {
+    if (!placeId) return;
+
+    const fetchPlaceCourses = async () => {
+      try {
+        setIsCoursesLoading(true);
+        const data = await getPlaceCourses(Number(placeId));
+        setCourses(data);
+      } catch (e) {
+        console.error(e);
+        setCoursesError("장소를 포함한 코스 목록을 불러오지 못했습니다.");
+      } finally {
+        setIsCoursesLoading(false);
+      }
+    };
+    fetchPlaceCourses();
+  }, [placeId]);
+
+  if (isPlaceLoading) return <p>로딩 중...</p>;
+  if (placeError) return <p>{placeError}</p>;
+  if (!place) return null;
+  if (isCoursesLoading) return <p>로딩 중...</p>;
+  if (coursesError) return <p>{coursesError}</p>;
+  if (!courses) return null;
 
   const slideImages = place.images;
   const isImageEmpty = slideImages.length < 1;
   const reviews = place.reviews;
   const isReviewEmpty = reviews.length < 1;
   const previewReviewCount = reviews.length < 3 ? reviews.length : 3;
-  // 장소를 포함한 코스 API 나오면 수정
-  const placeCourses = mockPlaceCourses.courses;
+  const placeCourses = courses;
   const isCourseEmpty = placeCourses.length < 1;
 
   const handleDotClick = (idx: number) => {
@@ -76,7 +99,6 @@ export default function DetailPage() {
   };
 
   const handleNavigate = () => {
-    // 링크 수정! --> 백엔드에서 장소별 링크 전체 넘겨줌 (kakaoPlaceUrl)
     window.open(`${place.kakaoPlaceUrl}`, "_blank", "noopener,noreferrer");
   };
 
@@ -99,7 +121,7 @@ export default function DetailPage() {
           <div className="flex flex-col gap-2">
             <div className="flex flex-col gap-1">
               <span className="text-title-02 font-semibold leading-[1.4] tracking-[-0.5px]">
-                {place.name}
+                {place.placeName}
               </span>
               <span className="text-body-02 text-gray-70 leading-[1.4] tracking-[-0.3px]">
                 {place.description}
@@ -140,7 +162,7 @@ export default function DetailPage() {
                   >
                     <img
                       src={image}
-                      alt={`${place.name} 사진 ${i + 1}`}
+                      alt={`${place.placeName} 사진 ${i + 1}`}
                       className="rounded-lg w-full h-full object-cover"
                     />
                   </div>
@@ -234,7 +256,7 @@ export default function DetailPage() {
           ) : (
             <div className="flex flex-col w-[360px] rounded-lg bg-white">
               {reviews.slice(0, previewReviewCount).map((review, index) => (
-                <div key={review.reviewId}>
+                <div key={review.reviewId} className="flex flex-col w-full">
                   <ReviewPreviewCard
                     writerProfileImageUrl={review.writerProfileImageUrl}
                     writerNickname={review.writerNickname}
@@ -271,9 +293,12 @@ export default function DetailPage() {
                   onClick={() => navigate(`/explore/${placeCourse.courseId}`)}
                 >
                   <CoursePreviewCard
-                    line={placeCourse.line}
-                    name={placeCourse.name}
+                    line={placeCourse.lineId}
+                    name={placeCourse.courseName}
                     placeCount={placeCourse.placeCount}
+                    travelDuration={placeCourse.travelDuration}
+                    tags={placeCourse.tags}
+                    imageUrl={placeCourse.imageUrl}
                   />
                 </button>
               ))}
