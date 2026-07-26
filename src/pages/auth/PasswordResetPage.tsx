@@ -24,6 +24,7 @@ export default function PasswordResetPage() {
     null,
   );
   const [code, setCode] = useState('');
+  const [isCodeConfirmed, setIsCodeConfirmed] = useState(false);
   const [password, setPassword] = useState('');
   const [passwordConfirm, setPasswordConfirm] = useState('');
   const [errors, setErrors] = useState({
@@ -34,7 +35,7 @@ export default function PasswordResetPage() {
   });
   const isCertificationActive =
     certificationSeconds !== null && certificationSeconds > 0;
-  const isEmailCertified = isCertificationActive && /^\d{6}$/.test(code);
+  const isEmailCertified = isCertificationActive && isCodeConfirmed;
   const isNextDisabled =
     !isEmailCertified ||
     !password ||
@@ -116,26 +117,42 @@ export default function PasswordResetPage() {
 
     setErrors((value) => ({ ...value, email: '' }));
     setCertificationSeconds(CERTIFICATION_LIMIT_SECONDS);
+    setIsCodeConfirmed(false);
+  };
+
+  const handleCodeConfirm = () => {
+    if (!isCertificationActive || !/^\d{6}$/.test(code)) {
+      setErrors((value) => ({
+        ...value,
+        code: '잘못된 인증번호입니다.',
+      }));
+      setIsCodeConfirmed(false);
+      return;
+    }
+
+    setErrors((value) => ({ ...value, code: '' }));
+    setIsCodeConfirmed(true);
   };
 
   return (
     <main className="relative h-dvh overflow-y-auto bg-white text-gray-100">
       <div className="absolute left-0 top-[40px] w-full">
-        <Header showBack title="비밀번호 재설정" />
+        <Header showBack title="비밀번호 찾기" />
       </div>
 
-      <section className="flex flex-col gap-[30px] px-[15px] pb-[150px] pt-[130px]">
-        <section className="flex flex-col gap-[30px]">
+      <section className="px-[15px] pb-[150px]">
+        <section className="absolute left-[15px] right-[15px] top-[129px] flex flex-col gap-[30px]">
           <h2 className="text-subtitle font-semibold leading-[1.4] text-gray-100">
-            가입한 이메일을 입력해주세요
+            이메일을 입력해주세요
           </h2>
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-3">
             <AuthEmailCertificationInput
               type="email"
               value={email}
               onChange={(event) => {
                 setEmail(event.target.value);
                 setCertificationSeconds(null);
+                setIsCodeConfirmed(false);
                 setCode('');
                 setPassword('');
                 setPasswordConfirm('');
@@ -145,7 +162,7 @@ export default function PasswordResetPage() {
               placeholder="user@example.com"
               autoComplete="email"
               buttonLabel={isCertificationActive ? '재요청' : '인증하기'}
-              buttonTone={email || isCertificationActive ? 'dark' : 'default'}
+              buttonTone={email || isCertificationActive ? 'active' : 'default'}
               errorMessage={errors.email}
               onCertificationClick={handleCertificationClick}
             />
@@ -153,6 +170,7 @@ export default function PasswordResetPage() {
               value={code}
               onChange={(event) => {
                 setCode(event.target.value);
+                setIsCodeConfirmed(false);
                 setPassword('');
                 setPasswordConfirm('');
                 setErrors((value) => ({ ...value, code: '' }));
@@ -161,61 +179,68 @@ export default function PasswordResetPage() {
               inputMode="numeric"
               timer={formatTimer(certificationSeconds ?? CERTIFICATION_LIMIT_SECONDS)}
               errorMessage={errors.code}
+              showButton
+              buttonTone={/^\d{6}$/.test(code) ? 'active' : 'default'}
+              onButtonClick={handleCodeConfirm}
             />
           </div>
         </section>
 
         {isEmailCertified && (
-        <section className="flex flex-col gap-[30px]">
-          <h2 className="text-subtitle font-semibold leading-[1.4] text-gray-100">
-            새로운 비밀번호를 입력해주세요
-          </h2>
-          <div className="flex flex-col gap-2">
-            <AuthPasswordInput
-              value={password}
-              onChange={(event) => {
-                const nextPassword = event.target.value;
-                setPassword(nextPassword);
-                setErrors((value) => ({
-                  ...value,
-                  password:
-                    nextPassword && !PASSWORD_PATTERN.test(nextPassword)
-                      ? '영문 ∙ 숫자 ∙ 특수기호 ∙ 8-20자 포함해서 설정해주세요.'
-                      : '',
-                  passwordConfirm:
-                    passwordConfirm && nextPassword !== passwordConfirm
-                      ? '비밀번호가 일치하지 않습니다.'
-                      : '',
-                }));
-              }}
-              placeholder="영문 ∙ 숫자 ∙ 특수기호 ∙ 8-20자를 포함해주세요"
-              autoComplete="new-password"
-              errorMessage={errors.password}
-            />
-            <AuthPasswordInput
-              value={passwordConfirm}
-              onChange={(event) => {
-                const nextPasswordConfirm = event.target.value;
-                setPasswordConfirm(nextPasswordConfirm);
-                setErrors((value) => ({
-                  ...value,
-                  passwordConfirm:
-                    nextPasswordConfirm && password !== nextPasswordConfirm
-                      ? '비밀번호가 일치하지 않습니다.'
-                      : '',
-                }));
-              }}
-              placeholder="비밀번호를 다시 입력해주세요"
-              autoComplete="new-password"
-              errorMessage={errors.passwordConfirm}
-            />
-          </div>
-        </section>
+          <section className="absolute left-[15px] right-[15px] top-[327px] flex flex-col gap-[30px]">
+            <h2 className="text-subtitle font-semibold leading-[1.4] text-gray-100">
+              비밀번호를 입력해주세요
+            </h2>
+            <div className="flex flex-col gap-3">
+              <AuthPasswordInput
+                value={password}
+                onChange={(event) => {
+                  const nextPassword = event.target.value;
+                  setPassword(nextPassword);
+                  setErrors((value) => ({
+                    ...value,
+                    password:
+                      nextPassword && !PASSWORD_PATTERN.test(nextPassword)
+                        ? '영문 ∙ 숫자 ∙ 특수기호 ∙ 8-20자 포함해서 설정해주세요.'
+                        : '',
+                    passwordConfirm:
+                      passwordConfirm && nextPassword !== passwordConfirm
+                        ? '비밀번호가 일치하지 않습니다.'
+                        : '',
+                  }));
+                }}
+                placeholder="영문 ∙ 숫자 ∙ 특수기호 ∙ 8-20자를 포함해주세요"
+                autoComplete="new-password"
+                errorMessage={errors.password}
+              />
+              <AuthPasswordInput
+                value={passwordConfirm}
+                onChange={(event) => {
+                  const nextPasswordConfirm = event.target.value;
+                  setPasswordConfirm(nextPasswordConfirm);
+                  setErrors((value) => ({
+                    ...value,
+                    passwordConfirm:
+                      nextPasswordConfirm && password !== nextPasswordConfirm
+                        ? '비밀번호가 일치하지 않습니다.'
+                        : '',
+                  }));
+                }}
+                placeholder="비밀번호를 다시 입력해주세요"
+                autoComplete="new-password"
+                errorMessage={errors.passwordConfirm}
+              />
+            </div>
+          </section>
         )}
       </section>
 
       <section className="fixed bottom-[calc(var(--safe-bottom)+50px)] left-1/2 z-30 w-full max-w-[var(--app-max-width)] -translate-x-1/2 px-[15px]">
-        <CTAButton disabled={isNextDisabled} onClick={handleNext}>
+        <CTAButton
+          disabled={isNextDisabled}
+          className="disabled:!bg-gray-40 disabled:!text-gray-10"
+          onClick={handleNext}
+        >
           다음
         </CTAButton>
       </section>

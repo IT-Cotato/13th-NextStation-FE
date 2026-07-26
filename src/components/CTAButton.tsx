@@ -28,7 +28,7 @@ export default function CTAButton({
   variant = "primary",
   className = "",
   disabled = false,
-  width = 360, // 디폴트 값
+  width,
   ...props
 }: CTAButtonProps) {
   return (
@@ -37,7 +37,7 @@ export default function CTAButton({
       disabled={disabled}
       style={{ width }}
       className={`
-        flex h-[60px] items-center justify-center rounded-lg py-3
+        flex h-[60px] w-full items-center justify-center rounded-lg py-3
         ${variantStyles[variant]}
         ${className}
       `}

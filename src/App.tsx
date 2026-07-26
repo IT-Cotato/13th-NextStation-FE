@@ -7,6 +7,7 @@ import LoginPage from "@/pages/auth/LoginPage";
 import PasswordResetPage from "@/pages/auth/PasswordResetPage";
 import ProfileSetupPage from "@/pages/auth/ProfileSetupPage";
 import SignUpPage from "@/pages/auth/SignUpPage";
+import TermsAgreementPage from "@/pages/auth/TermsAgreementPage";
 import WelcomePage from "@/pages/auth/WelcomePage";
 
 // draw
@@ -43,6 +44,7 @@ function App() {
           <Route path="/auth" element={<WelcomePage />} />
           <Route path="/auth/login" element={<LoginPage />} />
           <Route path="/auth/sign-up" element={<SignUpPage />} />
+          <Route path="/auth/terms" element={<TermsAgreementPage />} />
           <Route path="/auth/reset-password" element={<PasswordResetPage />} />
           <Route path="/auth/profile" element={<ProfileSetupPage />} />
           <Route path="/auth/finish" element={<FinishPage />} />

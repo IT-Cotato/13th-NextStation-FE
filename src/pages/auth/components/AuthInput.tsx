@@ -22,7 +22,7 @@ export default function AuthInput({
       )}
       <input
         aria-invalid={Boolean(errorMessage)}
-        className={`h-[50px] w-full rounded-[20px] border px-4 py-3 text-body-01 font-regular text-gray-70 placeholder:text-gray-70 focus:border-primary-50 focus:bg-white focus:outline-none ${
+        className={`h-[50px] w-full rounded-lg border px-4 py-3 text-body-01 font-regular text-gray-70 placeholder:text-gray-70 focus:border-primary-50 focus:bg-white focus:outline-none ${
           hasValue || errorMessage
             ? 'border-primary-50 bg-white'
             : 'border-transparent bg-gray-20'

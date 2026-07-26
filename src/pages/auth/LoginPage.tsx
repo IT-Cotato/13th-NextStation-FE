@@ -90,7 +90,7 @@ export default function LoginPage() {
         </p>
         <button
           type="button"
-          onClick={() => navigate('/auth/sign-up')}
+          onClick={() => navigate('/auth/terms')}
           className="text-title-02 font-semibold leading-[1.4] text-primary-60 underline underline-offset-4"
         >
           이메일로 회원가입

@@ -1,4 +1,4 @@
-import { type ReactNode, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import CTAButton from '@/components/CTAButton';
 import Header from '@/components/Header';
@@ -49,58 +49,18 @@ const validateBirthday = (value: string, shouldRequire = false) => {
   return birthdayPattern.test(value) ? '' : 'YYYYMMDD 형식을 지켜주세요.';
 };
 
-interface CheckItemProps {
-  checked: boolean;
-  children: ReactNode;
-  onChange: () => void;
-}
-
-function CheckItem({ checked, children, onChange }: CheckItemProps) {
-  return (
-    <button
-      type="button"
-      role="checkbox"
-      aria-checked={checked}
-      onClick={onChange}
-      className="flex items-center gap-[10px] text-left"
-    >
-      <span
-        className={`flex size-5 shrink-0 items-center justify-center rounded-[4px] border ${
-          checked ? 'border-primary-50 bg-primary-50' : 'border-primary-50 bg-white'
-        }`}
-      >
-        {checked && (
-          <span className="text-body-02 font-semibold leading-none text-white">✓</span>
-        )}
-      </span>
-      {children}
-    </button>
-  );
-}
-
 export default function ProfileSetupPage() {
   const navigate = useNavigate();
   const [nickname, setNickname] = useState('');
   const [birthday, setBirthday] = useState('');
   const [gender, setGender] = useState<Gender | ''>('');
-  const [termsAgreed, setTermsAgreed] = useState(false);
-  const [marketingAgreed, setMarketingAgreed] = useState(false);
-  const [termsError, setTermsError] = useState(false);
   const [errors, setErrors] = useState({
     nickname: '',
     birthday: '',
   });
 
-  const isAllAgreed = termsAgreed && marketingAgreed;
   const isNextDisabled =
     !nickname.trim() || !gender || !birthday || Boolean(validateBirthday(birthday));
-
-  const handleAllAgree = () => {
-    const nextValue = !isAllAgreed;
-    setTermsAgreed(nextValue);
-    setMarketingAgreed(nextValue);
-    setTermsError(false);
-  };
 
   const handleNext = () => {
     const nextErrors = {
@@ -109,13 +69,8 @@ export default function ProfileSetupPage() {
     };
 
     setErrors(nextErrors);
-    setTermsError(!termsAgreed);
 
-    if (
-      gender &&
-      termsAgreed &&
-      Object.values(nextErrors).every((message) => !message)
-    ) {
+    if (gender && Object.values(nextErrors).every((message) => !message)) {
       navigate('/auth/finish');
     }
   };
@@ -137,7 +92,7 @@ export default function ProfileSetupPage() {
             </h2>
             <button
               type="button"
-              className="flex size-[100px] items-center justify-center rounded-[20px] border border-dashed border-secondary-40 bg-secondary-10 text-[28px] font-light leading-none text-secondary-50"
+              className="flex size-[100px] items-center justify-center rounded-lg border border-dashed border-secondary-40 bg-secondary-10 text-[28px] font-light leading-none text-secondary-50"
               aria-label="프로필 사진 추가"
             >
               +
@@ -203,55 +158,6 @@ export default function ProfileSetupPage() {
           />
         </section>
 
-        <section className="overflow-hidden rounded-[20px] border border-gray-30 bg-white">
-          <div className="bg-secondary-10 px-[25px] py-[17px]">
-            <CheckItem checked={isAllAgreed} onChange={handleAllAgree}>
-              <span className="text-subtitle font-semibold leading-[1.4] text-gray-90">
-                전체 동의
-              </span>
-            </CheckItem>
-          </div>
-
-          <div className="flex flex-col gap-[15px] px-[25px] py-5">
-            <CheckItem
-              checked={termsAgreed}
-              onChange={() => {
-                setTermsAgreed((value) => {
-                  const nextValue = !value;
-
-                  if (nextValue) {
-                    setTermsError(false);
-                  }
-
-                  return nextValue;
-                });
-              }}
-            >
-              <span className="text-body-01 font-regular leading-[1.4] text-gray-80 underline underline-offset-2">
-                서비스 이용약관 및 개인정보 취급 방침 동의
-              </span>
-            </CheckItem>
-            {termsError && (
-              <p className="flex items-center gap-1 pl-7 text-body-02 font-regular leading-[1.4] text-primary-60">
-                <span
-                  className="flex size-3 items-center justify-center rounded-full border border-primary-60 text-[9px] leading-none"
-                  aria-hidden="true"
-                >
-                  !
-                </span>
-                <span>필수 이용약관에 동의해주세요.</span>
-              </p>
-            )}
-            <CheckItem
-              checked={marketingAgreed}
-              onChange={() => setMarketingAgreed((value) => !value)}
-            >
-              <span className="text-body-01 font-regular leading-[1.4] text-gray-80 underline underline-offset-2">
-                마케팅 정보 수신 동의 (선택)
-              </span>
-            </CheckItem>
-          </div>
-        </section>
       </section>
 
       <section className="fixed bottom-[calc(var(--safe-bottom)+50px)] left-1/2 z-30 w-full max-w-[var(--app-max-width)] -translate-x-1/2 px-[15px]">
