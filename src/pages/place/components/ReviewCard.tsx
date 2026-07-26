@@ -1,3 +1,4 @@
+import ProfileDefault from "@/assets/profile-default.svg?react";
 import LikeDefault from "@/assets/like-default.svg?react";
 import LikeActive from "@/assets/like-active.svg?react";
 import { useState } from "react";
@@ -33,19 +34,24 @@ export default function ReviewCard({
       <section className="flex items-center w-full">
         <div className="flex gap-3 items-center">
           {/* 프로필 사진 */}
-          <div className="flex w-11 h-11 shrink-0 rounded-full border border-primary-20 overflow-hidden">
-            <img
-              src={writerProfileImageUrl}
-              className="object-cover"
-              alt={`${writerNickname} 프로필 사진`}
-            />
-          </div>
+          {writerProfileImageUrl === null ? (
+            <ProfileDefault />
+          ) : (
+            <div className="flex w-11 h-11 shrink-0 rounded-full border border-primary-20 overflow-hidden">
+              <img
+                src={writerProfileImageUrl}
+                className="object-cover"
+                alt={`${writerNickname} 프로필 사진`}
+              />
+            </div>
+          )}
+
           <div className="flex flex-col gap-1">
             <span className="flex text-body-01 font-semibold leading-[1.4] tracking-[-0.35px]">
               {writerNickname}
             </span>
             <span className="flex text-caption text-gray-70 leading-none tracking-[-0.25px]">
-              {diffDays}일 전
+              {diffDays === 0 ? "오늘" : `{diffDays}일 전`}
             </span>
           </div>
         </div>
