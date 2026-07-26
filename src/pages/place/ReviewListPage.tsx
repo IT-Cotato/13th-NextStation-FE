@@ -6,7 +6,7 @@ import Dropdown from "./components/Dropdown";
 import { useParams } from "react-router-dom";
 import {
   createReviewLike,
-  deleteReveiwLike,
+  deleteReviewLike,
   getReviews,
   type Review,
 } from "@/api/placeReview";
@@ -112,7 +112,7 @@ export default function ReviewListPage() {
 
     try {
       if (review.isLiked) {
-        await deleteReveiwLike(review.reviewId);
+        await deleteReviewLike(review.reviewId);
       } else {
         await createReviewLike(review.reviewId);
       }
