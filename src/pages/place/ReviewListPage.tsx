@@ -179,7 +179,7 @@ export default function ReviewListPage() {
                   content={review.content}
                   imageUrl={review.imageUrls[0] ?? null}
                   likeCount={review.likeCount}
-                  isLike={review.isLiked}
+                  isLiked={review.isLiked}
                   onToggleLike={() => handleToggleLike(review)}
                   createdAt={review.createdAt}
                 />

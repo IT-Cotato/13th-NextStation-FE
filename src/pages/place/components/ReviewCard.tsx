@@ -9,7 +9,7 @@ export default function ReviewCard({
   content,
   imageUrl,
   likeCount,
-  isLike,
+  isLiked,
   onToggleLike,
   createdAt,
 }: {
@@ -18,7 +18,7 @@ export default function ReviewCard({
   content: string;
   imageUrl: string | null;
   likeCount: number;
-  isLike: boolean;
+  isLiked: boolean;
   onToggleLike: () => Promise<void>;
   createdAt: string;
 }) {
@@ -90,11 +90,14 @@ export default function ReviewCard({
       {/* like */}
       <section className="flex gap-1 items-center w-full">
         <button
+          type="button"
           onClick={handleClick}
+          aria-label={isLiked ? "좋아요 취소" : "좋아요"}
+          aria-pressed={isLiked}
           className="items-center justify-center w-4 h-4"
           disabled={isPending}
         >
-          {isLike ? <LikeActive /> : <LikeDefault />}
+          {isLiked ? <LikeActive /> : <LikeDefault />}
         </button>
         <span className="text-body-01 text-gray-60 leading-[1.4] tracking-[-0.35px]">
           {likeCount}
