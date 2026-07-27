@@ -1,7 +1,7 @@
 import ProfileDefault from "@/assets/profile-default.svg?react";
 import LikeDefault from "@/assets/like-default.svg?react";
 import LikeActive from "@/assets/like-active.svg?react";
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 export default function ReviewCard({
   writerNickname,
@@ -19,7 +19,7 @@ export default function ReviewCard({
   imageUrl: string | null;
   likeCount: number;
   isLike: boolean;
-  onToggleLike: () => void;
+  onToggleLike: () => Promise<void>;
   createdAt: string;
 }) {
   const [now] = useState(() => Date.now());
@@ -27,6 +27,21 @@ export default function ReviewCard({
     (now - new Date(createdAt).getTime()) / (1000 * 60 * 60 * 24),
   );
   const isImageEmpty = imageUrl === null;
+  const isRequestingRef = useRef(false); // 좋아요 요청 중인지 확인
+  const [isPending, setIsPending] = useState(false);
+
+  const handleClick = async () => {
+    if (isRequestingRef.current) return;
+    isRequestingRef.current = true;
+    setIsPending(true);
+
+    try {
+      await onToggleLike();
+    } finally {
+      isRequestingRef.current = false;
+      setIsPending(false);
+    }
+  };
 
   return (
     <div className="flex flex-col w-[360px] p-4 gap-4 rounded-lg bg-white items-center">
@@ -51,7 +66,7 @@ export default function ReviewCard({
               {writerNickname}
             </span>
             <span className="flex text-caption text-gray-70 leading-none tracking-[-0.25px]">
-              {diffDays === 0 ? "오늘" : `{diffDays}일 전`}
+              {diffDays === 0 ? "오늘" : `${diffDays}일 전`}
             </span>
           </div>
         </div>
@@ -75,8 +90,9 @@ export default function ReviewCard({
       {/* like */}
       <section className="flex gap-1 items-center w-full">
         <button
-          onClick={onToggleLike}
+          onClick={handleClick}
           className="items-center justify-center w-4 h-4"
+          disabled={isPending}
         >
           {isLike ? <LikeActive /> : <LikeDefault />}
         </button>

@@ -37,11 +37,14 @@ export default function ReviewListPage() {
   // 최초 로드 및 정렬 변경 시 재조회
   useEffect(() => {
     if (!placeId) return;
+    let ignore = false;
 
     const fetchInitialReviews = async () => {
       try {
         setIsReviewsLoading(true);
         const data = await getReviews(Number(placeId), selectedOption.value);
+        if (ignore) return; // 요청이 이미 시작된 응답이면 무시
+
         setReviews(data.reviews);
         setNextCursor(data.nextCursor);
         setHasNext(data.hasNext);
@@ -49,13 +52,18 @@ export default function ReviewListPage() {
           setTotalCount(data.totalCount);
         }
       } catch (e) {
+        if (ignore) return;
         console.error(e);
         setReviewsError("리뷰 목록을 불러오지 못했습니다.");
       } finally {
-        setIsReviewsLoading(false);
+        if (!ignore) setIsReviewsLoading(false);
       }
     };
     fetchInitialReviews();
+
+    return () => {
+      ignore = true;
+    };
   }, [placeId, selectedOption]);
 
   // 스크롤로 다음 페이지 불러오기
@@ -136,6 +144,7 @@ export default function ReviewListPage() {
           <div className="flex justify-end w-[360px]">
             <Dropdown
               options={sortOptions}
+              value={selectedOption.value}
               onSelect={(value) => {
                 const option = sortOptions.find((opt) => opt.value === value);
                 if (option) setSelectedOption(option);
