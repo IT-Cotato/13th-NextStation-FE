@@ -43,8 +43,8 @@ export default function CoursePreviewCard({
               장소 {placeCount}곳 ∙ {travelDuration}
             </span>
             <div className="flex gap-1">
-              {tags.map((tag) => (
-                <TagChip content={tag} />
+              {tags.map((tag, index) => (
+                <TagChip key={`${index}`} content={tag} />
               ))}
             </div>
           </div>

@@ -34,9 +34,13 @@ export default function DetailPage() {
   const sliderRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!placeId) return;
-
     const fetchPlaceDetail = async () => {
+      if (!placeId) {
+        setPlaceError("잘못된 장소입니다.");
+        setIsPlaceLoading(false);
+        return;
+      }
+
       try {
         setIsPlaceLoading(true);
         const data = await getPlaceDetail(Number(placeId));
