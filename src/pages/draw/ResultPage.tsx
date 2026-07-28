@@ -39,7 +39,7 @@ function ResultPage() {
             {/* 호선 칩 */}
             <div className='w-full flex px-20 gap-2 items-center justify-center'>
               {station.lines.map((line) => (
-                <SubwayLineChip label={line.name} />
+                <SubwayLineChip key={line.code} label={line.name} />
               ))}
             </div>
 
@@ -55,7 +55,7 @@ function ResultPage() {
               {station.stationName}에선!
             </h3>
             <div className='w-full rounded-lg px-4 py-5 gap-[10px] border-2 border-gray-30'>
-              <p className='text-body-01 text-gray-100 leading-[1.4] tracking-[-0.025em] text-start'>
+              <p className='whitespace-pre-line text-body-01 text-gray-100 leading-[1.4] tracking-[-0.025em] text-start'>
                 {station.todos.map((todo, index) => `${index+1}. ${todo}`).join("\n")}
               </p>
             </div>
