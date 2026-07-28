@@ -1,4 +1,5 @@
 import { drawRandomStation, RandomDrawNotFoundError } from "@/api/random";
+import { getMyProfile } from "@/api/member";
 import { useEffect, useRef, useState } from "react"
 import { useNavigate } from "react-router-dom"
 
@@ -8,9 +9,24 @@ function LoadingPage() {
   const navigate = useNavigate();
   const [error, setError] = useState<string | null>(null);
   const retryTimeoutRef = useRef<number | null>(null);
+  const [displayName, setDisplayName] = useState("유저");
 
   useEffect(() => {
     let isMounted = true;
+
+    const fetchMyProfile = async () => {
+      try {
+        const profile = await getMyProfile();
+
+        if (!isMounted) return;
+
+        setDisplayName(profile.nickname || "유저");
+      } catch {
+        if (!isMounted) return;
+
+        setDisplayName("유저");
+      }
+    };
 
     const requestRandomResult = async () => {
       const startedAt = Date.now();
@@ -46,6 +62,8 @@ function LoadingPage() {
         setError("랜덤 뽑기에 실패했어요. 잠시 후 다시 시도해주세요.");
       }
     };
+
+    void fetchMyProfile();
     void requestRandomResult();
 
     return () => {
@@ -60,7 +78,7 @@ function LoadingPage() {
     return(
     <main className="flex flex-col h-dvh overflow-hidden bg-gray-10 items-center justify-center pt-[var(--safe-top)]">
       <h1 className="text-headline font-semibold text-gray-90 leading-[1.4] tracking-[-0.025em] text-center">
-        유저님에게 어울리는 <br />
+        {displayName}님에게 어울리는 <br />
         환승역을 지금 찾고 있어요!
       </h1>
       {error && (
