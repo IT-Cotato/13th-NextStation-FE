@@ -69,7 +69,7 @@ export async function drawRandomStation(): Promise<RandomDrawResponseData> {
       stationId: data.station.stationId,
       stationName: data.station.stationName,
       description: data.station.description,
-      todos: data.station.todo ?? [],
+      todos: data.station.todos ?? [],
       lines: (data.station.lines ?? []).map((line: RandomStationLineResponse) => ({
         id: line.id,
         name: line.name,
