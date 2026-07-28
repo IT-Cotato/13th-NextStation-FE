@@ -1,5 +1,4 @@
 import type { SubwayLine } from "@/types/subway";
-
 export interface RandomStationLineResponse {
   id: SubwayLine;
   name: string;
