@@ -243,7 +243,7 @@ export default function DetailPage() {
                 다른 사람들이 남긴 리뷰
               </span>
               <span className="flex text-subtitle text-gray-70 leading-[1.4] tracking-[-0.4px]">
-                {isReviewEmpty ? "" : `(${reviews.length})`}
+                {isReviewEmpty ? "" : `(${place.totalReviewCount})`}
               </span>
             </div>
 
