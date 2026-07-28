@@ -1,9 +1,13 @@
+import Share from "@/assets/share.svg?react";
 import type { ButtonHTMLAttributes, ReactNode } from "react";
 
 type CTAButtonVariant = "primary" | "secondary";
+type CTAButtonMode = "default" | "share";
+
 interface CTAButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   children: ReactNode;
   variant?: CTAButtonVariant;
+  mode?: CTAButtonMode;
   width?: number;
 }
 
@@ -26,11 +30,33 @@ const variantStyles: Record<CTAButtonVariant, string> = {
 export default function CTAButton({
   children,
   variant = "primary",
+  mode = "default",
   className = "",
   disabled = false,
   width = 360,
   ...props
 }: CTAButtonProps) {
+  if (mode === "share") {
+    return (
+      <button
+        type="button"
+        disabled={disabled}
+        style={{ width }}
+        className={`
+        flex gap-[10px] h-[60px] items-center justify-center rounded-lg py-3
+        ${variantStyles[variant]}
+        ${className}
+      `}
+        {...props}
+      >
+        <Share />
+        <span className="whitespace-nowrap text-title-02 font-semibold leading-none tracking-[-0.025em]">
+          {children}
+        </span>
+      </button>
+    );
+  }
+
   return (
     <button
       type="button"
