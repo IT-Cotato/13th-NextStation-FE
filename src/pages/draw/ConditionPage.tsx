@@ -90,7 +90,7 @@ function ConditionPage() {
                 />
 
                 {!query.trim() && recentStations.length > 0 && (
-                <div className="flex gap-2 overflow-x-auto whitespace-nowrap">
+                <div className="flex gap-2 overflow-x-auto whitespace-nowrap [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
                   {recentStations.map((station) => (
                     <RecentStationChip
                       key={station.id}
