@@ -1,9 +1,10 @@
 import DeleteIcon from '@/assets/close.svg?react';
 import LineBadge from './LineBadge';
+import type { StationLine } from '@/api/stations';
 
 interface RecentStationChipProps {
   name: string;
-  lines: string[],
+  lines: StationLine[],
   onRemove?: () => void;
 }
 
@@ -12,12 +13,27 @@ export default function RecentStationChip({
   lines,
   onRemove
 }: RecentStationChipProps) {
+
+  const getLineBadgeValue = (lineName: string) => {
+    const match = lineName.match(/^([1-9])호선$/);
+    return match ? match[1] : null;
+  };
+
   return (
     <div className="flex gap-0.5 px-2 py-1 border border-gray-40 rounded-lg items-center justify-center">
       <div className='flex items-center gap-0.5'>
-        {lines.map((line) => (
-          <LineBadge key={`${name}-${line}`} line={line} />
-        ))}
+        {lines.map((line) => {
+          const badgeLine = getLineBadgeValue(line.name);
+
+          if (!badgeLine) return null;
+
+          return (
+            <LineBadge
+              key={`${name}-${line.code}`}
+              line={badgeLine}
+            />
+          );
+        })}
       </div>
       <p className="text-body-02 text-gray-70 leading-[1.4] tracking-[-0.025em] text-center">
         {name}
