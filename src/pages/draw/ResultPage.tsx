@@ -16,6 +16,7 @@ function ResultPage() {
   }
 
   const { station } = result;
+  const primaryLine = station.lines[0];
   const formattedDescription = station.description.replace(/,\s*/g, ",\n");
 
   return (
@@ -25,7 +26,7 @@ function ResultPage() {
       {/* title */}
       <section className='flex justify-center'>
         <StationTitle
-          line={station.line.id}
+          line={primaryLine.id}
           stationName={station.stationName}
         />
       </section>
@@ -37,7 +38,9 @@ function ResultPage() {
             
             {/* 호선 칩 */}
             <div className='w-full flex px-20 gap-2 items-center justify-center'>
-              <SubwayLineChip label={station.line.name} />
+              {station.lines.map((line) => (
+                <SubwayLineChip label={line.name} />
+              ))}
             </div>
 
             <div className='w-[330px] rounded-lg px-4 py-5 gap-[10px] bg-primary-10'>
@@ -52,8 +55,8 @@ function ResultPage() {
               {station.stationName}에선!
             </h3>
             <div className='w-full rounded-lg px-4 py-5 gap-[10px] border-2 border-gray-30'>
-              <p className='whitespace-pre-line text-body-01 text-gray-100 leading-[1.4] tracking-[-0.025em] text-start'>
-                {station.todo}
+              <p className='text-body-01 text-gray-100 leading-[1.4] tracking-[-0.025em] text-start'>
+                {station.todos.map((todo, index) => `${index+1}. ${todo}`).join("\n")}
               </p>
             </div>
           </div>

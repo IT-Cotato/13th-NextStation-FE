@@ -9,8 +9,8 @@ export interface RandomStationResponse {
   stationId: number;
   stationName: string;
   description: string;
-  todo: string;
-  line: RandomStationLineResponse;
+  todos: string[];
+  lines: RandomStationLineResponse[];
 }
 
 export interface RandomCoursePlaceResponse {
@@ -69,12 +69,12 @@ export async function drawRandomStation(): Promise<RandomDrawResponseData> {
       stationId: data.station.stationId,
       stationName: data.station.stationName,
       description: data.station.description,
-      todo: data.station.todo,
-      line: {
-        id: data.station.line.id,
-        name: data.station.line.name,
-        code: data.station.line.code,
-      },
+      todos: data.station.todo ?? [],
+      lines: (data.station.lines ?? []).map((line: RandomStationLineResponse) => ({
+        id: line.id,
+        name: line.name,
+        code: line.code,
+      })),
     },
     course: {
       name: data.course.name,
