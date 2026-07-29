@@ -2,13 +2,7 @@ import { useEffect, useState } from "react";
 import SearchIcon from '@/assets/search.svg?react';
 import CloseIcon from '@/assets/close.svg?react';
 import LineBadge from "./LineBadge";
-import { searchStations } from '@/api/stations';
-
-export interface Station {
-  id: number
-  name: string
-  lines: string[]
-}
+import { searchStations, type Station } from "@/api/stations";
 interface SearchBarProps {
   query: string;
   onQueryChange: (query: string) => void;
@@ -69,6 +63,11 @@ export default function SearchBar({
 
   const isSelected = selectedStation !== null
 
+  const getLineBadgeValue = (lineName: string) => {
+    const match = lineName.match(/^([1-9])호선$/);
+    return match ? match[1] : null;
+  };
+
   return (
     <div className={[
         "relative w-[360px] rounded-lg"
@@ -87,9 +86,17 @@ export default function SearchBar({
           <div className="flex min-w-0 flex-1 items-center gap-2">
             {isSelected && (
               <div className="flex shrink-0 items-center gap-1">
-                {selectedStation.lines.map((line) => (
-                  <LineBadge key={`${selectedStation.id}-${line}`} line={line} />
-                ))}
+                {selectedStation.lines.map((line) => {
+                  const badgeLine = getLineBadgeValue(line.name);
+
+                  if (!badgeLine) return null;
+                 return (
+                  <LineBadge
+                    key={`${selectedStation.id}-${line.code}`}
+                    line={badgeLine}
+                  />
+                );
+                })}
               </div>
             )}
 
@@ -134,11 +141,19 @@ export default function SearchBar({
                 className="flex w-full items-center gap-1 p-4 text-left"
               >
                 <div className="flex items-center gap-1">
-                  {station.lines.map((line) => (
-                    <LineBadge key={`${station.id}-${line}`} line={line} />
-                  ))}
-                </div>
+                  {station.lines.map((line) => {
+                    const badgeLine = getLineBadgeValue(line.name);
 
+                    if (!badgeLine) return null;
+
+                    return (
+                      <LineBadge
+                        key={`${station.id}-${line.code}`}
+                        line={badgeLine}
+                      />
+                    );
+                  })}
+                </div>
                 <span className="text-body-01 text-gray-100 leading-[1.4] tracking-[-0.025em]">
                   {station.name}
                 </span>
