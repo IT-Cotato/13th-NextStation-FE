@@ -34,7 +34,7 @@ export default function Header({
   };
 
   return (
-    <header className="grid h-[50px] w-full grid-cols-[40px_1fr_40px] items-center px-3">
+    <header className="grid h-[50px] w-full shrink-0 grid-cols-[40px_1fr_40px] items-center px-3">
       <div className="flex items-center justify-start">
         {showBack && (
           <button
