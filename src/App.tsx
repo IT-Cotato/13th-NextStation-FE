@@ -19,9 +19,6 @@ import "react-toastify/dist/ReactToastify.css";
 import Toast from "./pages/course/components/Toast";
 import DetailPage from "./pages/place/DetailPage";
 import ReviewListPage from "./pages/place/ReviewListPage";
-import StampAnimationPage from "./pages/course/StampAnimationPage";
-import StampSourcePage from "./pages/course/StampSourcePage";
-import StampLessPage from "./pages/course/StampLessPage";
 
 function App() {
   return (
@@ -41,18 +38,6 @@ function App() {
           <Route
             path="/course/:courseId/stamp"
             element={<StampAcquiredPage />}
-          />
-          <Route
-            path="/course/:courseId/stampAnimation"
-            element={<StampAnimationPage />}
-          />
-           <Route
-            path="/course/:courseId/stampSource"
-            element={<StampSourcePage />}
-          />
-          <Route
-            path="/course/:courseId/stampLess"
-            element={<StampLessPage />}
           />
           <Route path="/course/:courseId/log" element={<LogIntroPage />} />
           <Route path="/course/:courseId/log/info" element={<LogInfoPage />} />
