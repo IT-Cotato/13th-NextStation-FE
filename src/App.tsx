@@ -4,6 +4,7 @@ import MainPage from "@/pages/MainPage";
 // auth
 import FinishPage from "@/pages/auth/FinishPage";
 import LoginPage from "@/pages/auth/LoginPage";
+import KakaoCallbackPage from "@/pages/auth/KakaoCallbackPage";
 import PasswordResetPage from "@/pages/auth/PasswordResetPage";
 import ProfileSetupPage from "@/pages/auth/ProfileSetupPage";
 import SignUpPage from "@/pages/auth/SignUpPage";
@@ -43,6 +44,7 @@ function App() {
           {/* auth */}
           <Route path="/auth" element={<WelcomePage />} />
           <Route path="/auth/login" element={<LoginPage />} />
+          <Route path="/auth/kakao/callback" element={<KakaoCallbackPage />} />
           <Route path="/auth/sign-up" element={<SignUpPage />} />
           <Route path="/auth/terms" element={<TermsAgreementPage />} />
           <Route path="/auth/reset-password" element={<PasswordResetPage />} />

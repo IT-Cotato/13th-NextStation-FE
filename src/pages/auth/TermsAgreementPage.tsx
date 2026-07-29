@@ -1,6 +1,15 @@
 import { type ReactNode, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import termsAgreementImage from '@/assets/auth/terms-agreement.svg';
+import {
+  MARKETING_TERM_ID,
+  REQUIRED_TERMS_IDS,
+  AuthApiError,
+  getKakaoSignupToken,
+  kakaoSignup,
+  saveAgreedTermsIds,
+  saveSignupToken,
+} from '@/api/auth';
 import CTAButton from '@/components/CTAButton';
 import Header from '@/components/Header';
 import AuthProgressBar from './components/AuthProgressBar';
@@ -34,12 +43,66 @@ function CheckItem({ checked, children, onChange }: CheckItemProps) {
   );
 }
 
+interface AgreementItemProps {
+  checked: boolean;
+  label: string;
+  required?: boolean;
+  description: string;
+  onChange: () => void;
+}
+
+function AgreementItem({
+  checked,
+  label,
+  required = false,
+  description,
+  onChange,
+}: AgreementItemProps) {
+  const agreementType = required ? '필수' : '선택';
+
+  return (
+    <div className="flex items-start gap-[10px]">
+      <button
+        type="button"
+        role="checkbox"
+        aria-checked={checked}
+        aria-label={`${label} 동의`}
+        onClick={onChange}
+        className={`mt-px flex size-5 shrink-0 items-center justify-center rounded-[4px] border ${
+          checked ? 'border-primary-50 bg-primary-50' : 'border-primary-50 bg-white'
+        }`}
+      >
+        {checked && (
+          <span
+            className="text-body-02 font-semibold leading-none text-white"
+            aria-hidden="true"
+          >
+            ✓
+          </span>
+        )}
+      </button>
+
+      <details className="min-w-0 flex-1">
+        <summary className="cursor-pointer list-none text-body-01 font-regular leading-[1.4] text-gray-80 underline underline-offset-2 focus-visible:rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-50">
+          {label} 동의 ({agreementType})
+        </summary>
+        <p className="mt-2 rounded-lg bg-gray-20 p-3 text-body-02 font-regular leading-[1.4] text-gray-70">
+          {description}
+        </p>
+      </details>
+    </div>
+  );
+}
+
 export default function TermsAgreementPage() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [serviceAgreed, setServiceAgreed] = useState(false);
   const [privacyAgreed, setPrivacyAgreed] = useState(false);
   const [marketingAgreed, setMarketingAgreed] = useState(false);
   const [hasInteracted, setHasInteracted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState('');
 
   const isAllAgreed = serviceAgreed && privacyAgreed && marketingAgreed;
   const isRequiredAgreed = serviceAgreed && privacyAgreed;
@@ -54,17 +117,59 @@ export default function TermsAgreementPage() {
     setHasInteracted(true);
   };
 
-  return (
-    <main className="relative h-dvh overflow-y-auto bg-white text-gray-100">
-      <div className="absolute left-0 top-[40px] z-20 w-full">
-        <Header showBack title="약관동의" />
-      </div>
+  const handleNext = async () => {
+    if (!isRequiredAgreed) {
+      setHasInteracted(true);
+      return;
+    }
 
-      <div className="absolute left-[15px] right-[15px] top-[87px]">
+    const agreedTermsIds = [
+      ...REQUIRED_TERMS_IDS,
+      ...(marketingAgreed ? [MARKETING_TERM_ID] : []),
+    ];
+    saveAgreedTermsIds(agreedTermsIds);
+
+    if (searchParams.get('provider') === 'kakao') {
+      const kakaoSignupToken = getKakaoSignupToken();
+
+      if (!kakaoSignupToken) {
+        setSubmitError('카카오 회원가입 정보가 만료되었습니다. 다시 로그인해주세요.');
+        return;
+      }
+
+      try {
+        setIsSubmitting(true);
+        setSubmitError('');
+        const { signupToken } = await kakaoSignup(
+          kakaoSignupToken,
+          agreedTermsIds,
+        );
+        saveSignupToken(signupToken);
+        navigate('/auth/profile');
+      } catch (error) {
+        setSubmitError(
+          error instanceof AuthApiError
+            ? error.message
+            : '카카오 회원가입 요청에 실패했습니다.',
+        );
+      } finally {
+        setIsSubmitting(false);
+      }
+      return;
+    }
+
+    navigate('/auth/sign-up');
+  };
+
+  return (
+    <main className="flex h-dvh flex-col bg-white pt-[calc(var(--safe-top)+12px)] tracking-[-0.025em] text-gray-100">
+      <Header showBack title="약관동의" />
+
+      <div className="-mt-[3px] px-[15px]">
         <AuthProgressBar step={0} edgeToEdge />
       </div>
 
-      <section className="px-[15px] pb-[150px] pt-[130px]">
+      <section className="mt-[27px] px-[15px]">
         <h2 className="text-headline font-semibold leading-[1.4] text-gray-100">
           환승여행을 떠나기 전
           <br />
@@ -90,18 +195,16 @@ export default function TermsAgreementPage() {
 
           <div className="flex flex-col gap-3 pb-10 pt-4">
             <div>
-              <CheckItem
+              <AgreementItem
                 checked={serviceAgreed}
+                label="서비스 이용약관"
+                required
+                description="회원가입과 서비스 제공을 위해 계정 생성, 서비스 이용 규칙 및 이용 제한에 관한 내용에 동의합니다."
                 onChange={() => {
                   setServiceAgreed((value) => !value);
                   setHasInteracted(true);
                 }}
-              >
-                <span className="text-body-01 font-regular leading-[1.4] text-gray-80">
-                  <span className="underline underline-offset-2">서비스 이용약관</span>
-                  {' 동의 (필수)'}
-                </span>
-              </CheckItem>
+              />
               {showServiceError && (
                 <p className="mt-1 flex items-center gap-1 pl-[30px] text-body-02 font-regular leading-[1.4] text-primary-60">
                   <span
@@ -116,17 +219,16 @@ export default function TermsAgreementPage() {
             </div>
 
             <div>
-              <CheckItem
+              <AgreementItem
                 checked={privacyAgreed}
+                label="개인정보 취급 방침"
+                required
+                description="회원가입과 서비스 제공을 위해 이메일, 닉네임, 성별 및 생년월일을 수집·이용하며, 관련 법령과 서비스 정책에 따라 보관 후 파기합니다."
                 onChange={() => {
                   setPrivacyAgreed((value) => !value);
                   setHasInteracted(true);
                 }}
-              >
-                <span className="text-body-01 font-regular leading-[1.4] text-gray-80 underline underline-offset-2">
-                  개인정보 취급 방침 동의 (필수)
-                </span>
-              </CheckItem>
+              />
               {showPrivacyError && (
                 <p className="mt-1 flex items-center gap-1 pl-[30px] text-body-02 font-regular leading-[1.4] text-primary-60">
                   <span
@@ -140,28 +242,31 @@ export default function TermsAgreementPage() {
               )}
             </div>
 
-            <CheckItem
+            <AgreementItem
               checked={marketingAgreed}
+              label="마케팅 정보 수신"
+              description="이벤트, 혜택 및 서비스 소식을 안내받는 데 동의합니다. 동의하지 않아도 서비스를 이용할 수 있으며 언제든 철회할 수 있습니다."
               onChange={() => {
                 setMarketingAgreed((value) => !value);
                 setHasInteracted(true);
               }}
-            >
-              <span className="text-body-01 font-regular leading-[1.4] text-gray-80 underline underline-offset-2">
-                마케팅 정보 수신 동의 (선택)
-              </span>
-            </CheckItem>
+            />
           </div>
         </section>
       </section>
 
-      <section className="fixed bottom-[calc(var(--safe-bottom)+50px)] left-1/2 z-30 w-full max-w-[var(--app-max-width)] -translate-x-1/2 px-[15px]">
+      <section className="mt-auto flex flex-col items-center gap-2 px-[15px] pb-[calc(var(--safe-bottom)+50px)]">
+        {submitError && (
+          <p className="text-body-02 font-regular text-primary-60">
+            {submitError}
+          </p>
+        )}
         <CTAButton
-          disabled={!isRequiredAgreed}
+          disabled={!isRequiredAgreed || isSubmitting}
           className="disabled:!bg-gray-40 disabled:!text-gray-10"
-          onClick={() => navigate('/auth/sign-up')}
+          onClick={handleNext}
         >
-          다음
+          {isSubmitting ? '처리 중' : '다음'}
         </CTAButton>
       </section>
     </main>

@@ -2,6 +2,13 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import CTAButton from '@/components/CTAButton';
 import Header from '@/components/Header';
+import {
+  AuthApiError,
+  clearSignupFlow,
+  getKakaoProfile,
+  getSignupToken,
+  setupProfile,
+} from '@/api/auth';
 import AuthInput from './components/AuthInput';
 import AuthProgressBar from './components/AuthProgressBar';
 
@@ -51,18 +58,25 @@ const validateBirthday = (value: string, shouldRequire = false) => {
 
 export default function ProfileSetupPage() {
   const navigate = useNavigate();
-  const [nickname, setNickname] = useState('');
+  const [kakaoProfile] = useState(() => getKakaoProfile());
+  const [nickname, setNickname] = useState(() => kakaoProfile?.nickname ?? '');
   const [birthday, setBirthday] = useState('');
   const [gender, setGender] = useState<Gender | ''>('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState({
     nickname: '',
     birthday: '',
   });
 
   const isNextDisabled =
-    !nickname.trim() || !gender || !birthday || Boolean(validateBirthday(birthday));
+    !nickname.trim() ||
+    Boolean(validateNickname(nickname)) ||
+    !gender ||
+    !birthday ||
+    Boolean(validateBirthday(birthday)) ||
+    isSubmitting;
 
-  const handleNext = () => {
+  const handleNext = async () => {
     const nextErrors = {
       nickname: validateNickname(nickname, true),
       birthday: validateBirthday(birthday, true),
@@ -70,21 +84,60 @@ export default function ProfileSetupPage() {
 
     setErrors(nextErrors);
 
-    if (gender && Object.values(nextErrors).every((message) => !message)) {
+    if (!gender || Object.values(nextErrors).some(Boolean)) {
+      return;
+    }
+
+    const signupToken = getSignupToken();
+
+    if (!signupToken) {
+      navigate('/auth/terms');
+      return;
+    }
+
+    const genderByApi: Record<Gender, 'MALE' | 'FEMALE' | 'UNSPECIFIED'> = {
+      male: 'MALE',
+      female: 'FEMALE',
+      none: 'UNSPECIFIED',
+    };
+
+    try {
+      setIsSubmitting(true);
+      await setupProfile(signupToken, {
+        nickname: nickname.trim(),
+        ...(kakaoProfile?.profileImageUrl
+          ? { profileImageUrl: kakaoProfile.profileImageUrl }
+          : {}),
+        gender: genderByApi[gender],
+        birthDate: birthday,
+      });
+      clearSignupFlow();
       navigate('/auth/finish');
+    } catch (error) {
+      if (error instanceof AuthApiError && error.status === 401) {
+        clearSignupFlow();
+        navigate('/auth/terms');
+        return;
+      }
+
+      const message =
+        error instanceof AuthApiError
+          ? error.message
+          : '프로필 설정 요청에 실패했습니다.';
+      setErrors((value) => ({ ...value, nickname: message }));
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   return (
-    <main className="relative h-dvh overflow-y-auto bg-white text-gray-100">
-      <div className="sticky top-0 z-20 bg-white pt-[40px]">
-        <Header showBack title="프로필 설정" />
-        <div className="px-[15px] pb-[27px]">
-          <AuthProgressBar step={3} />
-        </div>
+    <main className="flex h-dvh flex-col bg-white pt-[calc(var(--safe-top)+12px)] tracking-[-0.025em] text-gray-100">
+      <Header showBack title="프로필 설정" />
+      <div className="-mt-[3px] px-[15px] pb-[27px]">
+        <AuthProgressBar step={3} />
       </div>
 
-      <section className="flex flex-col gap-[40px] px-[15px] pb-[150px] pt-[23px]">
+      <section className="flex flex-col gap-[40px] px-[15px] pt-[23px]">
         <section className="flex flex-col gap-[30px]">
           <div className="flex flex-col gap-4">
             <h2 className="text-subtitle font-semibold leading-[1.4] text-gray-100">
@@ -95,7 +148,15 @@ export default function ProfileSetupPage() {
               className="flex size-[100px] items-center justify-center rounded-lg border border-dashed border-secondary-40 bg-secondary-10 text-[28px] font-light leading-none text-secondary-50"
               aria-label="프로필 사진 추가"
             >
-              +
+              {kakaoProfile?.profileImageUrl ? (
+                <img
+                  src={kakaoProfile.profileImageUrl}
+                  alt="카카오 프로필"
+                  className="size-full rounded-lg object-cover"
+                />
+              ) : (
+                '+'
+              )}
             </button>
           </div>
 
@@ -160,9 +221,9 @@ export default function ProfileSetupPage() {
 
       </section>
 
-      <section className="fixed bottom-[calc(var(--safe-bottom)+50px)] left-1/2 z-30 w-full max-w-[var(--app-max-width)] -translate-x-1/2 px-[15px]">
+      <section className="mt-auto flex justify-center px-[15px] pb-[calc(var(--safe-bottom)+50px)]">
         <CTAButton disabled={isNextDisabled} onClick={handleNext}>
-          다음
+          {isSubmitting ? '저장 중' : '다음'}
         </CTAButton>
       </section>
     </main>

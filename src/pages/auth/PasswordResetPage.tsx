@@ -135,13 +135,11 @@ export default function PasswordResetPage() {
   };
 
   return (
-    <main className="relative h-dvh overflow-y-auto bg-white text-gray-100">
-      <div className="absolute left-0 top-[40px] w-full">
-        <Header showBack title="비밀번호 찾기" />
-      </div>
+    <main className="flex h-dvh flex-col bg-white pt-[calc(var(--safe-top)+12px)] tracking-[-0.025em] text-gray-100">
+      <Header showBack title="비밀번호 찾기" />
 
-      <section className="px-[15px] pb-[150px]">
-        <section className="absolute left-[15px] right-[15px] top-[129px] flex flex-col gap-[30px]">
+      <section className="mt-10 px-[15px]">
+        <section className="flex flex-col gap-[30px]">
           <h2 className="text-subtitle font-semibold leading-[1.4] text-gray-100">
             이메일을 입력해주세요
           </h2>
@@ -187,7 +185,7 @@ export default function PasswordResetPage() {
         </section>
 
         {isEmailCertified && (
-          <section className="absolute left-[15px] right-[15px] top-[327px] flex flex-col gap-[30px]">
+          <section className="mt-[33px] flex flex-col gap-[30px]">
             <h2 className="text-subtitle font-semibold leading-[1.4] text-gray-100">
               비밀번호를 입력해주세요
             </h2>
@@ -235,7 +233,7 @@ export default function PasswordResetPage() {
         )}
       </section>
 
-      <section className="fixed bottom-[calc(var(--safe-bottom)+50px)] left-1/2 z-30 w-full max-w-[var(--app-max-width)] -translate-x-1/2 px-[15px]">
+      <section className="mt-auto flex justify-center px-[15px] pb-[calc(var(--safe-bottom)+50px)]">
         <CTAButton
           disabled={isNextDisabled}
           className="disabled:!bg-gray-40 disabled:!text-gray-10"

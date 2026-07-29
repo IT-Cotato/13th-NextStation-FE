@@ -11,10 +11,32 @@ import cloudRight from '@/assets/auth/welcome-cloud-right.svg';
 import appleImage from '@/assets/auth/welcome-apple.svg';
 import kakaoImage from '@/assets/auth/welcome-kakao.svg';
 import Header from '@/components/Header';
-import AuthButton from './components/AuthButton';
+import CTAButton from '@/components/CTAButton';
 
 export default function WelcomePage() {
   const navigate = useNavigate();
+
+  const handleKakaoLogin = () => {
+    const restApiKey = import.meta.env.VITE_KAKAO_REST_API_KEY;
+    const redirectUri =
+      import.meta.env.VITE_KAKAO_REDIRECT_URI ??
+      `${window.location.origin}/auth/kakao/callback`;
+
+    if (!restApiKey) {
+      window.alert('카카오 REST API 키가 설정되지 않았습니다.');
+      return;
+    }
+
+    const params = new URLSearchParams({
+      client_id: restApiKey,
+      redirect_uri: redirectUri,
+      response_type: 'code',
+    });
+
+    window.location.assign(
+      `https://kauth.kakao.com/oauth/authorize?${params.toString()}`,
+    );
+  };
 
   return (
     <main className="relative h-dvh overflow-hidden bg-linear-to-b from-primary-10 to-secondary-20 [--welcome-button-size:clamp(54px,7.11dvh,60px)] [--welcome-social-gap:calc(min(100vw,var(--app-max-width))*20/390)] [--welcome-stack-gap:2.84dvh] [--welcome-track-top:63.27dvh]">
@@ -102,7 +124,7 @@ export default function WelcomePage() {
 
             <button
               type="button"
-              disabled
+              onClick={handleKakaoLogin}
               className="size-[var(--welcome-button-size)] rounded-full focus:outline-none focus:ring-2 focus:ring-primary-60"
               aria-label="카카오로 로그인"
             >
@@ -119,9 +141,12 @@ export default function WelcomePage() {
           </div>
 
           <div className="w-full">
-            <AuthButton onClick={() => navigate('/auth/login')}>
+            <CTAButton
+              className="mx-auto shadow-[0_0_4px_var(--color-secondary-50)]"
+              onClick={() => navigate('/auth/login')}
+            >
               이메일로 이어가기
-            </AuthButton>
+            </CTAButton>
           </div>
         </section>
       </section>

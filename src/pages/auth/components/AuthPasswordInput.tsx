@@ -26,6 +26,7 @@ export default function AuthPasswordInput({
       )}
       <span className="relative block h-[50px] w-full">
         <input
+          {...props}
           type={isVisible ? 'text' : 'password'}
           aria-invalid={Boolean(errorMessage)}
           className={`h-full w-full rounded-lg border px-4 py-3 pr-12 text-body-01 font-regular text-gray-70 placeholder:text-gray-70 focus:border-primary-50 focus:bg-white focus:outline-none ${
@@ -33,7 +34,6 @@ export default function AuthPasswordInput({
               ? 'border-primary-50 bg-white'
               : 'border-transparent bg-gray-20'
           } ${className}`}
-          {...props}
         />
         <button
           type="button"

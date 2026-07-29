@@ -6,6 +6,7 @@ interface AuthCodeInputProps extends InputHTMLAttributes<HTMLInputElement> {
   showButton?: boolean;
   buttonLabel?: string;
   buttonTone?: 'default' | 'active';
+  buttonDisabled?: boolean;
   onButtonClick?: () => void;
 }
 
@@ -15,6 +16,7 @@ export default function AuthCodeInput({
   showButton = false,
   buttonLabel = '확인',
   buttonTone = 'default',
+  buttonDisabled = false,
   onButtonClick,
   className = '',
   ...props
@@ -32,9 +34,9 @@ export default function AuthCodeInput({
           } ${className}`}
         >
           <input
+            {...props}
             aria-invalid={Boolean(errorMessage)}
             className="min-w-0 flex-1 bg-transparent text-body-01 font-regular leading-[1.4] text-gray-70 placeholder:text-gray-70 focus:outline-none"
-            {...props}
           />
           <span className="ml-3 shrink-0 text-body-02 font-regular leading-none text-primary-60">
             {timer}
@@ -43,8 +45,9 @@ export default function AuthCodeInput({
         {showButton && (
           <button
             type="button"
+            disabled={buttonDisabled}
             onClick={onButtonClick}
-            className={`flex h-[50px] w-[60px] shrink-0 items-center justify-center rounded-lg px-2 text-body-02 font-regular leading-[1.4] ${
+            className={`flex h-[50px] w-[60px] shrink-0 items-center justify-center rounded-lg px-2 text-body-02 font-regular leading-[1.4] tracking-[-0.025em] disabled:cursor-not-allowed ${
               buttonTone === 'active'
                 ? 'bg-primary-50 text-gray-10'
                 : 'bg-gray-30 text-gray-70'

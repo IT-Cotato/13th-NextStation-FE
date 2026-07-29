@@ -4,6 +4,7 @@ interface AuthEmailCertificationInputProps
   extends InputHTMLAttributes<HTMLInputElement> {
   buttonLabel?: string;
   buttonTone?: 'default' | 'active';
+  buttonDisabled?: boolean;
   errorMessage?: string;
   onCertificationClick?: () => void;
 }
@@ -11,6 +12,7 @@ interface AuthEmailCertificationInputProps
 export default function AuthEmailCertificationInput({
   buttonLabel = '인증하기',
   buttonTone = 'default',
+  buttonDisabled = false,
   errorMessage,
   onCertificationClick,
   className = '',
@@ -29,15 +31,16 @@ export default function AuthEmailCertificationInput({
           } ${className}`}
         >
           <input
+            {...props}
             aria-invalid={Boolean(errorMessage)}
             className="min-w-0 flex-1 bg-transparent text-body-01 font-regular leading-[1.4] text-gray-70 placeholder:text-gray-70 focus:outline-none"
-            {...props}
           />
         </div>
         <button
           type="button"
+          disabled={buttonDisabled}
           onClick={onCertificationClick}
-          className={`flex h-[50px] w-[60px] shrink-0 items-center justify-center rounded-lg px-2 text-body-02 font-regular leading-[1.4] ${
+          className={`flex h-[50px] w-[60px] shrink-0 items-center justify-center rounded-lg px-2 text-body-02 font-regular leading-[1.4] disabled:cursor-not-allowed ${
             buttonTone === 'active'
               ? 'bg-primary-50 text-gray-10'
               : 'bg-gray-30 text-gray-70'

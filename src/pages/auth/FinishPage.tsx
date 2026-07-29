@@ -8,7 +8,7 @@ export default function FinishPage() {
   const navigate = useNavigate();
 
   return (
-    <main className="relative h-dvh overflow-hidden bg-white text-gray-100">
+    <main className="relative h-dvh overflow-hidden bg-white tracking-[-0.025em] text-gray-100">
       <div className="absolute left-0 top-[40px] w-full">
         <Header showBack title="회원가입 완료" />
       </div>

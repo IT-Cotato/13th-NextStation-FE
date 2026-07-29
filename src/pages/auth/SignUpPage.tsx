@@ -2,6 +2,15 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import CTAButton from '@/components/CTAButton';
 import Header from '@/components/Header';
+import {
+  AuthApiError,
+  confirmEmailVerification,
+  getAgreedTermsIds,
+  REQUIRED_TERMS_IDS,
+  saveSignupToken,
+  sendEmailVerification,
+  signup,
+} from '@/api/auth';
 import AuthCodeInput from './components/AuthCodeInput';
 import AuthEmailCertificationInput from './components/AuthEmailCertificationInput';
 import AuthPasswordInput from './components/AuthPasswordInput';
@@ -30,6 +39,9 @@ export default function SignUpPage() {
   const [isCodeConfirmed, setIsCodeConfirmed] = useState(false);
   const [password, setPassword] = useState('');
   const [passwordConfirm, setPasswordConfirm] = useState('');
+  const [isSending, setIsSending] = useState(false);
+  const [isConfirming, setIsConfirming] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState({
     email: '',
     code: '',
@@ -38,12 +50,14 @@ export default function SignUpPage() {
   });
   const isCertificationActive =
     certificationSeconds !== null && certificationSeconds > 0;
-  const isEmailCertified = isCertificationActive && isCodeConfirmed;
+  const isEmailCertified = isCodeConfirmed;
   const isNextDisabled =
     !isEmailCertified ||
     !password ||
     !passwordConfirm ||
-    password !== passwordConfirm;
+    !PASSWORD_PATTERN.test(password) ||
+    password !== passwordConfirm ||
+    isSubmitting;
 
   useEffect(() => {
     if (certificationSeconds === null) {
@@ -77,7 +91,7 @@ export default function SignUpPage() {
     return !emailError;
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
     const nextErrors = {
       email: '',
       code: '',
@@ -108,28 +122,85 @@ export default function SignUpPage() {
 
     setErrors(nextErrors);
 
-    if (Object.values(nextErrors).every((message) => !message)) {
-      navigate('/auth/profile');
-    }
-  };
-
-  const handleCertificationClick = () => {
-    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-    if (!emailPattern.test(email)) {
-      setErrors((value) => ({
-        ...value,
-        email: '이메일 형식이 잘못되었습니다.',
-      }));
+    if (Object.values(nextErrors).some(Boolean)) {
       return;
     }
 
-    setErrors((value) => ({ ...value, email: '' }));
-    setCertificationSeconds(CERTIFICATION_LIMIT_SECONDS);
-    setIsCodeConfirmed(false);
+    const agreedTermsIds = getAgreedTermsIds();
+    const hasRequiredTerms = REQUIRED_TERMS_IDS.every((id) =>
+      agreedTermsIds.includes(id),
+    );
+
+    if (!hasRequiredTerms) {
+      navigate('/auth/terms');
+      return;
+    }
+
+    try {
+      setIsSubmitting(true);
+      const { signupToken } = await signup(
+        email,
+        password,
+        passwordConfirm,
+        agreedTermsIds,
+      );
+      saveSignupToken(signupToken);
+      navigate('/auth/profile');
+    } catch (error) {
+      const message =
+        error instanceof AuthApiError
+          ? error.message
+          : '회원가입 요청에 실패했습니다.';
+
+      if (
+        error instanceof AuthApiError &&
+        error.code.endsWith('DUPLICATE_EMAIL')
+      ) {
+        setErrors((value) => ({ ...value, email: message }));
+      } else if (
+        error instanceof AuthApiError &&
+        error.code.endsWith('PASSWORD_CONFIRMATION_MISMATCH')
+      ) {
+        setErrors((value) => ({ ...value, passwordConfirm: message }));
+      } else {
+        setErrors((value) => ({ ...value, password: message }));
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
-  const handleCodeConfirm = () => {
+  const handleCertificationClick = async () => {
+    if (!validateEmail()) {
+      return;
+    }
+
+    const agreedTermsIds = getAgreedTermsIds();
+
+    if (!REQUIRED_TERMS_IDS.every((id) => agreedTermsIds.includes(id))) {
+      navigate('/auth/terms');
+      return;
+    }
+
+    try {
+      setIsSending(true);
+      await sendEmailVerification(email, agreedTermsIds);
+      setCertificationSeconds(CERTIFICATION_LIMIT_SECONDS);
+      setIsCodeConfirmed(false);
+      setCode('');
+      setErrors((value) => ({ ...value, email: '', code: '' }));
+    } catch (error) {
+      const message =
+        error instanceof AuthApiError
+          ? error.message
+          : '인증번호 발송에 실패했습니다.';
+      setErrors((value) => ({ ...value, email: message }));
+    } finally {
+      setIsSending(false);
+    }
+  };
+
+  const handleCodeConfirm = async () => {
     if (!isCertificationActive || !/^\d{6}$/.test(code)) {
       setErrors((value) => ({
         ...value,
@@ -139,22 +210,33 @@ export default function SignUpPage() {
       return;
     }
 
-    setErrors((value) => ({ ...value, code: '' }));
-    setIsCodeConfirmed(true);
+    try {
+      setIsConfirming(true);
+      await confirmEmailVerification(email, code);
+      setErrors((value) => ({ ...value, code: '' }));
+      setIsCodeConfirmed(true);
+    } catch (error) {
+      const message =
+        error instanceof AuthApiError
+          ? error.message
+          : '인증번호 확인에 실패했습니다.';
+      setErrors((value) => ({ ...value, code: message }));
+      setIsCodeConfirmed(false);
+    } finally {
+      setIsConfirming(false);
+    }
   };
 
   return (
-    <main className="relative h-dvh overflow-y-auto bg-white text-gray-100">
-      <div className="absolute left-0 top-[40px] w-full">
-        <Header showBack title="이메일로 회원가입" />
-      </div>
+    <main className="flex h-dvh flex-col bg-white pt-[calc(var(--safe-top)+12px)] tracking-[-0.025em] text-gray-100">
+      <Header showBack title="이메일로 회원가입" />
 
-      <div className="absolute left-[15px] right-[15px] top-[87px]">
+      <div className="-mt-[3px] px-[15px]">
         <AuthProgressBar step={1} edgeToEdge />
       </div>
 
-      <section className="px-[15px] pb-[150px]">
-        <section className="absolute left-[15px] right-[15px] top-[130px] flex flex-col gap-[30px]">
+      <section className="mt-[27px] px-[15px]">
+        <section className="flex flex-col gap-[30px]">
           <h2 className="text-subtitle font-semibold leading-[1.4] text-gray-100">
             이메일을 입력해주세요
           </h2>
@@ -174,9 +256,20 @@ export default function SignUpPage() {
               onBlur={validateEmail}
               placeholder="user@example.com"
               autoComplete="email"
-              buttonLabel={isCertificationActive ? '재요청' : '인증하기'}
-              buttonTone={email || isCertificationActive ? 'active' : 'default'}
+              buttonLabel={
+                isSending
+                  ? '요청 중'
+                  : isCertificationActive
+                    ? '재요청'
+                    : '인증하기'
+              }
+              buttonTone={
+                /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+                  ? 'active'
+                  : 'default'
+              }
               errorMessage={errors.email}
+              buttonDisabled={isSending}
               onCertificationClick={handleCertificationClick}
             />
             <AuthCodeInput
@@ -193,14 +286,16 @@ export default function SignUpPage() {
               timer={formatTimer(certificationSeconds ?? CERTIFICATION_LIMIT_SECONDS)}
               errorMessage={errors.code}
               showButton
+              buttonLabel={isConfirming ? '확인 중' : '확인'}
               buttonTone={/^\d{6}$/.test(code) ? 'active' : 'default'}
+              buttonDisabled={isConfirming}
               onButtonClick={handleCodeConfirm}
             />
           </div>
         </section>
 
         {isEmailCertified && (
-          <section className="absolute left-[15px] right-[15px] top-[327px] flex flex-col gap-[30px]">
+          <section className="mt-[33px] flex flex-col gap-[30px]">
             <h2 className="text-subtitle font-semibold leading-[1.4] text-gray-100">
               비밀번호를 입력해주세요
             </h2>
@@ -248,7 +343,7 @@ export default function SignUpPage() {
         )}
       </section>
 
-      <section className="fixed bottom-[calc(var(--safe-bottom)+50px)] left-1/2 z-30 w-full max-w-[var(--app-max-width)] -translate-x-1/2 px-[15px]">
+      <section className="mt-auto flex justify-center px-[15px] pb-[calc(var(--safe-bottom)+50px)]">
         <CTAButton
           disabled={isNextDisabled}
           className="disabled:!bg-gray-40 disabled:!text-gray-10"

@@ -28,14 +28,14 @@ export default function CTAButton({
   variant = "primary",
   className = "",
   disabled = false,
-  width,
+  width = 360,
   ...props
 }: CTAButtonProps) {
   return (
     <button
       type="button"
       disabled={disabled}
-      style={{ width }}
+      style={{ width: `min(100%, ${width}px)` }}
       className={`
         flex h-[60px] w-full items-center justify-center rounded-lg py-3
         ${variantStyles[variant]}
