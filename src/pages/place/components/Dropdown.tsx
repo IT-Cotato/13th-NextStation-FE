@@ -8,19 +8,17 @@ type Option = {
 
 type DropdownProps = {
   options: Option[];
+  value: string;
   onSelect?: (value: string) => void;
 };
 
-export default function Dropdown({ options, onSelect }: DropdownProps) {
+export default function Dropdown({ options, value, onSelect }: DropdownProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedOption, setSelectedOption] = useState<Option | null>(
-    options[0] ?? null,
-  );
+  const selectedOption = options.find((option) => option.value === value) ?? null;
 
   const toggleDropdown = () => setIsOpen((prev) => !prev);
 
   const handleSelect = (option: Option) => {
-    setSelectedOption(option);
     setIsOpen(false);
     if (onSelect) onSelect(option.value);
   };

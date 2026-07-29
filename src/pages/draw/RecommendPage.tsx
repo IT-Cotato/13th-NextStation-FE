@@ -12,7 +12,7 @@ function RecommendPage() {
   return (
     <main className="flex flex-col h-dvh overflow-hidden bg-white items-center pt-[var(--safe-top)]">
       <Header showBack />
-      <section className='flex h-full flex-col items-center justify-center gap-[60px] pb-[calc(var(--safe-bottom)+10px)]'>
+      <section className='flex h-full flex-col items-center justify-between pt-[100px] pb-[calc(var(--safe-bottom)+10px)]'>
         <div className='flex flex-col items-center gap-6'>
           <h1 className="text-headline font-semibold text-gray-100 leading-[1.4] tracking-[-0.025em] text-center">
             00님에게 어울리는 역을 <br />
