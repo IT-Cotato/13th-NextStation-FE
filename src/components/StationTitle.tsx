@@ -7,8 +7,7 @@ import Line6Icon from '@/assets/subway/subway6.svg?react';
 import Line7Icon from '@/assets/subway/subway7.svg?react';
 import Line8Icon from '@/assets/subway/subway8.svg?react';
 import Line9Icon from '@/assets/subway/subway9.svg?react';
-
-type SubwayLine = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
+import type { SubwayLine } from '@/types/subway';
 
 interface StationTitleProps {
   line: SubwayLine;

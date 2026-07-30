@@ -1,64 +1,62 @@
 import Header from "@/components/Header"
 import ChoiceChip from "@/pages/draw/components/ChoiceChip"
 import CTAButton from "@/components/CTAButton"
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import SearchBar, { type Station} from "./components/SearchBar";
+import SearchBar from "./components/SearchBar";
 import RecentStationChip from "./components/RecentStationChip";
-import {
-  createDepartureStation,
-  deleteDepartureStation,
-  getDepartureStations,
-  type DepartureStation,
-} from "@/api/stations";
+import type { Station } from "@/api/stations";
 
 const timeOptions = ['30분 이내', '1시간 이내', '상관 없음'];
 const companionOptions = ['혼자', '친구와', '연인과', '부모님과', '아이와'];
 
+const RECENT_STATIONS_KEY = "recentStations";
+const MAX_RECENT_STATIONS = 5;
+
 function ConditionPage() {
   const navigate = useNavigate();
   const [query, setQuery] = useState('');
-  const [recentStations, setRecentStations] = useState<DepartureStation[]>([]);
   const [selectedStation, setSelectedStation] = useState<Station | null>(null);
   const [selectedTime, setSelectedTime] = useState<string |null>(null);
   const [selectedCompanion, setSelectedCompanion] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchDepartureStations = async () => {
-      try {
-        const data = await getDepartureStations();
-        setRecentStations(data);
-      } catch (error) {
-        console.error(error);
-      }
-    };
+  const [recentStations, setRecentStations] = useState<Station[]>(() => {
+  const stored = localStorage.getItem(RECENT_STATIONS_KEY);
 
-    fetchDepartureStations();
-  }, []);
+  if (!stored) return [];
 
-  const handleSelectStation = async (station: Station | null) => {
+  try {
+    return JSON.parse(stored) as Station[];
+  } catch (error) {
+    console.error(error);
+    localStorage.removeItem(RECENT_STATIONS_KEY);
+    return [];
+  }
+});
+
+  const saveRecentStations = (stations: Station[]) => {
+    setRecentStations(stations);
+    localStorage.setItem(RECENT_STATIONS_KEY, JSON.stringify(stations));
+  };
+
+  const handleSelectStation = (station: Station | null) => {
     setSelectedStation(station);
 
     if (!station) return;
 
-    try {
-      await createDepartureStation(station.id);
-      const updated = await getDepartureStations();
-      setRecentStations(updated);
-    } catch (error) {
-      console.error(error);
-    }
+    const nextRecentStations = [
+      station,
+      ...recentStations.filter((item) => item.id !== station.id),
+    ].slice(0, MAX_RECENT_STATIONS);
+
+    saveRecentStations(nextRecentStations);
   };
 
-  const handleRemoveRecent = async (departureStationId: number) => {
-    try {
-      await deleteDepartureStation(departureStationId);
-      setRecentStations((prev) =>
-        prev.filter((station) => station.departureStationId !== departureStationId)
-      );
-    } catch (error) {
-      console.error(error);
-    }
+  const handleRemoveRecent = (stationId: number) => {
+    const nextRecentStations = recentStations.filter(
+      (station) => station.id !== stationId
+    );
+    saveRecentStations(nextRecentStations);
   };
 
   const isFormValid =
@@ -92,13 +90,13 @@ function ConditionPage() {
                 />
 
                 {!query.trim() && recentStations.length > 0 && (
-                <div className="flex gap-2 overflow-x-auto whitespace-nowrap">
+                <div className="flex gap-2 overflow-x-auto whitespace-nowrap [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
                   {recentStations.map((station) => (
                     <RecentStationChip
-                      key={station.departureStationId}
+                      key={station.id}
                       name={station.name}
                       lines={station.lines}
-                      onRemove={() => handleRemoveRecent(station.departureStationId)}
+                      onRemove={() => handleRemoveRecent(station.id)}
                     />
                   ))}
                 </div>

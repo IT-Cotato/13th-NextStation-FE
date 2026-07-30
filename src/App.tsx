@@ -30,6 +30,10 @@ import LogVisibilityPage from "@/pages/course/LogVisibilityPage";
 import StampAcquiredPage from "@/pages/course/StampAcquiredPage";
 import { LogDraftProvider } from "@/pages/course/contexts/LogDraftContext";
 
+// place
+import DetailPage from "./pages/place/DetailPage";
+import ReviewListPage from "./pages/place/ReviewListPage";
+
 // toast
 import "react-toastify/dist/ReactToastify.css";
 import Toast from "@/pages/course/components/Toast";
@@ -44,10 +48,16 @@ function App() {
           {/* auth */}
           <Route path="/auth" element={<WelcomePage />} />
           <Route path="/auth/login" element={<LoginPage />} />
-          <Route path="/auth/kakao/callback" element={<KakaoCallbackPage />} />
+          <Route
+            path="/auth/kakao/callback"
+            element={<KakaoCallbackPage />}
+          />
           <Route path="/auth/sign-up" element={<SignUpPage />} />
           <Route path="/auth/terms" element={<TermsAgreementPage />} />
-          <Route path="/auth/reset-password" element={<PasswordResetPage />} />
+          <Route
+            path="/auth/reset-password"
+            element={<PasswordResetPage />}
+          />
           <Route path="/auth/profile" element={<ProfileSetupPage />} />
           <Route path="/auth/finish" element={<FinishPage />} />
 
@@ -82,6 +92,13 @@ function App() {
           <Route
             path="/course/:courseId/log/visibility"
             element={<LogVisibilityPage />}
+          />
+
+          {/* place */}
+          <Route path="/place/:placeId" element={<DetailPage />} />
+          <Route
+            path="/place/:placeId/reviews"
+            element={<ReviewListPage />}
           />
         </Routes>
 
