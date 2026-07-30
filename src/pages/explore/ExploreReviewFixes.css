@@ -1,0 +1,36 @@
+.explore-page,
+.explore-search-results {
+  min-height: 100dvh;
+}
+
+.explore-search:focus-within,
+.explore-search-results__form:focus-within input {
+  border-color: var(--color-primary-50);
+  background: var(--color-white);
+}
+
+.explore-search-results__form input,
+.explore-concept-card,
+.explore-course-item,
+.explore-concept-tile,
+.explore-sort > button,
+.explore-sort__menu {
+  border-radius: var(--radius-lg);
+}
+
+.explore-search input:focus-visible,
+.explore-search-results__form input:focus-visible,
+.explore-sort button:focus-visible,
+.explore-line-filter button:focus-visible,
+.explore-concept-card:focus-visible,
+.explore-concept-tile:focus-visible,
+.explore-scrap-count:focus-visible {
+  outline: 2px solid var(--color-primary-50);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .explore-sort > button span {
+    transition: none;
+  }
+}

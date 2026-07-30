@@ -1,0 +1,21 @@
+.explore-ranking-page{min-height:100dvh;padding-bottom:16px}
+.explore-ranking-header{padding:57px 15px 10px}
+.explore-ranking-header>button{width:24px;height:24px;margin:0 0 16px;padding:0;border:0;background:transparent;color:#696969;display:grid;place-items:center}
+.explore-ranking-header>button span{display:block;font-family:Arial,sans-serif;font-size:39px;font-weight:200;line-height:20px;transform:translate(-1px,-1px)}
+.explore-ranking-header h1{margin:0;font-size:20px;font-weight:600;line-height:1.4;letter-spacing:-.5px}
+.explore-ranking-header p{margin:4px 0 0;color:#696969;font-size:12px;line-height:1.4;letter-spacing:-.3px}
+.explore-ranking-list{display:flex;flex-direction:column;gap:12px;padding:16px 15px}
+.explore-ranking-list .explore-course-item{min-height:120px}
+.explore-course-item__image{position:relative;overflow:hidden}
+.explore-list-rank{position:absolute;left:0;top:2px;width:42px;height:42px;display:grid;place-items:center;line-height:1}
+.explore-list-rank img{width:35px;height:39px;object-fit:fill}
+.explore-list-rank b{position:absolute;top:7px;left:50%;transform:translateX(-50%);color:#fff;font-size:20px;font-weight:600;line-height:1.4}
+.explore-rank-badge img{width:35px!important;height:39px!important;object-fit:fill!important}
+.explore-rank-badge b{top:7px;left:50%;transform:translateX(-50%);line-height:1.4}
+.explore-popular-scroll{flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch;overscroll-behavior-inline:contain;touch-action:pan-x}
+.explore-popular-scroll:focus{outline:none}
+.explore-popular-card{flex-shrink:0;scroll-snap-align:start}
+.explore-line-filter{flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch;overscroll-behavior-inline:contain;touch-action:pan-x}
+.explore-line-filter:focus{outline:none}
+.explore-line-filter button{flex-shrink:0;scroll-snap-align:start}
+.explore-scrap-count{padding:0;border:0;background:transparent;color:#696969;font:inherit;cursor:pointer}

@@ -1,0 +1,20 @@
+.explore-card-station{gap:0!important}.explore-card-station>div{gap:4px}
+.explore-concept-detail{min-height:100dvh;padding-bottom:24px}
+.explore-concept-detail__header{position:relative;height:217px;padding:57px 15px 0}
+.explore-concept-detail__header>button{width:24px;height:24px;padding:0;border:0;background:transparent;color:#696969;display:grid;place-items:center}
+.explore-concept-detail__header>button span{font:200 39px/20px Arial,sans-serif;transform:translate(-1px,-1px)}
+.explore-concept-detail__copy{position:absolute;left:15px;right:15px;top:121px}
+.explore-concept-detail__copy h1{margin:0 0 4px;font-size:20px;font-weight:600;line-height:1.4;letter-spacing:-.5px}
+.explore-concept-detail__copy p{margin:0;color:#696969;font-size:14px;line-height:1.4;letter-spacing:-.35px}
+.explore-concept-detail__art{position:absolute;inset:0;pointer-events:none}
+.explore-concept-detail__star{position:absolute;object-fit:fill}
+.explore-concept-detail__icon{position:absolute;object-fit:fill}
+.explore-concept-detail__art .explore-concept-detail__star,
+.explore-concept-detail__art .explore-concept-detail__icon{left:auto;bottom:auto}
+.explore-sort{position:relative;height:36px;margin:0 15px 0;z-index:5}
+.explore-sort>button{position:absolute;right:0;top:0;height:36px;min-width:96px;padding:8px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;border:1px solid #fff;border-radius:20px;background:rgba(255,255,255,.5);color:#696969;font-size:14px;font-weight:600;backdrop-filter:blur(10px)}
+.explore-sort>button span{font-size:18px;transform:rotate(180deg);transition:transform .15s}.explore-sort>button span.is-open{transform:rotate(0)}
+.explore-sort__menu{position:absolute;right:0;top:48px;width:96px;padding:12px 20px;display:flex;flex-direction:column;gap:12px;border:1px solid #fff;border-radius:20px;background:rgba(255,255,255,.86);box-shadow:0 0 28px rgba(118,118,118,.25);backdrop-filter:blur(10px)}
+.explore-sort__menu button{padding:0;border:0;background:transparent;color:#696969;text-align:left;font-size:14px;font-weight:600;line-height:1.4}
+.explore-sort__menu button.is-selected{color:#171717}
+.explore-concept-detail__list{padding-top:16px}

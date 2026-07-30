@@ -26,6 +26,11 @@ import LogInfoPage from '@/pages/course/LogInfoPage';
 import LogPlacePage from '@/pages/course/LogPlacePage';
 import LogVisibilityPage from '@/pages/course/LogVisibilityPage';
 import StampAcquiredPage from '@/pages/course/StampAcquiredPage';
+import ExplorePage from '@/pages/explore/ExplorePage';
+import PopularCoursesPage from '@/pages/explore/PopularCoursesPage';
+import ConceptToursPage from '@/pages/explore/ConceptToursPage';
+import ConceptDetailPage from '@/pages/explore/ConceptDetailPage';
+import SearchResultsPage from '@/pages/explore/SearchResultsPage';
 import { LogDraftProvider } from '@/pages/course/contexts/LogDraftContext';
 
 // toast
@@ -59,6 +64,11 @@ function App() {
           <Route path="/course/create" element={<CreatePage />} />
           <Route path="/course/verify" element={<CourseVerifyPage />} />
           <Route path="/course/saved" element={<SavedPage />} />
+          <Route path="/explore" element={<ExplorePage />} />
+          <Route path="/explore/popular" element={<PopularCoursesPage />} />
+          <Route path="/explore/concepts" element={<ConceptToursPage />} />
+          <Route path="/explore/concepts/:conceptId" element={<ConceptDetailPage />} />
+          <Route path="/explore/search" element={<SearchResultsPage />} />
           <Route path="/course/:courseId/stamp" element={<StampAcquiredPage />} />
           <Route path="/course/:courseId/log" element={<LogIntroPage />} />
           <Route path="/course/:courseId/log/info" element={<LogInfoPage />} />
