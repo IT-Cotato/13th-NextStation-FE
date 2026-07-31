@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { stationsByLine } from "@/mocks/StationByLine";
 import ExploreCourseItem from "./components/ExploreCourseItem";
@@ -27,6 +27,10 @@ export default function LineCoursesPage() {
   const [sortOption, setSortOption] = useState<SortOption>("전체");
   const [isStationMenuOpen, setIsStationMenuOpen] = useState(false);
   const [isSortMenuOpen, setIsSortMenuOpen] = useState(false);
+  const stationButtonRef = useRef<HTMLButtonElement>(null);
+  const sortButtonRef = useRef<HTMLButtonElement>(null);
+  const sortContainerRef = useRef<HTMLDivElement>(null);
+  const stationDialogRef = useRef<HTMLElement>(null);
   const stationNames = stationsByLine[`${line}호선`];
   const visibleStations = useMemo(
     () => (station ? stationNames.filter((name) => name === station) : stationNames),
@@ -40,6 +44,67 @@ export default function LineCoursesPage() {
     setStation("");
     setSearchParams({ line: String(nextLine) }, { replace: true });
   };
+
+  useEffect(() => {
+    if (!isSortMenuOpen) {
+      return undefined;
+    }
+
+    const handlePointerDown = (event: PointerEvent) => {
+      if (!sortContainerRef.current?.contains(event.target as Node)) {
+        setIsSortMenuOpen(false);
+      }
+    };
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setIsSortMenuOpen(false);
+        sortButtonRef.current?.focus();
+      }
+    };
+
+    document.addEventListener("pointerdown", handlePointerDown);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("pointerdown", handlePointerDown);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isSortMenuOpen]);
+
+  useEffect(() => {
+    if (!isStationMenuOpen) {
+      return undefined;
+    }
+
+    const dialog = stationDialogRef.current;
+    const focusableElements = dialog?.querySelectorAll<HTMLElement>("button");
+    focusableElements?.[0]?.focus();
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setIsStationMenuOpen(false);
+        stationButtonRef.current?.focus();
+        return;
+      }
+
+      if (event.key !== "Tab" || !focusableElements?.length) {
+        return;
+      }
+
+      const firstElement = focusableElements[0];
+      const lastElement = focusableElements[focusableElements.length - 1];
+
+      if (event.shiftKey && document.activeElement === firstElement) {
+        event.preventDefault();
+        lastElement.focus();
+      } else if (!event.shiftKey && document.activeElement === lastElement) {
+        event.preventDefault();
+        firstElement.focus();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [isStationMenuOpen]);
 
   return (
     <main className="line-courses-page">
@@ -77,6 +142,7 @@ export default function LineCoursesPage() {
 
       <div className="line-courses-filters">
         <button
+          ref={stationButtonRef}
           type="button"
           className="line-courses-filter"
           aria-haspopup="dialog"
@@ -90,8 +156,9 @@ export default function LineCoursesPage() {
           <span aria-hidden="true" />
         </button>
 
-        <div className="line-courses-sort">
+        <div className="line-courses-sort" ref={sortContainerRef}>
           <button
+            ref={sortButtonRef}
             type="button"
             className="line-courses-filter"
             aria-haspopup="menu"
@@ -126,18 +193,14 @@ export default function LineCoursesPage() {
       </div>
 
       <section className="line-courses-list" aria-label={`${line}호선 코스 목록`}>
-        {Array.from({ length: Math.max(6, courseStations.length) }, (_, index) => {
-          const stationName = courseStations[index % courseStations.length];
-
-          return (
+        {courseStations.map((stationName, index) => (
             <ExploreCourseItem
               key={`${line}-${stationName}-${index}`}
               line={line}
               stationName={stationName}
               imageSrc={index === 0 ? "/explore/line-course-sky.png" : undefined}
             />
-          );
-        })}
+          ))}
       </section>
 
       {isStationMenuOpen && (
@@ -151,6 +214,7 @@ export default function LineCoursesPage() {
           }}
         >
           <section
+            ref={stationDialogRef}
             className="line-courses-modal"
             role="dialog"
             aria-modal="true"
