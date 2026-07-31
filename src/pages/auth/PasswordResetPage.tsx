@@ -2,9 +2,13 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import CTAButton from '@/components/CTAButton';
 import Header from '@/components/Header';
-import AuthCodeInput from './components/AuthCodeInput';
-import AuthEmailCertificationInput from './components/AuthEmailCertificationInput';
-import AuthPasswordInput from './components/AuthPasswordInput';
+import {
+  AuthApiError,
+  confirmPasswordResetVerification,
+  resetPassword,
+  sendPasswordResetVerification,
+} from '@/api/auth';
+import AuthInput from './components/AuthInput';
 
 const CERTIFICATION_LIMIT_SECONDS = 180;
 const PASSWORD_PATTERN =
@@ -27,6 +31,10 @@ export default function PasswordResetPage() {
   const [isCodeConfirmed, setIsCodeConfirmed] = useState(false);
   const [password, setPassword] = useState('');
   const [passwordConfirm, setPasswordConfirm] = useState('');
+  const [submitError, setSubmitError] = useState('');
+  const [isSending, setIsSending] = useState(false);
+  const [isConfirming, setIsConfirming] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState({
     email: '',
     code: '',
@@ -35,13 +43,14 @@ export default function PasswordResetPage() {
   });
   const isCertificationActive =
     certificationSeconds !== null && certificationSeconds > 0;
-  const isEmailCertified = isCertificationActive && isCodeConfirmed;
+  const isEmailCertified = isCodeConfirmed;
   const isNextDisabled =
     !isEmailCertified ||
     !password ||
     !passwordConfirm ||
     !PASSWORD_PATTERN.test(password) ||
-    password !== passwordConfirm;
+    password !== passwordConfirm ||
+    isSubmitting;
 
   useEffect(() => {
     if (certificationSeconds === null) {
@@ -71,7 +80,8 @@ export default function PasswordResetPage() {
     return !emailError;
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
+    setSubmitError('');
     const nextErrors = {
       email: '',
       code: '',
@@ -100,11 +110,39 @@ export default function PasswordResetPage() {
     setErrors(nextErrors);
 
     if (Object.values(nextErrors).every((message) => !message)) {
-      navigate('/auth/login');
+      try {
+        setIsSubmitting(true);
+        await resetPassword(email, code, password, passwordConfirm);
+        navigate('/auth/login');
+      } catch (error) {
+        const message =
+          error instanceof AuthApiError
+            ? error.message
+            : '비밀번호 재설정에 실패했습니다.';
+
+        if (
+          error instanceof AuthApiError &&
+          error.code.endsWith('PASSWORD_CONFIRMATION_MISMATCH')
+        ) {
+          setErrors((value) => ({ ...value, passwordConfirm: message }));
+        } else if (
+          error instanceof AuthApiError &&
+          (error.code.endsWith('EMAIL_VERIFICATION_EXPIRED') ||
+            error.code.endsWith('EMAIL_VERIFICATION_CODE_MISMATCH') ||
+            error.code.endsWith('EMAIL_VERIFICATION_NOT_FOUND'))
+        ) {
+          setErrors((value) => ({ ...value, code: message }));
+          setIsCodeConfirmed(false);
+        } else {
+          setSubmitError(message);
+        }
+      } finally {
+        setIsSubmitting(false);
+      }
     }
   };
 
-  const handleCertificationClick = () => {
+  const handleCertificationClick = async () => {
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
     if (!emailPattern.test(email)) {
@@ -115,12 +153,27 @@ export default function PasswordResetPage() {
       return;
     }
 
-    setErrors((value) => ({ ...value, email: '' }));
-    setCertificationSeconds(CERTIFICATION_LIMIT_SECONDS);
-    setIsCodeConfirmed(false);
+    try {
+      setIsSending(true);
+      await sendPasswordResetVerification(email);
+      setErrors((value) => ({ ...value, email: '', code: '' }));
+      setCertificationSeconds(CERTIFICATION_LIMIT_SECONDS);
+      setIsCodeConfirmed(false);
+      setCode('');
+    } catch (error) {
+      setErrors((value) => ({
+        ...value,
+        email:
+          error instanceof AuthApiError
+            ? error.message
+            : '인증번호 발송에 실패했습니다.',
+      }));
+    } finally {
+      setIsSending(false);
+    }
   };
 
-  const handleCodeConfirm = () => {
+  const handleCodeConfirm = async () => {
     if (!isCertificationActive || !/^\d{6}$/.test(code)) {
       setErrors((value) => ({
         ...value,
@@ -130,8 +183,23 @@ export default function PasswordResetPage() {
       return;
     }
 
-    setErrors((value) => ({ ...value, code: '' }));
-    setIsCodeConfirmed(true);
+    try {
+      setIsConfirming(true);
+      await confirmPasswordResetVerification(email, code);
+      setErrors((value) => ({ ...value, code: '' }));
+      setIsCodeConfirmed(true);
+    } catch (error) {
+      setErrors((value) => ({
+        ...value,
+        code:
+          error instanceof AuthApiError
+            ? error.message
+            : '인증번호 확인에 실패했습니다.',
+      }));
+      setIsCodeConfirmed(false);
+    } finally {
+      setIsConfirming(false);
+    }
   };
 
   return (
@@ -144,7 +212,7 @@ export default function PasswordResetPage() {
             이메일을 입력해주세요
           </h2>
           <div className="flex flex-col gap-3">
-            <AuthEmailCertificationInput
+            <AuthInput
               type="email"
               value={email}
               onChange={(event) => {
@@ -159,12 +227,19 @@ export default function PasswordResetPage() {
               onBlur={validateEmail}
               placeholder="user@example.com"
               autoComplete="email"
-              buttonLabel={isCertificationActive ? '재요청' : '인증하기'}
-              buttonTone={email || isCertificationActive ? 'active' : 'default'}
+              actionLabel={
+                isSending
+                  ? '요청 중'
+                  : isCertificationActive
+                    ? '재요청'
+                    : '인증하기'
+              }
+              actionTone={email || isCertificationActive ? 'active' : 'default'}
               errorMessage={errors.email}
-              onCertificationClick={handleCertificationClick}
+              actionDisabled={isSending}
+              onActionClick={handleCertificationClick}
             />
-            <AuthCodeInput
+            <AuthInput
               value={code}
               onChange={(event) => {
                 setCode(event.target.value);
@@ -175,11 +250,16 @@ export default function PasswordResetPage() {
               }}
               placeholder="인증번호 6자리를 입력해주세요"
               inputMode="numeric"
-              timer={formatTimer(certificationSeconds ?? CERTIFICATION_LIMIT_SECONDS)}
+              timer={
+                certificationSeconds === null
+                  ? undefined
+                  : formatTimer(certificationSeconds)
+              }
               errorMessage={errors.code}
-              showButton
-              buttonTone={/^\d{6}$/.test(code) ? 'active' : 'default'}
-              onButtonClick={handleCodeConfirm}
+              actionLabel={isConfirming ? '확인 중' : '확인'}
+              actionTone={/^\d{6}$/.test(code) ? 'active' : 'default'}
+              actionDisabled={isConfirming}
+              onActionClick={handleCodeConfirm}
             />
           </div>
         </section>
@@ -190,7 +270,8 @@ export default function PasswordResetPage() {
               비밀번호를 입력해주세요
             </h2>
             <div className="flex flex-col gap-3">
-              <AuthPasswordInput
+              <AuthInput
+                type="password"
                 value={password}
                 onChange={(event) => {
                   const nextPassword = event.target.value;
@@ -211,7 +292,8 @@ export default function PasswordResetPage() {
                 autoComplete="new-password"
                 errorMessage={errors.password}
               />
-              <AuthPasswordInput
+              <AuthInput
+                type="password"
                 value={passwordConfirm}
                 onChange={(event) => {
                   const nextPasswordConfirm = event.target.value;
@@ -234,13 +316,20 @@ export default function PasswordResetPage() {
       </section>
 
       <section className="mt-auto flex justify-center px-[15px] pb-[calc(var(--safe-bottom)+50px)]">
-        <CTAButton
-          disabled={isNextDisabled}
-          className="disabled:!bg-gray-40 disabled:!text-gray-10"
-          onClick={handleNext}
-        >
-          다음
-        </CTAButton>
+        <div className="flex w-full flex-col items-center gap-2">
+          {submitError && (
+            <p className="text-body-02 font-regular leading-[1.4] text-primary-60">
+              {submitError}
+            </p>
+          )}
+          <CTAButton
+            disabled={isNextDisabled}
+            className="disabled:!bg-gray-40 disabled:!text-gray-10"
+            onClick={handleNext}
+          >
+            {isSubmitting ? '변경 중' : '다음'}
+          </CTAButton>
+        </div>
       </section>
     </main>
   );

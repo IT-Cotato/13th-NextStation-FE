@@ -8,7 +8,6 @@ import {
   saveAccessToken,
 } from '@/api/auth';
 import AuthInput from './components/AuthInput';
-import AuthPasswordInput from './components/AuthPasswordInput';
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -83,7 +82,8 @@ export default function LoginPage() {
           />
 
           <div className="flex w-full flex-col gap-2">
-            <AuthPasswordInput
+            <AuthInput
+              type="password"
               label="비밀번호"
               value={password}
               onChange={(event) => {

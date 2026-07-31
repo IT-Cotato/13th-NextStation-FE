@@ -53,7 +53,20 @@ const validateBirthday = (value: string, shouldRequire = false) => {
     return shouldRequire ? '생년월일을 입력해주세요.' : '';
   }
 
-  return birthdayPattern.test(value) ? '' : 'YYYYMMDD 형식을 지켜주세요.';
+  if (!birthdayPattern.test(value)) {
+    return 'YYYYMMDD 형식을 지켜주세요.';
+  }
+
+  const year = Number(value.slice(0, 4));
+  const month = Number(value.slice(4, 6));
+  const day = Number(value.slice(6, 8));
+  const date = new Date(Date.UTC(year, month - 1, day));
+  const isValidDate =
+    date.getUTCFullYear() === year &&
+    date.getUTCMonth() === month - 1 &&
+    date.getUTCDate() === day;
+
+  return isValidDate ? '' : '유효한 생년월일을 입력해주세요.';
 };
 
 export default function ProfileSetupPage() {
@@ -63,6 +76,7 @@ export default function ProfileSetupPage() {
   const [birthday, setBirthday] = useState('');
   const [gender, setGender] = useState<Gender | ''>('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState('');
   const [errors, setErrors] = useState({
     nickname: '',
     birthday: '',
@@ -77,6 +91,7 @@ export default function ProfileSetupPage() {
     isSubmitting;
 
   const handleNext = async () => {
+    setSubmitError('');
     const nextErrors = {
       nickname: validateNickname(nickname, true),
       birthday: validateBirthday(birthday, true),
@@ -120,11 +135,22 @@ export default function ProfileSetupPage() {
         return;
       }
 
-      const message =
-        error instanceof AuthApiError
-          ? error.message
-          : '프로필 설정 요청에 실패했습니다.';
-      setErrors((value) => ({ ...value, nickname: message }));
+      if (error instanceof AuthApiError) {
+        const nicknameError = error.reasons?.nickname ?? '';
+        const birthdayError = error.reasons?.birthDate ?? '';
+
+        if (nicknameError || birthdayError) {
+          setErrors((value) => ({
+            ...value,
+            nickname: nicknameError,
+            birthday: birthdayError,
+          }));
+        } else {
+          setSubmitError(error.message);
+        }
+      } else {
+        setSubmitError('프로필 설정 요청에 실패했습니다.');
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -134,7 +160,7 @@ export default function ProfileSetupPage() {
     <main className="flex h-dvh flex-col bg-white pt-[calc(var(--safe-top)+12px)] tracking-[-0.025em] text-gray-100">
       <Header showBack title="프로필 설정" />
       <div className="-mt-[3px] px-[15px] pb-[27px]">
-        <AuthProgressBar step={3} />
+        <AuthProgressBar step={2} />
       </div>
 
       <section className="flex flex-col gap-[40px] px-[15px] pt-[23px]">
@@ -222,9 +248,16 @@ export default function ProfileSetupPage() {
       </section>
 
       <section className="mt-auto flex justify-center px-[15px] pb-[calc(var(--safe-bottom)+50px)]">
-        <CTAButton disabled={isNextDisabled} onClick={handleNext}>
-          {isSubmitting ? '저장 중' : '다음'}
-        </CTAButton>
+        <div className="flex w-full flex-col items-center gap-2">
+          {submitError && (
+            <p className="text-body-02 font-regular leading-[1.4] text-primary-60">
+              {submitError}
+            </p>
+          )}
+          <CTAButton disabled={isNextDisabled} onClick={handleNext}>
+            {isSubmitting ? '저장 중' : '다음'}
+          </CTAButton>
+        </div>
       </section>
     </main>
   );

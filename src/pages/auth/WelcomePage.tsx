@@ -12,6 +12,7 @@ import appleImage from '@/assets/auth/welcome-apple.svg';
 import kakaoImage from '@/assets/auth/welcome-kakao.svg';
 import Header from '@/components/Header';
 import CTAButton from '@/components/CTAButton';
+import { createKakaoOAuthState } from '@/api/auth';
 
 export default function WelcomePage() {
   const navigate = useNavigate();
@@ -31,6 +32,7 @@ export default function WelcomePage() {
       client_id: restApiKey,
       redirect_uri: redirectUri,
       response_type: 'code',
+      state: createKakaoOAuthState(),
     });
 
     window.location.assign(

@@ -8,9 +8,18 @@ const SIGNUP_TOKEN_STORAGE_KEY = 'auth.signupToken';
 const ACCESS_TOKEN_STORAGE_KEY = 'auth.accessToken';
 const KAKAO_SIGNUP_TOKEN_STORAGE_KEY = 'auth.kakaoSignupToken';
 const KAKAO_PROFILE_STORAGE_KEY = 'auth.kakaoProfile';
+const KAKAO_OAUTH_STATE_STORAGE_KEY = 'auth.kakaoOAuthState';
 
 export const REQUIRED_TERMS_IDS = [1, 2] as const;
 export const MARKETING_TERM_ID = 3;
+
+export interface AuthTerm {
+  id: number;
+  title: string;
+  content: string;
+  version: string;
+  isRequired: boolean;
+}
 
 interface ApiResponse<T> {
   success: boolean;
@@ -109,6 +118,27 @@ export function saveAccessToken(token: string) {
 
 export function getAccessToken() {
   return sessionStorage.getItem(ACCESS_TOKEN_STORAGE_KEY);
+}
+
+export function getTerms() {
+  return authRequest<AuthTerm[]>('/api/v1/auth/terms');
+}
+
+export function createKakaoOAuthState() {
+  const bytes = crypto.getRandomValues(new Uint8Array(32));
+  const state = Array.from(bytes, (byte) =>
+    byte.toString(16).padStart(2, '0'),
+  ).join('');
+  sessionStorage.setItem(KAKAO_OAUTH_STATE_STORAGE_KEY, state);
+  return state;
+}
+
+export function getKakaoOAuthState() {
+  return sessionStorage.getItem(KAKAO_OAUTH_STATE_STORAGE_KEY);
+}
+
+export function clearKakaoOAuthState() {
+  sessionStorage.removeItem(KAKAO_OAUTH_STATE_STORAGE_KEY);
 }
 
 export function sendEmailVerification(email: string, agreedTermsIds: number[]) {
@@ -230,10 +260,48 @@ interface KakaoLoginResponse {
   kakaoProfileImageUrl?: string;
 }
 
-export function kakaoLogin(code: string) {
+export function kakaoLogin(code: string, signal?: AbortSignal) {
   return authRequest<KakaoLoginResponse>('/api/v1/auth/kakao/login', {
     method: 'POST',
+    signal,
     body: JSON.stringify({ code }),
+  });
+}
+
+export function sendPasswordResetVerification(email: string) {
+  return authRequest<string>(
+    '/api/v1/auth/password-reset/email/verification',
+    {
+      method: 'POST',
+      body: JSON.stringify({ email }),
+    },
+  );
+}
+
+export function confirmPasswordResetVerification(email: string, code: string) {
+  return authRequest<string>(
+    '/api/v1/auth/password-reset/email/verification/confirm',
+    {
+      method: 'POST',
+      body: JSON.stringify({ email, code }),
+    },
+  );
+}
+
+export function resetPassword(
+  email: string,
+  code: string,
+  newPassword: string,
+  newPasswordConfirm: string,
+) {
+  return authRequest<string>('/api/v1/auth/password-reset', {
+    method: 'POST',
+    body: JSON.stringify({
+      email,
+      code,
+      newPassword,
+      newPasswordConfirm,
+    }),
   });
 }
 

@@ -11,9 +11,7 @@ import {
   sendEmailVerification,
   signup,
 } from '@/api/auth';
-import AuthCodeInput from './components/AuthCodeInput';
-import AuthEmailCertificationInput from './components/AuthEmailCertificationInput';
-import AuthPasswordInput from './components/AuthPasswordInput';
+import AuthInput from './components/AuthInput';
 import AuthProgressBar from './components/AuthProgressBar';
 
 const CERTIFICATION_LIMIT_SECONDS = 180;
@@ -83,8 +81,6 @@ export default function SignUpPage() {
 
     if (!emailPattern.test(email)) {
       emailError = '이메일 형식이 올바르지 않습니다.';
-    } else if (email === 'user@example.com') {
-      emailError = '이미 가입된 이메일입니다.';
     }
 
     setErrors((value) => ({ ...value, email: emailError }));
@@ -102,8 +98,6 @@ export default function SignUpPage() {
 
     if (!emailPattern.test(email)) {
       nextErrors.email = '이메일 형식이 잘못되었습니다.';
-    } else if (email === 'user@example.com') {
-      nextErrors.email = '이미 가입된 이메일입니다.';
     }
 
     if (!/^\d{6}$/.test(code)) {
@@ -241,7 +235,7 @@ export default function SignUpPage() {
             이메일을 입력해주세요
           </h2>
           <div className="flex flex-col gap-3">
-            <AuthEmailCertificationInput
+            <AuthInput
               type="email"
               value={email}
               onChange={(event) => {
@@ -256,23 +250,23 @@ export default function SignUpPage() {
               onBlur={validateEmail}
               placeholder="user@example.com"
               autoComplete="email"
-              buttonLabel={
+              actionLabel={
                 isSending
                   ? '요청 중'
                   : isCertificationActive
                     ? '재요청'
                     : '인증하기'
               }
-              buttonTone={
+              actionTone={
                 /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
                   ? 'active'
                   : 'default'
               }
               errorMessage={errors.email}
-              buttonDisabled={isSending}
-              onCertificationClick={handleCertificationClick}
+              actionDisabled={isSending}
+              onActionClick={handleCertificationClick}
             />
-            <AuthCodeInput
+            <AuthInput
               value={code}
               onChange={(event) => {
                 setCode(event.target.value);
@@ -283,13 +277,16 @@ export default function SignUpPage() {
               }}
               placeholder="인증번호 6자리를 입력해주세요"
               inputMode="numeric"
-              timer={formatTimer(certificationSeconds ?? CERTIFICATION_LIMIT_SECONDS)}
+              timer={
+                certificationSeconds === null
+                  ? undefined
+                  : formatTimer(certificationSeconds)
+              }
               errorMessage={errors.code}
-              showButton
-              buttonLabel={isConfirming ? '확인 중' : '확인'}
-              buttonTone={/^\d{6}$/.test(code) ? 'active' : 'default'}
-              buttonDisabled={isConfirming}
-              onButtonClick={handleCodeConfirm}
+              actionLabel={isConfirming ? '확인 중' : '확인'}
+              actionTone={/^\d{6}$/.test(code) ? 'active' : 'default'}
+              actionDisabled={isConfirming}
+              onActionClick={handleCodeConfirm}
             />
           </div>
         </section>
@@ -300,7 +297,8 @@ export default function SignUpPage() {
               비밀번호를 입력해주세요
             </h2>
             <div className="flex flex-col gap-3">
-              <AuthPasswordInput
+              <AuthInput
+                type="password"
                 value={password}
                 onChange={(event) => {
                   const nextPassword = event.target.value;
@@ -321,7 +319,8 @@ export default function SignUpPage() {
                 autoComplete="new-password"
                 errorMessage={errors.password}
               />
-              <AuthPasswordInput
+              <AuthInput
+                type="password"
                 value={passwordConfirm}
                 onChange={(event) => {
                   const nextPasswordConfirm = event.target.value;

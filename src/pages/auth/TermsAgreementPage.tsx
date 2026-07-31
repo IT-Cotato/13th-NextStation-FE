@@ -1,10 +1,12 @@
-import { type ReactNode, useState } from 'react';
+import { type ReactNode, useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import termsAgreementImage from '@/assets/auth/terms-agreement.svg';
 import {
   MARKETING_TERM_ID,
   REQUIRED_TERMS_IDS,
   AuthApiError,
+  type AuthTerm,
+  getTerms,
   getKakaoSignupToken,
   kakaoSignup,
   saveAgreedTermsIds,
@@ -103,6 +105,37 @@ export default function TermsAgreementPage() {
   const [hasInteracted, setHasInteracted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState('');
+  const [terms, setTerms] = useState<AuthTerm[]>([]);
+
+  useEffect(() => {
+    let isCancelled = false;
+
+    const loadTerms = async () => {
+      try {
+        const response = await getTerms();
+        if (!isCancelled) {
+          setTerms(response);
+        }
+      } catch (error) {
+        if (!isCancelled) {
+          setSubmitError(
+            error instanceof AuthApiError
+              ? error.message
+              : '약관 정보를 불러오지 못했습니다.',
+          );
+        }
+      }
+    };
+
+    void loadTerms();
+    return () => {
+      isCancelled = true;
+    };
+  }, []);
+
+  const serviceTerm = terms.find(({ id }) => id === REQUIRED_TERMS_IDS[0]);
+  const privacyTerm = terms.find(({ id }) => id === REQUIRED_TERMS_IDS[1]);
+  const marketingTerm = terms.find(({ id }) => id === MARKETING_TERM_ID);
 
   const isAllAgreed = serviceAgreed && privacyAgreed && marketingAgreed;
   const isRequiredAgreed = serviceAgreed && privacyAgreed;
@@ -197,9 +230,12 @@ export default function TermsAgreementPage() {
             <div>
               <AgreementItem
                 checked={serviceAgreed}
-                label="서비스 이용약관"
+                label={serviceTerm?.title ?? '서비스 이용약관'}
                 required
-                description="회원가입과 서비스 제공을 위해 계정 생성, 서비스 이용 규칙 및 이용 제한에 관한 내용에 동의합니다."
+                description={
+                  serviceTerm?.content ??
+                  '회원가입과 서비스 제공을 위한 이용약관입니다.'
+                }
                 onChange={() => {
                   setServiceAgreed((value) => !value);
                   setHasInteracted(true);
@@ -221,9 +257,12 @@ export default function TermsAgreementPage() {
             <div>
               <AgreementItem
                 checked={privacyAgreed}
-                label="개인정보 취급 방침"
+                label={privacyTerm?.title ?? '개인정보 취급 방침'}
                 required
-                description="회원가입과 서비스 제공을 위해 이메일, 닉네임, 성별 및 생년월일을 수집·이용하며, 관련 법령과 서비스 정책에 따라 보관 후 파기합니다."
+                description={
+                  privacyTerm?.content ??
+                  '회원가입과 서비스 제공을 위한 개인정보 처리 방침입니다.'
+                }
                 onChange={() => {
                   setPrivacyAgreed((value) => !value);
                   setHasInteracted(true);
@@ -244,8 +283,11 @@ export default function TermsAgreementPage() {
 
             <AgreementItem
               checked={marketingAgreed}
-              label="마케팅 정보 수신"
-              description="이벤트, 혜택 및 서비스 소식을 안내받는 데 동의합니다. 동의하지 않아도 서비스를 이용할 수 있으며 언제든 철회할 수 있습니다."
+              label={marketingTerm?.title ?? '마케팅 정보 수신'}
+              description={
+                marketingTerm?.content ??
+                '이벤트, 혜택 및 서비스 소식 수신에 대한 약관입니다.'
+              }
               onChange={() => {
                 setMarketingAgreed((value) => !value);
                 setHasInteracted(true);

@@ -1,7 +1,7 @@
 import ProgressIcon from '@/assets/auth/progress.svg?react';
 
 interface AuthProgressBarProps {
-  step: 0 | 1 | 2 | 3 | 4;
+  step: 0 | 1 | 2 | 3;
   edgeToEdge?: boolean;
 }
 
@@ -9,7 +9,7 @@ export default function AuthProgressBar({
   step,
   edgeToEdge = false,
 }: AuthProgressBarProps) {
-  const progressWidth = `${(step / 4) * 100}%`;
+  const progressWidth = `${(step / 3) * 100}%`;
   const markerPosition = step === 0 ? '5px' : progressWidth;
 
   return (

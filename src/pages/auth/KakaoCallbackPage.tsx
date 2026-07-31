@@ -1,7 +1,10 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
   AuthApiError,
+  clearKakaoOAuthState,
+  clearSignupFlow,
+  getKakaoOAuthState,
   kakaoLogin,
   saveAccessToken,
   saveKakaoProfile,
@@ -12,28 +15,33 @@ import {
 export default function KakaoCallbackPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const hasRequested = useRef(false);
   const code = searchParams.get('code');
   const kakaoError = searchParams.get('error');
+  const returnedState = searchParams.get('state');
+  const expectedState = getKakaoOAuthState();
+  const isValidState =
+    Boolean(returnedState) && returnedState === expectedState;
   const [errorMessage, setErrorMessage] = useState(() =>
-    !code || kakaoError
+    !code || kakaoError || !isValidState
       ? '카카오 로그인이 취소되었거나 인가 코드를 받지 못했습니다.'
       : '',
   );
 
   useEffect(() => {
-    if (hasRequested.current) {
-      return;
+    if (!code || kakaoError || !isValidState) {
+      return undefined;
     }
 
-    hasRequested.current = true;
-    if (!code || kakaoError) {
-      return;
-    }
+    clearKakaoOAuthState();
+    const controller = new AbortController();
 
     const processKakaoLogin = async () => {
       try {
-        const result = await kakaoLogin(code);
+        const result = await kakaoLogin(code, controller.signal);
+
+        if (controller.signal.aborted) {
+          return;
+        }
 
         if (result.kakaoNickname || result.kakaoProfileImageUrl) {
           saveKakaoProfile({
@@ -44,6 +52,7 @@ export default function KakaoCallbackPage() {
 
         if (result.resultType === 'LOGIN_SUCCESS' && result.accessToken) {
           saveAccessToken(result.accessToken);
+          clearSignupFlow();
           navigate('/', { replace: true });
           return;
         }
@@ -62,6 +71,10 @@ export default function KakaoCallbackPage() {
 
         setErrorMessage('카카오 로그인 응답을 확인할 수 없습니다.');
       } catch (error) {
+        if (controller.signal.aborted) {
+          return;
+        }
+
         setErrorMessage(
           error instanceof AuthApiError
             ? error.message
@@ -71,7 +84,9 @@ export default function KakaoCallbackPage() {
     };
 
     void processKakaoLogin();
-  }, [code, kakaoError, navigate]);
+
+    return () => controller.abort();
+  }, [code, isValidState, kakaoError, navigate]);
 
   return (
     <main className="flex h-dvh flex-col items-center justify-center gap-4 bg-white px-[15px] text-center tracking-[-0.025em] text-gray-100">
