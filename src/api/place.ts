@@ -18,6 +18,7 @@ export interface PlaceResponseItem {
   address: string;
   contactNumber: string;
   kakaoPlaceUrl: string;
+  totalReviewCount: number;
   images: string[] | null;
   reviews: PlaceReview[] | null;
 }
@@ -31,6 +32,7 @@ export interface Place {
   address: string;
   contactNumber: string;
   kakaoPlaceUrl: string;
+  totalReviewCount: number;
   images: string[];
   reviews: PlaceReview[];
 }
@@ -93,6 +95,7 @@ export async function getPlaceDetail(placeId: number): Promise<Place> {
     address: item.address,
     contactNumber: item.contactNumber,
     kakaoPlaceUrl: item.kakaoPlaceUrl,
+    totalReviewCount: item.totalReviewCount,
     images: item.images ?? [],
     reviews: item.reviews ?? [],
   };
