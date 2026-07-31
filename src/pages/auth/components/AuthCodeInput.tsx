@@ -1,3 +1,4 @@
+import { useId } from 'react';
 import type { InputHTMLAttributes } from 'react';
 
 interface AuthCodeInputProps extends InputHTMLAttributes<HTMLInputElement> {
@@ -11,6 +12,9 @@ export default function AuthCodeInput({
   className = '',
   ...props
 }: AuthCodeInputProps) {
+  const generatedId = useId();
+  const inputId = props.id ?? generatedId;
+  const errorMessageId = `${inputId}-error`;
   const hasValue = props.value !== undefined && String(props.value).length > 0;
 
   return (
@@ -23,16 +27,21 @@ export default function AuthCodeInput({
         } ${className}`}
       >
         <input
-          aria-invalid={Boolean(errorMessage)}
-          className="min-w-0 flex-1 bg-transparent text-body-01 font-regular leading-[1.4] text-gray-70 placeholder:text-gray-70 focus:outline-none"
           {...props}
+          id={inputId}
+          aria-invalid={Boolean(errorMessage)}
+          aria-describedby={errorMessage ? errorMessageId : undefined}
+          className="min-w-0 flex-1 bg-transparent text-body-01 font-regular leading-[1.4] text-gray-70 placeholder:text-gray-70 focus:outline-none"
         />
         <span className="ml-3 shrink-0 text-body-02 font-regular leading-none text-primary-60">
           {timer}
         </span>
       </div>
       {errorMessage && (
-        <span className="flex items-start gap-[5px] text-body-01 font-regular leading-[1.4] text-primary-60">
+        <span
+          id={errorMessageId}
+          className="flex items-start gap-[5px] text-body-01 font-regular leading-[1.4] text-primary-60"
+        >
           <span className="mt-[1px] flex size-4 shrink-0 items-center justify-center rounded-full border border-primary-60 text-caption font-regular leading-none">
             !
           </span>

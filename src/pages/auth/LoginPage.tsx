@@ -1,5 +1,6 @@
 ﻿import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { AuthApiError, login, saveAccessToken } from '@/api/auth';
 import AuthButton from './components/AuthButton';
 import AuthInput from './components/AuthInput';
 import AuthPasswordInput from './components/AuthPasswordInput';
@@ -11,6 +12,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleBack = () => {
     if (window.history.length > 1) {
@@ -39,7 +41,7 @@ export default function LoginPage() {
     return !nextError;
   };
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     const isEmailValid = validateEmail();
     const isPasswordValid = validatePassword();
 
@@ -47,7 +49,20 @@ export default function LoginPage() {
       return;
     }
 
-    setPasswordError('비밀번호가 일치하지 않습니다.');
+    try {
+      setIsSubmitting(true);
+      const { accessToken } = await login(email, password);
+      saveAccessToken(accessToken);
+      navigate('/');
+    } catch (error) {
+      setPasswordError(
+        error instanceof AuthApiError
+          ? error.message
+          : '로그인 요청에 실패했습니다.',
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -106,7 +121,9 @@ export default function LoginPage() {
       </section>
 
       <div className="absolute bottom-[calc(var(--safe-bottom)+50px)] left-[15px] right-[15px]">
-        <AuthButton onClick={handleLogin}>로그인하기</AuthButton>
+        <AuthButton disabled={isSubmitting} onClick={handleLogin}>
+          {isSubmitting ? '로그인 중' : '로그인하기'}
+        </AuthButton>
       </div>
     </main>
   );

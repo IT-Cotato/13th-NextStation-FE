@@ -1,14 +1,10 @@
-.explore-concepts-page{min-height:100dvh;padding-bottom:28px}
-.explore-concept-search{margin-top:8px}
+.explore-concepts-page{height:100dvh;min-height:0;overflow-y:auto;padding-bottom:28px;scrollbar-width:none;-ms-overflow-style:none}.explore-concepts-page::-webkit-scrollbar{display:none}.explore-concepts-page>.explore-ranking-header{height:156px}.explore-concept-search{margin-top:9px}
 .explore-search-icon{position:relative;flex:0 0 20px;width:20px;height:20px;border:1.5px solid #696969;border-radius:50%}
 .explore-search-icon:after{content:"";position:absolute;right:-4px;bottom:0;width:7px;height:1.5px;background:#696969;transform:rotate(45deg);transform-origin:left center}
 .explore-concept-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;padding:0 15px}
 .explore-concept-tile{position:relative;height:208px;padding:0;border:0;border-radius:20px;background:#fff;box-shadow:0 0 20px rgba(118,118,118,.1);text-align:left;overflow:hidden}
-.explore-concept-tile__art{position:absolute;right:8px;top:8px;width:92px;height:92px;display:grid;place-items:center}
-.explore-concept-tile__art:before{content:"";position:absolute;width:88px;height:88px;background:#ffdbd4;clip-path:polygon(50% 0,60% 30%,88% 12%,70% 42%,100% 50%,70% 59%,88% 88%,58% 69%,50% 100%,41% 70%,12% 88%,30% 58%,0 50%,30% 41%,12% 12%,42% 30%)}
-.explore-concept-tile__art.is-blue:before{background:#d7edff}.explore-concept-tile__art.is-orange:before{background:#ffe0ba}.explore-concept-tile__art.is-green:before{background:#cce7d5}.explore-concept-tile__art.is-purple:before{background:#e5e2ff}
-.explore-concept-tile__art img{position:relative;z-index:1;max-width:72px;max-height:72px;object-fit:contain}
-.explore-concept-tile__content{position:absolute;left:16px;top:90px;display:flex;flex-direction:column;align-items:flex-start;gap:8px}
+.explore-concept-tile__art{position:absolute;inset:0}.explore-concept-tile__star,.explore-concept-tile__icon{position:absolute;object-fit:contain}.explore-concept-tile__icon{z-index:1}
+.explore-concept-tile__content{position:absolute;z-index:2;left:16px;top:90px;display:flex;flex-direction:column;align-items:flex-start;gap:8px}
 .explore-concept-tile__content>strong{display:block;color:#171717;font-size:20px;font-weight:600;line-height:1.4;letter-spacing:-.5px;white-space:nowrap}
 .explore-concept-tile__description{display:flex;flex-direction:column;color:#696969;font-size:14px;line-height:1.4;letter-spacing:-.35px}
 .explore-concept-tile__content>small{display:flex;align-items:center;gap:8px;color:#909090;font-size:10px;font-weight:400;line-height:1}

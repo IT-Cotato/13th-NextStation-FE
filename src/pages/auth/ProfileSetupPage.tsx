@@ -46,7 +46,20 @@ const validateBirthday = (value: string) => {
     return '';
   }
 
-  return birthdayPattern.test(value) ? '' : 'YYYYMMDD 형식을 지켜주세요.';
+  if (!birthdayPattern.test(value)) {
+    return 'YYYYMMDD 형식을 지켜주세요.';
+  }
+
+  const year = Number(value.slice(0, 4));
+  const month = Number(value.slice(4, 6));
+  const day = Number(value.slice(6, 8));
+  const date = new Date(Date.UTC(year, month - 1, day));
+  const isActualDate =
+    date.getUTCFullYear() === year &&
+    date.getUTCMonth() === month - 1 &&
+    date.getUTCDate() === day;
+
+  return isActualDate ? '' : '존재하지 않는 날짜입니다.';
 };
 
 interface CheckItemProps {
@@ -219,15 +232,12 @@ export default function ProfileSetupPage() {
             <CheckItem
               checked={termsAgreed}
               onChange={() => {
-                setTermsAgreed((value) => {
-                  const nextValue = !value;
+                const nextValue = !termsAgreed;
+                setTermsAgreed(nextValue);
 
-                  if (nextValue) {
-                    setTermsError(false);
-                  }
-
-                  return nextValue;
-                });
+                if (nextValue) {
+                  setTermsError(false);
+                }
               }}
             >
               <span className="text-body-01 font-regular leading-[1.4] text-gray-80 underline underline-offset-2">

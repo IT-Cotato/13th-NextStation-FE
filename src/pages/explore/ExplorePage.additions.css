@@ -12,10 +12,11 @@
 .explore-list-rank b{position:absolute;top:7px;left:50%;transform:translateX(-50%);color:#fff;font-size:20px;font-weight:600;line-height:1.4}
 .explore-rank-badge img{width:35px!important;height:39px!important;object-fit:fill!important}
 .explore-rank-badge b{top:7px;left:50%;transform:translateX(-50%);line-height:1.4}
-.explore-popular-scroll{flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch;overscroll-behavior-inline:contain;touch-action:pan-x}
+.explore-popular-scroll{flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x proximity;scroll-padding-inline:15px;-webkit-overflow-scrolling:touch;overscroll-behavior-inline:contain;touch-action:pan-x}
 .explore-popular-scroll:focus{outline:none}
 .explore-popular-card{flex-shrink:0;scroll-snap-align:start}
-.explore-line-filter{flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch;overscroll-behavior-inline:contain;touch-action:pan-x}
+.explore-line-filter{flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x proximity;scroll-padding-inline:15px;-webkit-overflow-scrolling:touch;overscroll-behavior-inline:contain;touch-action:pan-x}
 .explore-line-filter:focus{outline:none}
 .explore-line-filter button{flex-shrink:0;scroll-snap-align:start}
 .explore-scrap-count{padding:0;border:0;background:transparent;color:#696969;font:inherit;cursor:pointer}
+.explore-concept-art::before{content:none}.explore-concept-art{inset:0;width:auto;height:auto}.explore-concept-art .explore-concept-art__star,.explore-concept-art .explore-concept-art__icon{position:absolute;max-width:none;max-height:none;object-fit:contain}.explore-concept-art .explore-concept-art__icon{z-index:1}

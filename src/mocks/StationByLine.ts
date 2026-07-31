@@ -14,6 +14,7 @@ export const LINES = [
 const stationsByLineWithoutAll: Record<string, string[]> = {
   "1호선": ["제기동역", "동묘앞역", "신설동역", "외대앞역", "남영역"],
   "2호선": [
+    "신림역",
     "문래역",
     "아현역",
     "한양대역",

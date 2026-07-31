@@ -3,6 +3,7 @@ import StationLineList from "@/components/StationLineList";
 
 type ExploreCourseItemProps = {
   filledImage?: boolean;
+  imageSrc?: string;
   rank?: number;
   line?: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
   stationName?: string;
@@ -10,6 +11,7 @@ type ExploreCourseItemProps = {
 
 export default function ExploreCourseItem({
   filledImage = false,
+  imageSrc,
   rank,
   line = 2,
   stationName = "신림역",
@@ -19,6 +21,7 @@ export default function ExploreCourseItem({
   return (
     <article className="explore-course-item">
       <div className={`explore-course-item__image${filledImage ? " is-photo" : ""}`}>
+        {imageSrc && <img src={imageSrc} alt="" />}
         {rank && (
           <span className="explore-list-rank" aria-label={`${rank}위`}>
             <img src="/explore/rank-star-figma.png" alt="" />

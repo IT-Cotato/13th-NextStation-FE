@@ -1,3 +1,4 @@
+import { useId } from 'react';
 import type { InputHTMLAttributes } from 'react';
 
 interface AuthInputProps extends InputHTMLAttributes<HTMLInputElement> {
@@ -11,26 +12,34 @@ export default function AuthInput({
   className = '',
   ...props
 }: AuthInputProps) {
+  const generatedId = useId();
+  const inputId = props.id ?? generatedId;
+  const errorMessageId = `${inputId}-error`;
   const hasValue = props.value !== undefined && String(props.value).length > 0;
 
   return (
-    <label className="flex w-full flex-col gap-2">
+    <label htmlFor={inputId} className="flex w-full flex-col gap-2">
       {label && (
         <span className="text-subtitle font-semibold leading-[1.4] text-gray-100">
           {label}
         </span>
       )}
       <input
+        {...props}
+        id={inputId}
         aria-invalid={Boolean(errorMessage)}
+        aria-describedby={errorMessage ? errorMessageId : undefined}
         className={`h-[50px] w-full rounded-[20px] border px-4 py-3 text-body-01 font-regular text-gray-70 placeholder:text-gray-70 focus:border-primary-50 focus:bg-white focus:outline-none ${
           hasValue || errorMessage
             ? 'border-primary-50 bg-white'
             : 'border-transparent bg-gray-20'
         } ${className}`}
-        {...props}
       />
       {errorMessage && (
-        <span className="flex items-start gap-[5px] text-body-01 font-regular leading-[1.4] text-primary-60">
+        <span
+          id={errorMessageId}
+          className="flex items-start gap-[5px] text-body-01 font-regular leading-[1.4] text-primary-60"
+        >
           <span className="mt-[1px] flex size-4 shrink-0 items-center justify-center rounded-full border border-primary-60 text-caption font-regular leading-none">
             !
           </span>

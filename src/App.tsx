@@ -31,6 +31,7 @@ import PopularCoursesPage from '@/pages/explore/PopularCoursesPage';
 import ConceptToursPage from '@/pages/explore/ConceptToursPage';
 import ConceptDetailPage from '@/pages/explore/ConceptDetailPage';
 import SearchResultsPage from '@/pages/explore/SearchResultsPage';
+import LineCoursesPage from '@/pages/explore/LineCoursesPage';
 import { LogDraftProvider } from '@/pages/course/contexts/LogDraftContext';
 
 // toast
@@ -69,6 +70,7 @@ function App() {
           <Route path="/explore/concepts" element={<ConceptToursPage />} />
           <Route path="/explore/concepts/:conceptId" element={<ConceptDetailPage />} />
           <Route path="/explore/search" element={<SearchResultsPage />} />
+          <Route path="/explore/lines" element={<LineCoursesPage />} />
           <Route path="/course/:courseId/stamp" element={<StampAcquiredPage />} />
           <Route path="/course/:courseId/log" element={<LogIntroPage />} />
           <Route path="/course/:courseId/log/info" element={<LogInfoPage />} />

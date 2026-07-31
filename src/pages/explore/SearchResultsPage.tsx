@@ -1,5 +1,6 @@
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
+import { stationsByLine } from "@/mocks/StationByLine";
 import ExploreCourseItem from "./components/ExploreCourseItem";
 import useSafeBack from "./hooks/useSafeBack";
 import "./ExplorePage.css";
@@ -9,8 +10,29 @@ import "./ExploreReviewFixes.css";
 export default function SearchResultsPage() {
   const goBack = useSafeBack();
   const [searchParams, setSearchParams] = useSearchParams();
-  const [query, setQuery] = useState(searchParams.get("q") ?? "");
-  const hasResults = useMemo(() => query.trim().includes("신림"), [query]);
+  const urlQuery = searchParams.get("q") ?? "";
+  const results = useMemo(() => {
+    const keyword = urlQuery.trim().toLowerCase();
+
+    if (!keyword) {
+      return [];
+    }
+
+    return Object.entries(stationsByLine)
+      .filter(([lineLabel]) => lineLabel !== "전체")
+      .flatMap(([lineLabel, stationNames]) => {
+        const line = Number(lineLabel.replace("호선", ""));
+
+        return stationNames
+          .filter((stationName) =>
+            `${lineLabel} ${stationName}`.toLowerCase().includes(keyword),
+          )
+          .map((stationName) => ({
+            line: line as 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9,
+            stationName,
+          }));
+      });
+  }, [urlQuery]);
 
   return (
     <main className="explore-search-results">
@@ -19,21 +41,33 @@ export default function SearchResultsPage() {
           <span aria-hidden="true" />
         </button>
         <form
+          key={urlQuery}
           className="explore-search-results__form"
           onSubmit={(event) => {
             event.preventDefault();
-            const nextQuery = query.trim();
+            const formData = new FormData(event.currentTarget);
+            const nextQuery = String(formData.get("query") ?? "").trim();
             setSearchParams(nextQuery ? { q: nextQuery } : {});
           }}
         >
-          <input aria-label="코스 검색" value={query} onChange={(event) => setQuery(event.target.value)} />
+          <input
+            aria-label="코스 검색"
+            name="query"
+            defaultValue={urlQuery}
+          />
         </form>
       </header>
 
-      {hasResults ? (
-        <section className="explore-search-results__list" aria-label={`${query} 검색 결과`}>
-          {Array.from({ length: 6 }, (_, index) => (
-            <ExploreCourseItem key={index} rank={1} line={2} stationName="신림역" filledImage={index === 0} />
+      {results.length > 0 ? (
+        <section className="explore-search-results__list" aria-label={`${urlQuery} 검색 결과`}>
+          {results.map(({ line, stationName }, index) => (
+            <ExploreCourseItem
+              key={`${line}-${stationName}`}
+              rank={index + 1}
+              line={line}
+              stationName={stationName}
+              filledImage={index === 0}
+            />
           ))}
         </section>
       ) : (

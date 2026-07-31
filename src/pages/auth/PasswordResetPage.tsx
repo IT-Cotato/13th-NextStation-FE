@@ -99,11 +99,12 @@ export default function PasswordResetPage() {
       nextErrors.passwordConfirm = '비밀번호가 일치하지 않습니다.';
     }
 
-    setErrors(nextErrors);
-
     if (Object.values(nextErrors).every((message) => !message)) {
-      navigate('/auth/login');
+      nextErrors.passwordConfirm =
+        '비밀번호 재설정 API 연결 후 변경할 수 있습니다.';
     }
+
+    setErrors(nextErrors);
   };
 
   const handleCertificationClick = () => {
@@ -169,6 +170,7 @@ export default function PasswordResetPage() {
           </h2>
           <div className="flex flex-col gap-2">
             <AuthPasswordInput
+              aria-label="새 비밀번호"
               value={password}
               onChange={(event) => {
                 setPassword(event.target.value);
@@ -179,6 +181,7 @@ export default function PasswordResetPage() {
               errorMessage={errors.password}
             />
             <AuthPasswordInput
+              aria-label="새 비밀번호 확인"
               value={passwordConfirm}
               onChange={(event) => {
                 setPasswordConfirm(event.target.value);

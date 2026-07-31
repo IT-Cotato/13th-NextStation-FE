@@ -35,9 +35,9 @@ export default function CTAButton({
     <button
       type="button"
       disabled={disabled}
-      style={{ width }}
+      style={{ width: `min(100%, ${width}px)` }}
       className={`
-        flex h-[60px] items-center justify-center rounded-lg py-3
+        flex h-[60px] w-full items-center justify-center rounded-lg py-3
         ${variantStyles[variant]}
         ${className}
       `}
