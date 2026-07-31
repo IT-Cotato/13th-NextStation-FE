@@ -1,42 +1,48 @@
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import MainPage from '@/pages/MainPage';
+﻿import { BrowserRouter, Route, Routes } from "react-router-dom";
+import MainPage from "@/pages/MainPage";
 
 // auth
-import FinishPage from '@/pages/auth/FinishPage';
-import LoginPage from '@/pages/auth/LoginPage';
-import PasswordResetPage from '@/pages/auth/PasswordResetPage';
-import ProfileSetupPage from '@/pages/auth/ProfileSetupPage';
-import SignUpPage from '@/pages/auth/SignUpPage';
-import WelcomePage from '@/pages/auth/WelcomePage';
+import FinishPage from "@/pages/auth/FinishPage";
+import LoginPage from "@/pages/auth/LoginPage";
+import PasswordResetPage from "@/pages/auth/PasswordResetPage";
+import ProfileSetupPage from "@/pages/auth/ProfileSetupPage";
+import SignUpPage from "@/pages/auth/SignUpPage";
+import WelcomePage from "@/pages/auth/WelcomePage";
 
 // draw
-import LoadingPage from '@/pages/draw/LoadingPage';
-import ResultPage from '@/pages/draw/ResultPage';
-import RecommendPage from '@/pages/draw/RecommendPage';
-import ConditionPage from '@/pages/draw/ConditionPage';
-import PreferencePage from '@/pages/draw/PreferencePage';
+import LoadingPage from "@/pages/draw/LoadingPage";
+import ResultPage from "@/pages/draw/ResultPage";
+import RecommendPage from "@/pages/draw/RecommendPage";
+import ConditionPage from "@/pages/draw/ConditionPage";
+import PreferencePage from "@/pages/draw/PreferencePage";
 
 // course
-import CourseMainPage from '@/pages/course/MainPage';
-import CourseVerifyPage from '@/pages/course/VerifyPage';
-import SavedPage from '@/pages/course/SavedPage';
-import CreatePage from '@/pages/course/CreatePage';
-import LogIntroPage from '@/pages/course/LogIntroPage';
-import LogInfoPage from '@/pages/course/LogInfoPage';
-import LogPlacePage from '@/pages/course/LogPlacePage';
-import LogVisibilityPage from '@/pages/course/LogVisibilityPage';
-import StampAcquiredPage from '@/pages/course/StampAcquiredPage';
-import ExplorePage from '@/pages/explore/ExplorePage';
-import PopularCoursesPage from '@/pages/explore/PopularCoursesPage';
-import ConceptToursPage from '@/pages/explore/ConceptToursPage';
-import ConceptDetailPage from '@/pages/explore/ConceptDetailPage';
-import SearchResultsPage from '@/pages/explore/SearchResultsPage';
-import LineCoursesPage from '@/pages/explore/LineCoursesPage';
-import { LogDraftProvider } from '@/pages/course/contexts/LogDraftContext';
+import CourseMainPage from "@/pages/course/MainPage";
+import CourseVerifyPage from "@/pages/course/VerifyPage";
+import SavedPage from "@/pages/course/SavedPage";
+import CreatePage from "@/pages/course/CreatePage";
+import LogIntroPage from "@/pages/course/LogIntroPage";
+import LogInfoPage from "@/pages/course/LogInfoPage";
+import LogPlacePage from "@/pages/course/LogPlacePage";
+import LogVisibilityPage from "@/pages/course/LogVisibilityPage";
+import StampAcquiredPage from "@/pages/course/StampAcquiredPage";
+import { LogDraftProvider } from "@/pages/course/contexts/LogDraftContext";
+
+// explore
+import ExplorePage from "@/pages/explore/ExplorePage";
+import PopularCoursesPage from "@/pages/explore/PopularCoursesPage";
+import ConceptToursPage from "@/pages/explore/ConceptToursPage";
+import ConceptDetailPage from "@/pages/explore/ConceptDetailPage";
+import SearchResultsPage from "@/pages/explore/SearchResultsPage";
+import LineCoursesPage from "@/pages/explore/LineCoursesPage";
+
+// place
+import DetailPage from "./pages/place/DetailPage";
+import ReviewListPage from "./pages/place/ReviewListPage";
 
 // toast
-import 'react-toastify/dist/ReactToastify.css';
-import Toast from '@/pages/course/components/Toast';
+import "react-toastify/dist/ReactToastify.css";
+import Toast from "@/pages/course/components/Toast";
 
 function App() {
   return (
@@ -65,19 +71,39 @@ function App() {
           <Route path="/course/create" element={<CreatePage />} />
           <Route path="/course/verify" element={<CourseVerifyPage />} />
           <Route path="/course/saved" element={<SavedPage />} />
+
+          {/* explore */}
           <Route path="/explore" element={<ExplorePage />} />
           <Route path="/explore/popular" element={<PopularCoursesPage />} />
           <Route path="/explore/concepts" element={<ConceptToursPage />} />
-          <Route path="/explore/concepts/:conceptId" element={<ConceptDetailPage />} />
+          <Route
+            path="/explore/concepts/:conceptId"
+            element={<ConceptDetailPage />}
+          />
           <Route path="/explore/search" element={<SearchResultsPage />} />
           <Route path="/explore/lines" element={<LineCoursesPage />} />
-          <Route path="/course/:courseId/stamp" element={<StampAcquiredPage />} />
+
+          {/* course log */}
+          <Route
+            path="/course/:courseId/stamp"
+            element={<StampAcquiredPage />}
+          />
           <Route path="/course/:courseId/log" element={<LogIntroPage />} />
           <Route path="/course/:courseId/log/info" element={<LogInfoPage />} />
-          <Route path="/course/:courseId/log/place" element={<LogPlacePage />} />
+          <Route
+            path="/course/:courseId/log/place"
+            element={<LogPlacePage />}
+          />
           <Route
             path="/course/:courseId/log/visibility"
             element={<LogVisibilityPage />}
+          />
+
+          {/* place */}
+          <Route path="/place/:placeId" element={<DetailPage />} />
+          <Route
+            path="/place/:placeId/reviews"
+            element={<ReviewListPage />}
           />
         </Routes>
 

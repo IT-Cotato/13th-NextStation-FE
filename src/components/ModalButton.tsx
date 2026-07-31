@@ -31,7 +31,7 @@ export default function ModalButton({
       `}
       {...props}
     >
-      <span className="whitespace-nowrap text-title-02 font-semibold">
+      <span className="whitespace-nowrap text-title-02 font-semibold leading-[1.4] tracking-[-0.45px]">
         {children}
       </span>
     </button>

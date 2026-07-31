@@ -115,6 +115,7 @@
     font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
     font-weight: var(--font-weight-regular);
     font-size: var(--text-body-01);
+    overscroll-behavior-y: contain;
   }
 
   #root {
