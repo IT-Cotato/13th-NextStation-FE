@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import type { ChangeEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import CTAButton from '@/components/CTAButton';
 import Header from '@/components/Header';
@@ -6,8 +7,11 @@ import {
   AuthApiError,
   clearSignupFlow,
   getKakaoProfile,
+  getProfileImagePresignedUrl,
   getSignupToken,
+  ProfileImageUploadError,
   setupProfile,
+  uploadProfileImage,
 } from '@/api/auth';
 import AuthInput from './components/AuthInput';
 import AuthProgressBar from './components/AuthProgressBar';
@@ -72,6 +76,11 @@ const validateBirthday = (value: string, shouldRequire = false) => {
 export default function ProfileSetupPage() {
   const navigate = useNavigate();
   const [kakaoProfile] = useState(() => getKakaoProfile());
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [profileImageFile, setProfileImageFile] = useState<File | null>(null);
+  const [profileImagePreview, setProfileImagePreview] = useState(
+    () => kakaoProfile?.profileImageUrl ?? '',
+  );
   const [nickname, setNickname] = useState(() => kakaoProfile?.nickname ?? '');
   const [birthday, setBirthday] = useState('');
   const [gender, setGender] = useState<Gender | ''>('');
@@ -81,6 +90,34 @@ export default function ProfileSetupPage() {
     nickname: '',
     birthday: '',
   });
+
+  useEffect(() => {
+    return () => {
+      if (profileImagePreview.startsWith('blob:')) {
+        URL.revokeObjectURL(profileImagePreview);
+      }
+    };
+  }, [profileImagePreview]);
+
+  const handleProfileImageChange = (
+    event: ChangeEvent<HTMLInputElement>,
+  ) => {
+    const file = event.target.files?.[0];
+
+    if (!file) {
+      return;
+    }
+
+    if (!/\.(jpe?g|png|webp|gif)$/i.test(file.name)) {
+      setSubmitError('JPG, PNG, WEBP, GIF 형식의 이미지만 선택할 수 있어요.');
+      event.target.value = '';
+      return;
+    }
+
+    setSubmitError('');
+    setProfileImageFile(file);
+    setProfileImagePreview(URL.createObjectURL(file));
+  };
 
   const isNextDisabled =
     !nickname.trim() ||
@@ -118,11 +155,24 @@ export default function ProfileSetupPage() {
 
     try {
       setIsSubmitting(true);
+      let profileImageUrl = kakaoProfile?.profileImageUrl;
+
+      if (profileImageFile) {
+        const uploadInfo = await getProfileImagePresignedUrl(
+          signupToken,
+          profileImageFile.name,
+        );
+        await uploadProfileImage(
+          uploadInfo.presignedUrl,
+          profileImageFile,
+          uploadInfo.contentType,
+        );
+        profileImageUrl = uploadInfo.imageUrl;
+      }
+
       await setupProfile(signupToken, {
         nickname: nickname.trim(),
-        ...(kakaoProfile?.profileImageUrl
-          ? { profileImageUrl: kakaoProfile.profileImageUrl }
-          : {}),
+        ...(profileImageUrl ? { profileImageUrl } : {}),
         gender: genderByApi[gender],
         birthDate: birthday,
       });
@@ -148,6 +198,8 @@ export default function ProfileSetupPage() {
         } else {
           setSubmitError(error.message);
         }
+      } else if (error instanceof ProfileImageUploadError) {
+        setSubmitError(error.message);
       } else {
         setSubmitError('프로필 설정 요청에 실패했습니다.');
       }
@@ -171,19 +223,29 @@ export default function ProfileSetupPage() {
             </h2>
             <button
               type="button"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={isSubmitting}
               className="flex size-[100px] items-center justify-center rounded-lg border border-dashed border-secondary-40 bg-secondary-10 text-[28px] font-light leading-none text-secondary-50"
               aria-label="프로필 사진 추가"
             >
-              {kakaoProfile?.profileImageUrl ? (
+              {profileImagePreview ? (
                 <img
-                  src={kakaoProfile.profileImageUrl}
-                  alt="카카오 프로필"
+                  src={profileImagePreview}
+                  alt="선택한 프로필"
                   className="size-full rounded-lg object-cover"
                 />
               ) : (
                 '+'
               )}
             </button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".jpg,.jpeg,.png,.webp,.gif,image/jpeg,image/png,image/webp,image/gif"
+              onChange={handleProfileImageChange}
+              className="sr-only"
+              aria-label="프로필 사진 파일 선택"
+            />
           </div>
 
           <AuthInput
