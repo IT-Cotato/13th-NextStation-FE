@@ -13,9 +13,13 @@ export interface Station {
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 // 출발역 검색
-export async function searchStations(keyword: string): Promise<Station[]> {
+export async function searchStations(
+  keyword: string,
+  signal?: AbortSignal
+): Promise<Station[]> {
   const response = await fetch(
-    `${API_BASE_URL}/api/v1/stations?keyword=${encodeURIComponent(keyword)}`
+    `${API_BASE_URL}/api/v1/stations?keyword=${encodeURIComponent(keyword)}`,
+    { signal }
   );
 
   if (!response.ok) {
