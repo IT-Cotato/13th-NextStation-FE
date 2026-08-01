@@ -1,4 +1,5 @@
 import type { SubwayLine } from "@/types/subway";
+import { getAccessToken } from "@/api/auth";
 export interface RandomStationLineResponse {
   id: SubwayLine;
   name: string;
@@ -36,8 +37,6 @@ export interface RandomDrawResponseData {
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-const MEMBER_ID = 1;
-
 export class RandomDrawNotFoundError extends Error {
   constructor(message = "뽑기 대상 역이 없음") {
     super(message);
@@ -49,7 +48,7 @@ export async function drawRandomStation(): Promise<RandomDrawResponseData> {
   const response = await fetch(`${API_BASE_URL}/api/v1/random`, {
     method: "POST",
     headers: {
-      "X-Member-Id": String(MEMBER_ID),
+      Authorization: `Bearer ${getAccessToken()}`,
     },
   });
 

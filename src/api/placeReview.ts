@@ -27,9 +27,9 @@ export interface PlaceReviewListResponse {
   hasNext: boolean;
 }
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+import { getAccessToken } from "@/api/auth";
 
-const MEMBER_ID = 1;
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 // 장소 리뷰 목록 조회
 export async function getReviews(
@@ -41,7 +41,7 @@ export async function getReviews(
     `${API_BASE_URL}/api/v1/places/${placeId}/reviews?sort=${sort}&size=10${cursor ? `&cursor=${cursor}` : ""}`,
     {
       headers: {
-        "X-Member-Id": String(MEMBER_ID),
+        Authorization: `Bearer ${getAccessToken()}`,
       },
     },
   );
@@ -68,7 +68,7 @@ export async function createReviewLike(reviewId: number): Promise<void> {
     {
       method: "POST",
       headers: {
-        "X-Member-Id": String(MEMBER_ID),
+        Authorization: `Bearer ${getAccessToken()}`,
       },
     },
   );
@@ -85,7 +85,7 @@ export async function deleteReviewLike(reviewId: number): Promise<void> {
     {
       method: "DELETE",
       headers: {
-        "X-Member-Id": String(MEMBER_ID),
+        Authorization: `Bearer ${getAccessToken()}`,
       },
     },
   );

@@ -67,15 +67,15 @@ export interface Course {
   imageUrl: string | null;
 }
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+import { getAccessToken } from "@/api/auth";
 
-const MEMBER_ID = 1;
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 // 장소 상세 조회
 export async function getPlaceDetail(placeId: number): Promise<Place> {
   const response = await fetch(`${API_BASE_URL}/api/v1/places/${placeId}`, {
     headers: {
-      "X-Member-Id": String(MEMBER_ID),
+      Authorization: `Bearer ${getAccessToken()}`,
     },
   });
 
@@ -107,7 +107,7 @@ export async function getPlaceCourses(placeId: number): Promise<Course[]> {
     `${API_BASE_URL}/api/v1/places/${placeId}/courses`,
     {
       headers: {
-        "X-Member-Id": String(MEMBER_ID),
+        Authorization: `Bearer ${getAccessToken()}`,
       },
     },
   );
