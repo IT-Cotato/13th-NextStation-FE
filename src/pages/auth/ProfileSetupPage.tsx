@@ -1,9 +1,16 @@
-import { type ReactNode, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import AuthButton from './components/AuthButton';
+import CTAButton from '@/components/CTAButton';
+import Header from '@/components/Header';
+import {
+  AuthApiError,
+  clearSignupFlow,
+  getKakaoProfile,
+  getSignupToken,
+  setupProfile,
+} from '@/api/auth';
 import AuthInput from './components/AuthInput';
 import AuthProgressBar from './components/AuthProgressBar';
-import AuthTopBar from './components/AuthTopBar';
 
 type Gender = 'male' | 'female' | 'none';
 
@@ -41,9 +48,9 @@ const validateNickname = (value: string, shouldRequire = false) => {
   return '';
 };
 
-const validateBirthday = (value: string) => {
+const validateBirthday = (value: string, shouldRequire = false) => {
   if (!value) {
-    return '';
+    return shouldRequire ? '생년월일을 입력해주세요.' : '';
   }
 
   if (!birthdayPattern.test(value)) {
@@ -54,98 +61,109 @@ const validateBirthday = (value: string) => {
   const month = Number(value.slice(4, 6));
   const day = Number(value.slice(6, 8));
   const date = new Date(Date.UTC(year, month - 1, day));
-  const isActualDate =
+  const isValidDate =
     date.getUTCFullYear() === year &&
     date.getUTCMonth() === month - 1 &&
     date.getUTCDate() === day;
 
-  return isActualDate ? '' : '존재하지 않는 날짜입니다.';
+  return isValidDate ? '' : '유효한 생년월일을 입력해주세요.';
 };
-
-interface CheckItemProps {
-  checked: boolean;
-  children: ReactNode;
-  onChange: () => void;
-}
-
-function CheckItem({ checked, children, onChange }: CheckItemProps) {
-  return (
-    <button
-      type="button"
-      role="checkbox"
-      aria-checked={checked}
-      onClick={onChange}
-      className="flex items-center gap-[10px] text-left"
-    >
-      <span
-        className={`flex size-5 shrink-0 items-center justify-center rounded-[4px] border ${
-          checked ? 'border-primary-50 bg-primary-50' : 'border-primary-50 bg-white'
-        }`}
-      >
-        {checked && (
-          <span className="text-body-02 font-semibold leading-none text-white">✓</span>
-        )}
-      </span>
-      {children}
-    </button>
-  );
-}
 
 export default function ProfileSetupPage() {
   const navigate = useNavigate();
-  const [nickname, setNickname] = useState('');
+  const [kakaoProfile] = useState(() => getKakaoProfile());
+  const [nickname, setNickname] = useState(() => kakaoProfile?.nickname ?? '');
   const [birthday, setBirthday] = useState('');
   const [gender, setGender] = useState<Gender | ''>('');
-  const [termsAgreed, setTermsAgreed] = useState(false);
-  const [marketingAgreed, setMarketingAgreed] = useState(false);
-  const [termsError, setTermsError] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState('');
   const [errors, setErrors] = useState({
     nickname: '',
     birthday: '',
   });
 
-  const isAllAgreed = termsAgreed && marketingAgreed;
+  const isNextDisabled =
+    !nickname.trim() ||
+    Boolean(validateNickname(nickname)) ||
+    !gender ||
+    !birthday ||
+    Boolean(validateBirthday(birthday)) ||
+    isSubmitting;
 
-  const handleBack = () => {
-    if (window.history.length > 1) {
-      navigate(-1);
-      return;
-    }
-
-    navigate('/auth/sign-up');
-  };
-
-  const handleAllAgree = () => {
-    const nextValue = !isAllAgreed;
-    setTermsAgreed(nextValue);
-    setMarketingAgreed(nextValue);
-    setTermsError(false);
-  };
-
-  const handleNext = () => {
+  const handleNext = async () => {
+    setSubmitError('');
     const nextErrors = {
       nickname: validateNickname(nickname, true),
-      birthday: validateBirthday(birthday),
+      birthday: validateBirthday(birthday, true),
     };
 
     setErrors(nextErrors);
-    setTermsError(!termsAgreed);
 
-    if (termsAgreed && Object.values(nextErrors).every((message) => !message)) {
+    if (!gender || Object.values(nextErrors).some(Boolean)) {
+      return;
+    }
+
+    const signupToken = getSignupToken();
+
+    if (!signupToken) {
+      navigate('/auth/terms');
+      return;
+    }
+
+    const genderByApi: Record<Gender, 'MALE' | 'FEMALE' | 'UNSPECIFIED'> = {
+      male: 'MALE',
+      female: 'FEMALE',
+      none: 'UNSPECIFIED',
+    };
+
+    try {
+      setIsSubmitting(true);
+      await setupProfile(signupToken, {
+        nickname: nickname.trim(),
+        ...(kakaoProfile?.profileImageUrl
+          ? { profileImageUrl: kakaoProfile.profileImageUrl }
+          : {}),
+        gender: genderByApi[gender],
+        birthDate: birthday,
+      });
+      clearSignupFlow();
       navigate('/auth/finish');
+    } catch (error) {
+      if (error instanceof AuthApiError && error.status === 401) {
+        clearSignupFlow();
+        navigate('/auth/terms');
+        return;
+      }
+
+      if (error instanceof AuthApiError) {
+        const nicknameError = error.reasons?.nickname ?? '';
+        const birthdayError = error.reasons?.birthDate ?? '';
+
+        if (nicknameError || birthdayError) {
+          setErrors((value) => ({
+            ...value,
+            nickname: nicknameError,
+            birthday: birthdayError,
+          }));
+        } else {
+          setSubmitError(error.message);
+        }
+      } else {
+        setSubmitError('프로필 설정 요청에 실패했습니다.');
+      }
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   return (
-    <main className="relative h-dvh overflow-y-auto bg-white text-gray-100">
-      <div className="sticky top-0 z-20 bg-white pt-[40px]">
-        <AuthTopBar title="프로필 설정" onBack={handleBack} />
-        <div className="px-[15px] pb-[27px]">
-          <AuthProgressBar step={2} />
-        </div>
+    <main className="flex h-dvh flex-col bg-white pt-[calc(var(--safe-top)+12px)] tracking-[-0.025em] text-gray-100">
+      <Header showBack title="프로필 설정" />
+      <div className="-mt-[3px] px-[15px] pb-[27px]">
+        <AuthProgressBar step={2} />
       </div>
 
-      <section className="flex flex-col gap-[40px] px-[15px] pb-[150px] pt-[23px]">
+      <section className="flex flex-col gap-[40px] px-[15px] pt-[23px]">
         <section className="flex flex-col gap-[30px]">
           <div className="flex flex-col gap-4">
             <h2 className="text-subtitle font-semibold leading-[1.4] text-gray-100">
@@ -153,10 +171,18 @@ export default function ProfileSetupPage() {
             </h2>
             <button
               type="button"
-              className="flex size-[100px] items-center justify-center rounded-[20px] border border-dashed border-secondary-40 bg-secondary-10 text-[28px] font-light leading-none text-secondary-50"
+              className="flex size-[100px] items-center justify-center rounded-lg border border-dashed border-secondary-40 bg-secondary-10 text-[28px] font-light leading-none text-secondary-50"
               aria-label="프로필 사진 추가"
             >
-              +
+              {kakaoProfile?.profileImageUrl ? (
+                <img
+                  src={kakaoProfile.profileImageUrl}
+                  alt="카카오 프로필"
+                  className="size-full rounded-lg object-cover"
+                />
+              ) : (
+                '+'
+              )}
             </button>
           </div>
 
@@ -189,7 +215,7 @@ export default function ProfileSetupPage() {
                     key={option.value}
                     type="button"
                     onClick={() => setGender(option.value)}
-                    className={`flex h-11 items-center justify-center rounded-[20px] border px-2 text-body-01 font-regular leading-[1.4] ${
+                    className={`flex h-11 items-center justify-center rounded-lg border px-2 text-body-01 font-regular leading-[1.4] ${
                       isSelected
                         ? 'border-secondary-40 bg-secondary-10 text-primary-80'
                         : 'border-gray-40 bg-gray-20 text-gray-70'
@@ -219,58 +245,19 @@ export default function ProfileSetupPage() {
           />
         </section>
 
-        <section className="overflow-hidden rounded-[20px] border border-gray-30 bg-white">
-          <div className="bg-secondary-10 px-[25px] py-[17px]">
-            <CheckItem checked={isAllAgreed} onChange={handleAllAgree}>
-              <span className="text-subtitle font-semibold leading-[1.4] text-gray-90">
-                전체 동의
-              </span>
-            </CheckItem>
-          </div>
-
-          <div className="flex flex-col gap-[15px] px-[25px] py-5">
-            <CheckItem
-              checked={termsAgreed}
-              onChange={() => {
-                const nextValue = !termsAgreed;
-                setTermsAgreed(nextValue);
-
-                if (nextValue) {
-                  setTermsError(false);
-                }
-              }}
-            >
-              <span className="text-body-01 font-regular leading-[1.4] text-gray-80 underline underline-offset-2">
-                서비스 이용약관 및 개인정보 취급 방침 동의
-              </span>
-            </CheckItem>
-            {termsError && (
-              <p className="flex items-center gap-1 pl-7 text-body-02 font-regular leading-[1.4] text-primary-60">
-                <span
-                  className="flex size-3 items-center justify-center rounded-full border border-primary-60 text-[9px] leading-none"
-                  aria-hidden="true"
-                >
-                  !
-                </span>
-                <span>필수 이용약관에 동의해주세요.</span>
-              </p>
-            )}
-            <CheckItem
-              checked={marketingAgreed}
-              onChange={() => setMarketingAgreed((value) => !value)}
-            >
-              <span className="text-body-01 font-regular leading-[1.4] text-gray-80 underline underline-offset-2">
-                마케팅 정보 수신 동의 (선택)
-              </span>
-            </CheckItem>
-          </div>
-        </section>
       </section>
 
-      <section className="fixed bottom-[calc(var(--safe-bottom)+50px)] left-1/2 z-30 w-full max-w-[var(--app-max-width)] -translate-x-1/2 px-[15px]">
-        <AuthButton onClick={handleNext}>
-          다음
-        </AuthButton>
+      <section className="mt-auto flex justify-center px-[15px] pb-[calc(var(--safe-bottom)+50px)]">
+        <div className="flex w-full flex-col items-center gap-2">
+          {submitError && (
+            <p className="text-body-02 font-regular leading-[1.4] text-primary-60">
+              {submitError}
+            </p>
+          )}
+          <CTAButton disabled={isNextDisabled} onClick={handleNext}>
+            {isSubmitting ? '저장 중' : '다음'}
+          </CTAButton>
+        </div>
       </section>
     </main>
   );

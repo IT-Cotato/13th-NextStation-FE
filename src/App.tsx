@@ -1,12 +1,14 @@
-﻿import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import MainPage from "@/pages/MainPage";
 
 // auth
 import FinishPage from "@/pages/auth/FinishPage";
 import LoginPage from "@/pages/auth/LoginPage";
+import KakaoCallbackPage from "@/pages/auth/KakaoCallbackPage";
 import PasswordResetPage from "@/pages/auth/PasswordResetPage";
 import ProfileSetupPage from "@/pages/auth/ProfileSetupPage";
 import SignUpPage from "@/pages/auth/SignUpPage";
+import TermsAgreementPage from "@/pages/auth/TermsAgreementPage";
 import WelcomePage from "@/pages/auth/WelcomePage";
 
 // draw
@@ -54,8 +56,16 @@ function App() {
           {/* auth */}
           <Route path="/auth" element={<WelcomePage />} />
           <Route path="/auth/login" element={<LoginPage />} />
+          <Route
+            path="/auth/kakao/callback"
+            element={<KakaoCallbackPage />}
+          />
           <Route path="/auth/sign-up" element={<SignUpPage />} />
-          <Route path="/auth/reset-password" element={<PasswordResetPage />} />
+          <Route path="/auth/terms" element={<TermsAgreementPage />} />
+          <Route
+            path="/auth/reset-password"
+            element={<PasswordResetPage />}
+          />
           <Route path="/auth/profile" element={<ProfileSetupPage />} />
           <Route path="/auth/finish" element={<FinishPage />} />
 
@@ -71,6 +81,26 @@ function App() {
           <Route path="/course/create" element={<CreatePage />} />
           <Route path="/course/verify" element={<CourseVerifyPage />} />
           <Route path="/course/saved" element={<SavedPage />} />
+          <Route
+            path="/course/:courseId/stamp"
+            element={<StampAcquiredPage />}
+          />
+          <Route
+            path="/course/:courseId/log"
+            element={<LogIntroPage />}
+          />
+          <Route
+            path="/course/:courseId/log/info"
+            element={<LogInfoPage />}
+          />
+          <Route
+            path="/course/:courseId/log/place"
+            element={<LogPlacePage />}
+          />
+          <Route
+            path="/course/:courseId/log/visibility"
+            element={<LogVisibilityPage />}
+          />
 
           {/* explore */}
           <Route path="/explore" element={<ExplorePage />} />
@@ -82,22 +112,6 @@ function App() {
           />
           <Route path="/explore/search" element={<SearchResultsPage />} />
           <Route path="/explore/lines" element={<LineCoursesPage />} />
-
-          {/* course log */}
-          <Route
-            path="/course/:courseId/stamp"
-            element={<StampAcquiredPage />}
-          />
-          <Route path="/course/:courseId/log" element={<LogIntroPage />} />
-          <Route path="/course/:courseId/log/info" element={<LogInfoPage />} />
-          <Route
-            path="/course/:courseId/log/place"
-            element={<LogPlacePage />}
-          />
-          <Route
-            path="/course/:courseId/log/visibility"
-            element={<LogVisibilityPage />}
-          />
 
           {/* place */}
           <Route path="/place/:placeId" element={<DetailPage />} />

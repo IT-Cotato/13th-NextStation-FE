@@ -33,7 +33,7 @@ export default function CTAButton({
   mode = "default",
   className = "",
   disabled = false,
-  width = 360, // 디폴트 값
+  width = 360,
   ...props
 }: CTAButtonProps) {
   if (mode === "share") {

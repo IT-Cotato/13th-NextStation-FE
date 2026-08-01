@@ -1,5 +1,4 @@
 import { useNavigate } from 'react-router-dom';
-import ArrowPrev from '@/assets/arrow-prev.svg?react';
 import titleImage from '@/assets/auth/welcome-title.png';
 import archesImage from '@/assets/auth/welcome-arches.png';
 import trainCarImage from '@/assets/auth/welcome-train-car.png';
@@ -11,30 +10,41 @@ import cloudSmall from '@/assets/auth/welcome-cloud-small.svg';
 import cloudRight from '@/assets/auth/welcome-cloud-right.svg';
 import appleImage from '@/assets/auth/welcome-apple.svg';
 import kakaoImage from '@/assets/auth/welcome-kakao.svg';
-import AuthButton from './components/AuthButton';
+import Header from '@/components/Header';
+import CTAButton from '@/components/CTAButton';
+import { createKakaoOAuthState } from '@/api/auth';
 
 export default function WelcomePage() {
   const navigate = useNavigate();
 
-  const handleBack = () => {
-    if (window.history.length > 1) {
-      navigate(-1);
+  const handleKakaoLogin = () => {
+    const restApiKey = import.meta.env.VITE_KAKAO_REST_API_KEY;
+    const redirectUri =
+      import.meta.env.VITE_KAKAO_REDIRECT_URI ??
+      `${window.location.origin}/auth/kakao/callback`;
+
+    if (!restApiKey) {
+      window.alert('카카오 REST API 키가 설정되지 않았습니다.');
       return;
     }
 
-    navigate('/');
+    const params = new URLSearchParams({
+      client_id: restApiKey,
+      redirect_uri: redirectUri,
+      response_type: 'code',
+      state: createKakaoOAuthState(),
+    });
+
+    window.location.assign(
+      `https://kauth.kakao.com/oauth/authorize?${params.toString()}`,
+    );
   };
 
   return (
     <main className="relative h-dvh overflow-hidden bg-linear-to-b from-primary-10 to-secondary-20 [--welcome-button-size:clamp(54px,7.11dvh,60px)] [--welcome-social-gap:calc(min(100vw,var(--app-max-width))*20/390)] [--welcome-stack-gap:2.84dvh] [--welcome-track-top:63.27dvh]">
-      <button
-        type="button"
-        className="absolute left-[13px] top-[52px] z-30 flex size-6 items-center justify-center"
-        aria-label="뒤로가기"
-        onClick={handleBack}
-      >
-        <ArrowPrev className="size-6 [&_path]:stroke-gray-90" />
-      </button>
+      <div className="absolute left-0 top-[40px] z-30 w-full">
+        <Header showBack />
+      </div>
 
       <div aria-hidden className="pointer-events-none absolute inset-0 z-0">
         <img
@@ -116,7 +126,7 @@ export default function WelcomePage() {
 
             <button
               type="button"
-              disabled
+              onClick={handleKakaoLogin}
               className="size-[var(--welcome-button-size)] rounded-full focus:outline-none focus:ring-2 focus:ring-primary-60"
               aria-label="카카오로 로그인"
             >
@@ -133,9 +143,12 @@ export default function WelcomePage() {
           </div>
 
           <div className="w-full">
-            <AuthButton onClick={() => navigate('/auth/login')}>
+            <CTAButton
+              className="mx-auto shadow-[0_0_4px_var(--color-secondary-50)]"
+              onClick={() => navigate('/auth/login')}
+            >
               이메일로 이어가기
-            </AuthButton>
+            </CTAButton>
           </div>
         </section>
       </section>

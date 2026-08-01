@@ -1,12 +1,18 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import AuthButton from './components/AuthButton';
-import AuthCodeInput from './components/AuthCodeInput';
-import AuthEmailCertificationInput from './components/AuthEmailCertificationInput';
-import AuthPasswordInput from './components/AuthPasswordInput';
-import AuthTopBar from './components/AuthTopBar';
+import CTAButton from '@/components/CTAButton';
+import Header from '@/components/Header';
+import {
+  AuthApiError,
+  confirmPasswordResetVerification,
+  resetPassword,
+  sendPasswordResetVerification,
+} from '@/api/auth';
+import AuthInput from './components/AuthInput';
 
 const CERTIFICATION_LIMIT_SECONDS = 180;
+const PASSWORD_PATTERN =
+  /^(?=.*[A-Za-z])(?=.*\d)(?=.*[^A-Za-z\d\s]).{8,20}$/;
 
 function formatTimer(seconds: number) {
   const minutes = Math.floor(seconds / 60);
@@ -22,8 +28,13 @@ export default function PasswordResetPage() {
     null,
   );
   const [code, setCode] = useState('');
+  const [isCodeConfirmed, setIsCodeConfirmed] = useState(false);
   const [password, setPassword] = useState('');
   const [passwordConfirm, setPasswordConfirm] = useState('');
+  const [submitError, setSubmitError] = useState('');
+  const [isSending, setIsSending] = useState(false);
+  const [isConfirming, setIsConfirming] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState({
     email: '',
     code: '',
@@ -32,15 +43,14 @@ export default function PasswordResetPage() {
   });
   const isCertificationActive =
     certificationSeconds !== null && certificationSeconds > 0;
-
-  const handleBack = () => {
-    if (window.history.length > 1) {
-      navigate(-1);
-      return;
-    }
-
-    navigate('/auth/login');
-  };
+  const isEmailCertified = isCodeConfirmed;
+  const isNextDisabled =
+    !isEmailCertified ||
+    !password ||
+    !passwordConfirm ||
+    !PASSWORD_PATTERN.test(password) ||
+    password !== passwordConfirm ||
+    isSubmitting;
 
   useEffect(() => {
     if (certificationSeconds === null) {
@@ -70,7 +80,8 @@ export default function PasswordResetPage() {
     return !emailError;
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
+    setSubmitError('');
     const nextErrors = {
       email: '',
       code: '',
@@ -78,9 +89,6 @@ export default function PasswordResetPage() {
       passwordConfirm: '',
     };
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    const passwordPattern =
-      /^(?=.*[A-Za-z])(?=.*\d)(?=.*[^A-Za-z\d\s]).{8,20}$/;
-
     if (!emailPattern.test(email)) {
       nextErrors.email = '이메일 형식이 잘못되었습니다.';
     }
@@ -89,7 +97,7 @@ export default function PasswordResetPage() {
       nextErrors.code = '잘못된 인증번호입니다.';
     }
 
-    if (!passwordPattern.test(password)) {
+    if (!PASSWORD_PATTERN.test(password)) {
       nextErrors.password = '영문 ∙ 숫자 ∙ 특수기호 ∙ 8-20자 포함해서 설정해주세요.';
     }
 
@@ -99,15 +107,42 @@ export default function PasswordResetPage() {
       nextErrors.passwordConfirm = '비밀번호가 일치하지 않습니다.';
     }
 
-    if (Object.values(nextErrors).every((message) => !message)) {
-      nextErrors.passwordConfirm =
-        '비밀번호 재설정 API 연결 후 변경할 수 있습니다.';
-    }
-
     setErrors(nextErrors);
+
+    if (Object.values(nextErrors).every((message) => !message)) {
+      try {
+        setIsSubmitting(true);
+        await resetPassword(email, code, password, passwordConfirm);
+        navigate('/auth/login');
+      } catch (error) {
+        const message =
+          error instanceof AuthApiError
+            ? error.message
+            : '비밀번호 재설정에 실패했습니다.';
+
+        if (
+          error instanceof AuthApiError &&
+          error.code.endsWith('PASSWORD_CONFIRMATION_MISMATCH')
+        ) {
+          setErrors((value) => ({ ...value, passwordConfirm: message }));
+        } else if (
+          error instanceof AuthApiError &&
+          (error.code.endsWith('EMAIL_VERIFICATION_EXPIRED') ||
+            error.code.endsWith('EMAIL_VERIFICATION_CODE_MISMATCH') ||
+            error.code.endsWith('EMAIL_VERIFICATION_NOT_FOUND'))
+        ) {
+          setErrors((value) => ({ ...value, code: message }));
+          setIsCodeConfirmed(false);
+        } else {
+          setSubmitError(message);
+        }
+      } finally {
+        setIsSubmitting(false);
+      }
+    }
   };
 
-  const handleCertificationClick = () => {
+  const handleCertificationClick = async () => {
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
     if (!emailPattern.test(email)) {
@@ -118,85 +153,183 @@ export default function PasswordResetPage() {
       return;
     }
 
-    setErrors((value) => ({ ...value, email: '' }));
-    setCertificationSeconds(CERTIFICATION_LIMIT_SECONDS);
+    try {
+      setIsSending(true);
+      await sendPasswordResetVerification(email);
+      setErrors((value) => ({ ...value, email: '', code: '' }));
+      setCertificationSeconds(CERTIFICATION_LIMIT_SECONDS);
+      setIsCodeConfirmed(false);
+      setCode('');
+    } catch (error) {
+      setErrors((value) => ({
+        ...value,
+        email:
+          error instanceof AuthApiError
+            ? error.message
+            : '인증번호 발송에 실패했습니다.',
+      }));
+    } finally {
+      setIsSending(false);
+    }
+  };
+
+  const handleCodeConfirm = async () => {
+    if (!isCertificationActive || !/^\d{6}$/.test(code)) {
+      setErrors((value) => ({
+        ...value,
+        code: '잘못된 인증번호입니다.',
+      }));
+      setIsCodeConfirmed(false);
+      return;
+    }
+
+    try {
+      setIsConfirming(true);
+      await confirmPasswordResetVerification(email, code);
+      setErrors((value) => ({ ...value, code: '' }));
+      setIsCodeConfirmed(true);
+    } catch (error) {
+      setErrors((value) => ({
+        ...value,
+        code:
+          error instanceof AuthApiError
+            ? error.message
+            : '인증번호 확인에 실패했습니다.',
+      }));
+      setIsCodeConfirmed(false);
+    } finally {
+      setIsConfirming(false);
+    }
   };
 
   return (
-    <main className="relative h-dvh overflow-y-auto bg-white text-gray-100">
-      <div className="absolute left-0 top-[40px] w-full">
-        <AuthTopBar title="비밀번호 재설정" onBack={handleBack} />
-      </div>
+    <main className="flex h-dvh flex-col bg-white pt-[calc(var(--safe-top)+12px)] tracking-[-0.025em] text-gray-100">
+      <Header showBack title="비밀번호 찾기" />
 
-      <section className="flex flex-col gap-[30px] px-[15px] pb-[150px] pt-[130px]">
+      <section className="mt-10 px-[15px]">
         <section className="flex flex-col gap-[30px]">
           <h2 className="text-subtitle font-semibold leading-[1.4] text-gray-100">
-            가입한 이메일을 입력해주세요
+            이메일을 입력해주세요
           </h2>
-          <div className="flex flex-col gap-2">
-            <AuthEmailCertificationInput
+          <div className="flex flex-col gap-3">
+            <AuthInput
               type="email"
               value={email}
               onChange={(event) => {
                 setEmail(event.target.value);
                 setCertificationSeconds(null);
+                setIsCodeConfirmed(false);
+                setCode('');
+                setPassword('');
+                setPasswordConfirm('');
                 setErrors((value) => ({ ...value, email: '' }));
               }}
               onBlur={validateEmail}
               placeholder="user@example.com"
               autoComplete="email"
-              buttonLabel={isCertificationActive ? '재요청' : '인증하기'}
-              buttonTone={email || isCertificationActive ? 'dark' : 'default'}
+              actionLabel={
+                isSending
+                  ? '요청 중'
+                  : isCertificationActive
+                    ? '재요청'
+                    : '인증하기'
+              }
+              actionTone={email || isCertificationActive ? 'active' : 'default'}
               errorMessage={errors.email}
-              onCertificationClick={handleCertificationClick}
+              actionDisabled={isSending}
+              onActionClick={handleCertificationClick}
             />
-            <AuthCodeInput
+            <AuthInput
               value={code}
               onChange={(event) => {
                 setCode(event.target.value);
+                setIsCodeConfirmed(false);
+                setPassword('');
+                setPasswordConfirm('');
                 setErrors((value) => ({ ...value, code: '' }));
               }}
               placeholder="인증번호 6자리를 입력해주세요"
               inputMode="numeric"
-              timer={formatTimer(certificationSeconds ?? CERTIFICATION_LIMIT_SECONDS)}
+              timer={
+                certificationSeconds === null
+                  ? undefined
+                  : formatTimer(certificationSeconds)
+              }
               errorMessage={errors.code}
+              actionLabel={isConfirming ? '확인 중' : '확인'}
+              actionTone={/^\d{6}$/.test(code) ? 'active' : 'default'}
+              actionDisabled={isConfirming}
+              onActionClick={handleCodeConfirm}
             />
           </div>
         </section>
 
-        <section className="flex flex-col gap-[30px]">
-          <h2 className="text-subtitle font-semibold leading-[1.4] text-gray-100">
-            새로운 비밀번호를 입력해주세요
-          </h2>
-          <div className="flex flex-col gap-2">
-            <AuthPasswordInput
-              aria-label="새 비밀번호"
-              value={password}
-              onChange={(event) => {
-                setPassword(event.target.value);
-                setErrors((value) => ({ ...value, password: '' }));
-              }}
-              placeholder="영문 ∙ 숫자 ∙ 특수기호 ∙ 8-20자를 포함해주세요"
-              autoComplete="new-password"
-              errorMessage={errors.password}
-            />
-            <AuthPasswordInput
-              aria-label="새 비밀번호 확인"
-              value={passwordConfirm}
-              onChange={(event) => {
-                setPasswordConfirm(event.target.value);
-                setErrors((value) => ({ ...value, passwordConfirm: '' }));
-              }}
-              placeholder="비밀번호를 다시 입력해주세요"
-              autoComplete="new-password"
-              errorMessage={errors.passwordConfirm}
-            />
-          </div>
-        </section>
+        {isEmailCertified && (
+          <section className="mt-[33px] flex flex-col gap-[30px]">
+            <h2 className="text-subtitle font-semibold leading-[1.4] text-gray-100">
+              비밀번호를 입력해주세요
+            </h2>
+            <div className="flex flex-col gap-3">
+              <AuthInput
+                type="password"
+                value={password}
+                onChange={(event) => {
+                  const nextPassword = event.target.value;
+                  setPassword(nextPassword);
+                  setErrors((value) => ({
+                    ...value,
+                    password:
+                      nextPassword && !PASSWORD_PATTERN.test(nextPassword)
+                        ? '영문 ∙ 숫자 ∙ 특수기호 ∙ 8-20자 포함해서 설정해주세요.'
+                        : '',
+                    passwordConfirm:
+                      passwordConfirm && nextPassword !== passwordConfirm
+                        ? '비밀번호가 일치하지 않습니다.'
+                        : '',
+                  }));
+                }}
+                placeholder="영문 ∙ 숫자 ∙ 특수기호 ∙ 8-20자를 포함해주세요"
+                autoComplete="new-password"
+                errorMessage={errors.password}
+              />
+              <AuthInput
+                type="password"
+                value={passwordConfirm}
+                onChange={(event) => {
+                  const nextPasswordConfirm = event.target.value;
+                  setPasswordConfirm(nextPasswordConfirm);
+                  setErrors((value) => ({
+                    ...value,
+                    passwordConfirm:
+                      nextPasswordConfirm && password !== nextPasswordConfirm
+                        ? '비밀번호가 일치하지 않습니다.'
+                        : '',
+                  }));
+                }}
+                placeholder="비밀번호를 다시 입력해주세요"
+                autoComplete="new-password"
+                errorMessage={errors.passwordConfirm}
+              />
+            </div>
+          </section>
+        )}
       </section>
 
-      <section className="fixed bottom-[calc(var(--safe-bottom)+50px)] left-1/2 z-30 w-full max-w-[var(--app-max-width)] -translate-x-1/2 px-[15px]">
-        <AuthButton onClick={handleNext}>다음</AuthButton>
+      <section className="mt-auto flex justify-center px-[15px] pb-[calc(var(--safe-bottom)+50px)]">
+        <div className="flex w-full flex-col items-center gap-2">
+          {submitError && (
+            <p className="text-body-02 font-regular leading-[1.4] text-primary-60">
+              {submitError}
+            </p>
+          )}
+          <CTAButton
+            disabled={isNextDisabled}
+            className="disabled:!bg-gray-40 disabled:!text-gray-10"
+            onClick={handleNext}
+          >
+            {isSubmitting ? '변경 중' : '다음'}
+          </CTAButton>
+        </div>
       </section>
     </main>
   );
