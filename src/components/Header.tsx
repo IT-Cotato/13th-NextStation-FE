@@ -25,44 +25,49 @@ export default function Header({
       return;
     }
 
-    navigate(-1);
+    if (window.history.length > 1) {
+      navigate(-1);
+      return;
+    }
+
+    navigate('/');
   };
 
   return (
-    <header className="grid w-full h-[50px] grid-cols-[40px_1fr_40px] items-center px-3">
-      <div className='flex items-center justify-start'>
+    <header className="grid h-[50px] w-full shrink-0 grid-cols-[40px_1fr_40px] items-center px-3">
+      <div className="flex items-center justify-start">
         {showBack && (
           <button
-          type="button"
-          onClick={handleBackClick}
-          aria-label='뒤로가기'
-          className="flex size-6 items-center justify-center outline-none"
-        >
-          <BackIcon className='size-6' />
-        </button>
+            type="button"
+            onClick={handleBackClick}
+            aria-label="뒤로가기"
+            className="flex size-6 items-center justify-center rounded-sm outline-none focus-visible:ring-2 focus-visible:ring-primary-50 focus-visible:ring-offset-2"
+          >
+            <BackIcon className="size-6" />
+          </button>
         )}
       </div>
 
-      <div className='flex min-w-0 items-center justify-center'>
+      <div className="flex min-w-0 items-center justify-center">
         {title && (
-          <h3 className='text-title-02 font-semibold leading-none tracking-[-0.025em] text-center'>
+          <h3 className="text-center text-title-02 font-semibold leading-none tracking-[-0.025em] text-gray-90">
             {title}
           </h3>
         )}
       </div>
 
-      <div className='flex items-center justify-end'>
+      <div className="flex items-center justify-end">
         {showClose && (
           <button
-          type="button"
-          onClick={onCloseClick}
-          aria-label='닫기'
-          className="flex size-6 items-center justify-center outline-none"
-        >
-          <CloseIcon className='size-6' />
-        </button>
+            type="button"
+            onClick={onCloseClick}
+            aria-label="닫기"
+            className="flex size-6 items-center justify-center rounded-sm outline-none focus-visible:ring-2 focus-visible:ring-primary-50 focus-visible:ring-offset-2"
+          >
+            <CloseIcon className="size-6" />
+          </button>
         )}
       </div>
     </header>
-  )
+  );
 }
