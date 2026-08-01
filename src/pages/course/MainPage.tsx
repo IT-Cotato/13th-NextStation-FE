@@ -11,27 +11,27 @@ import {
   type Course,
 } from "@/api/savedCourse";
 import { useInView } from "react-intersection-observer";
+import { useNavigate } from "react-router-dom";
 import { showToast } from "./components/ShowToast";
 
 export default function MainPage() {
+  const navigate = useNavigate();
   const [courses, setCourses] = useState<Course[]>([]);
   const [nextCursor, setNextCursor] = useState<string | null>(null);
   const [hasNext, setHasNext] = useState(false);
   const [isCoursesLoading, setIsCoursesLoading] = useState(true);
-  const [isLoadingMore, setIsLoadingMore] = useState(false); // 무한스크롤
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [initialLoadError, setInitialLoadError] = useState<string | null>(
     null,
   );
-
   const [isCompleteModalOpen, setIsCompleteModalOpen] = useState(false);
-  const [selectedCourseId, setSelectedCourseId] = useState<number | null>(null); // 여행 완료 모달용 단일 선택
+  const [selectedCourseId, setSelectedCourseId] = useState<number | null>(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [selectedLine, setSelectedLine] = useState("전체"); // 호선
-  const [selectedStation, setSelectedStation] = useState("전체"); // 역
+  const [selectedLine, setSelectedLine] = useState("전체");
+  const [selectedStation, setSelectedStation] = useState("전체");
   const [isDeleteMode, setIsDeleteMode] = useState(false);
-  const [selectedIds, setSelectedIds] = useState<number[]>([]); // 삭제 모드용 다중 선택
+  const [selectedIds, setSelectedIds] = useState<number[]>([]);
 
-  // 최초 로드
   useEffect(() => {
     const fetchCourses = async () => {
       try {
@@ -47,7 +47,8 @@ export default function MainPage() {
         setIsCoursesLoading(false);
       }
     };
-    fetchCourses();
+
+    void fetchCourses();
   }, []);
 
   const loadMoreCourses = async () => {
@@ -72,7 +73,7 @@ export default function MainPage() {
     rootMargin: "200px",
     onChange: (inView) => {
       if (inView && hasNext && !isLoadingMore) {
-        loadMoreCourses();
+        void loadMoreCourses();
       }
     },
   });
@@ -81,8 +82,8 @@ export default function MainPage() {
   if (initialLoadError) return <p>{initialLoadError}</p>;
   if (!courses) return null;
 
-  const handleCompletedClick = (id: number) => {
-    setSelectedCourseId(id);
+  const handleCompletedClick = (courseId: number) => {
+    setSelectedCourseId(courseId);
     setIsCompleteModalOpen(true);
   };
 
@@ -139,19 +140,18 @@ export default function MainPage() {
   };
 
   return (
-    <main className="flex flex-col h-dvh  bg-gray-10 pt-[calc(var(--safe-top)+12px)] overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
-      {/* Header */}
+    <main className="flex h-dvh flex-col overflow-y-auto bg-gray-10 pt-[calc(var(--safe-top)+12px)] [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
       <section className="flex justify-center">
-        <div className="flex w-[390px] px-[15px] items-center justify-between">
+        <div className="flex w-[390px] items-center justify-between px-[15px]">
           <span className="text-title-02 font-semibold leading-[1.4] tracking-[-0.45px]">
             내가 만든 코스
           </span>
-          {/* 스크랩 페이지 경로 나오면 연결 */}
-          <Heart />
+          <button type="button" onClick={() => navigate("/course/like")}>
+            <Heart />
+          </button>
         </div>
       </section>
 
-      {/* 여행 확인 모달 */}
       {isCompleteModalOpen && selectedCourseId !== null && (
         <CompleteConfirmModal
           onClose={closeCompleteModal}
@@ -160,7 +160,6 @@ export default function MainPage() {
         />
       )}
 
-      {/* 삭제 확인 모달 */}
       {isDeleteModalOpen && selectedIds.length > 0 && (
         <ConfirmModal
           message="저장한 코스를 삭제하시겠습니까?"
@@ -169,7 +168,6 @@ export default function MainPage() {
         />
       )}
 
-      {/* 카테고리 */}
       <section className="flex justify-center">
         <div className="flex w-[390px]">
           <StationCategory
@@ -181,12 +179,11 @@ export default function MainPage() {
         </div>
       </section>
 
-      {/* 삭제 */}
       <section className="flex justify-center">
         <div className="flex w-[390px]">
           <button
             type="button"
-            className={`flex text-body-01 leading-[1.4] tracking-[-0.35px] ${isDeleteMode && selectedIds.length > 0 ? "text-primary-60" : "text-gray-70"} pt-2 pb-4 pl-[346px]`}
+            className={`flex pt-2 pb-4 pl-[346px] text-body-01 leading-[1.4] tracking-[-0.35px] ${isDeleteMode && selectedIds.length > 0 ? "text-primary-60" : "text-gray-70"}`}
             onClick={() =>
               isDeleteMode
                 ? selectedIds.length > 0
@@ -200,7 +197,6 @@ export default function MainPage() {
         </div>
       </section>
 
-      {/* 저장된 코스 */}
       <section className="flex justify-center">
         <div className="flex flex-col gap-[9px]">
           {filteredCourses.map((course) => (
@@ -219,7 +215,8 @@ export default function MainPage() {
           ))}
         </div>
       </section>
-      <div ref={ref} className="h-1 w-full"></div>
+
+      <div ref={ref} className="h-1 w-full" />
 
       <BottomNav mode="course" />
     </main>
