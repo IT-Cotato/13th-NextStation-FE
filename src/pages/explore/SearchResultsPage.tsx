@@ -130,7 +130,6 @@ export default function SearchResultsPage() {
             {results.map(({ line, stationName }, index) => (
               <ExploreCourseItem
                 key={`${line}-${stationName}`}
-                rank={index + 1}
                 line={line}
                 stationName={stationName}
                 filledImage={index === 0}
