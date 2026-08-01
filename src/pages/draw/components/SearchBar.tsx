@@ -63,8 +63,19 @@ export default function SearchBar({
     onSelectStation(station);
   }
 
+  const handleInputChange = (value: string) => {
+    setSuggestions([]);
+    setError(null);
+    setIsLoading(false);
+    onQueryChange(value);
+    onSelectStation(null);
+  };
+
   const handleClear = () => {
-    onQueryChange('')
+    setSuggestions([]);
+    setError(null);
+    setIsLoading(false);
+    onQueryChange('');
     onSelectStation(null);
   }
 
@@ -118,8 +129,7 @@ export default function SearchBar({
             <input
               value={query}
               onChange={(e) => {
-                onQueryChange(e.target.value)
-                onSelectStation(null);
+                handleInputChange(e.target.value);
               }}
               placeholder="나와 가장 가까운 지하철역 찾아보기"
               className={[
