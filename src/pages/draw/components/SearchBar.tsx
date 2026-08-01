@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import SearchIcon from '@/assets/search.svg?react';
 import CloseIcon from '@/assets/close.svg?react';
 import LineBadge from "./LineBadge";
@@ -19,47 +19,73 @@ export default function SearchBar({
   const [suggestions, setSuggestions] = useState<Station[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const requestIdRef = useRef(0);
   const trimmedQuery = query.trim();
   const hasQuery = trimmedQuery.length > 0;
-  const visibleSuggestions = hasQuery ? suggestions : [];
-  const visibleError = hasQuery ? error : null;
 
   useEffect(() => {
-    if (!hasQuery) return;
+    if (trimmedQuery.length < 1) {
+      return;
+    }
+
+    const controller = new AbortController();
+    const currentRequestId = ++requestIdRef.current;
 
     const timer = setTimeout(async () => {
       try {
         setIsLoading(true);
         setError(null);
 
-        const mapped = await searchStations(trimmedQuery);
+        const mapped = await searchStations(trimmedQuery, controller.signal);
+
+        if (requestIdRef.current !== currentRequestId) return;
         setSuggestions(mapped);
-        
       } catch {
+        if (controller.signal.aborted) return;
+
         setSuggestions([]);
         setError('검색 결과를 불러오지 못했어요.');
       } finally {
-        setIsLoading(false);
+        if (requestIdRef.current === currentRequestId) {
+          setIsLoading(false);
+        }
       }
-    }, 250);
+    }, 200);
 
-    return () => clearTimeout(timer);
-  }, [trimmedQuery, hasQuery]);
+    return () => {
+      clearTimeout(timer);
+      controller.abort();
+    }
+  }, [trimmedQuery]);
 
   const handleSelectStation = (station: Station) => {
     onQueryChange(station.name)
     onSelectStation(station);
   }
 
+  const handleInputChange = (value: string) => {
+    setSuggestions([]);
+    setError(null);
+    setIsLoading(false);
+    onQueryChange(value);
+    onSelectStation(null);
+  };
+
   const handleClear = () => {
-    onQueryChange('')
+    setSuggestions([]);
+    setError(null);
+    setIsLoading(false);
+    onQueryChange('');
     onSelectStation(null);
   }
+
+  const visibleSuggestions = hasQuery ? suggestions : [];
+  const visibleError = hasQuery ? error : null;
 
   const showSuggestions =
     hasQuery &&
     visibleSuggestions.length > 0 &&
-    selectedStation?.name !== query
+    selectedStation?.name !== query;
 
   const isSelected = selectedStation !== null
 
@@ -103,8 +129,7 @@ export default function SearchBar({
             <input
               value={query}
               onChange={(e) => {
-                onQueryChange(e.target.value)
-                onSelectStation(null);
+                handleInputChange(e.target.value);
               }}
               placeholder="나와 가장 가까운 지하철역 찾아보기"
               className={[
@@ -132,7 +157,7 @@ export default function SearchBar({
       </div>
 
       {showSuggestions && (
-        <ul className="absolute inset-x-0 top-[calc(100%-20px)] z-0 rounded-b-[20px] bg-white pt-[20px] pb-2 shadow-[0_0_28px_0_rgba(118,118,118,0.25)]">
+        <ul className="absolute inset-x-0 top-[calc(100%-20px)] max-h-[280px] z-0 rounded-b-[20px] bg-white pt-[20px] pb-2 shadow-[0_0_28px_0_rgba(118,118,118,0.25)] overflow-y-auto overscroll-contain [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
           {visibleSuggestions.map((station) => (
             <li key={station.id}>
               <button
