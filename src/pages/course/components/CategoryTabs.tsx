@@ -25,7 +25,7 @@ export default function CategoryTabs({
         return (
           <label
             key={cat}
-            className={`shrink-0 px-4 py-2 text-body-02 rounded-lg whitespace-nowrap ${currentClass}`}
+            className={`shrink-0 px-4 py-2 text-body-01 leading-[1.4] tracking-[-0.35px] rounded-lg whitespace-nowrap ${currentClass}`}
           >
             {" "}
             <input

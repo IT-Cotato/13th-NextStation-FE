@@ -25,7 +25,7 @@ export default function ConfirmModal({
         className="flex relative flex-col gap-4 w-[340px] items-center bg-white px-4 pt-8 pb-6 rounded-lg"
       >
         <Warning className="w-12 h-12" />
-        <p className="text-title-02 font-semibold text-center whitespace-pre-line">
+        <p className="text-title-02 font-semibold text-center whitespace-pre-line leading-[1.4] tracking-[-0.45px]">
           {message}
         </p>
         <div className="flex gap-2">

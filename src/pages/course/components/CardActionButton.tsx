@@ -11,7 +11,7 @@ export default function CardActionButton({
     <button
       type="button"
       onClick={onClick}
-      className="flex justify-center items-center border border-primary-50 rounded-lg px-3 py-1 text-primary-60 text-body-02 outline-none"
+      className="flex justify-center items-center border border-primary-50 rounded-lg px-3 py-1 text-primary-60 text-body-02 outline-none leading-[1.4] tracking-[-0.3px]"
     >
       {children}
     </button>
