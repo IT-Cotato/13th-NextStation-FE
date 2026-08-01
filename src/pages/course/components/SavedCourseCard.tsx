@@ -10,7 +10,7 @@ export default function SavedCourseCard({
   name,
   line,
   stationName,
-  isCourseCompleted,
+  isCompleted,
   onCompletedClick,
   isDeleteMode,
   isSelect,
@@ -20,14 +20,14 @@ export default function SavedCourseCard({
   name: string;
   line: string;
   stationName: string;
-  isCourseCompleted: boolean;
-  onCompletedClick: () => void;
+  isCompleted: boolean;
+  onCompletedClick: (id: number) => void;
   isDeleteMode: boolean;
   isSelect: boolean;
   handleSelected: (targetId: number) => void;
 }) {
   const navigate = useNavigate();
-  const StampIcon = isCourseCompleted
+  const StampIcon = isCompleted
     ? STATION_STAMP_MAP[stationName]
     : DISABLED_LINE_STAMP_MAP[line];
 
@@ -40,18 +40,20 @@ export default function SavedCourseCard({
     >
       <div>{StampIcon ? <StampIcon className="w-16 h-16" /> : null}</div>
       <div className="flex flex-col flex-1 gap-2.5">
-        <span className="text-black text-subtitle font-semibold">{name}</span>
+        <span className="text-black text-subtitle font-semibold leading-[1.4] tracking-[-0.4px]">
+          {name}
+        </span>
         <div className="flex gap-1">
           <CardActionButton
             onClick={() => {
-              if (!isDeleteMode) navigate("/course/verify");
+              if (!isDeleteMode) navigate(`/course/${id}/verify`);
             }}
           >
             코스 확인
           </CardActionButton>
           <CardActionButton
             onClick={() => {
-              if (!isDeleteMode) onCompletedClick();
+              if (!isDeleteMode) onCompletedClick(id);
             }}
           >
             여행 완료
