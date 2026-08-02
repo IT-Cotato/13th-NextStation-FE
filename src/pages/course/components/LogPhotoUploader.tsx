@@ -1,6 +1,12 @@
 import { useRef } from "react";
 import PlusIcon from '@/assets/photoPlus.svg?react';
 import DeleteIcon from '@/assets/delete.svg?react';
+import {
+  createUploadFileName,
+  getPresignedUrlsBatch,
+  uploadFileToPresignedUrl,
+} from "@/api/image";
+import { showToast } from "./ShowToast";
 
 const MAX_PHOTO_COUNT = 3;
 
@@ -15,7 +21,7 @@ export default function LogPhotoUploader({
 }: LogPhotoUploaderProps) {
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const handleAddPhoto = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleAddPhoto = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files ?? []);
     if (files.length === 0) return;
 
@@ -25,8 +31,35 @@ export default function LogPhotoUploader({
       return;
     }
 
-    const nextPhotos = files.map((file) => URL.createObjectURL(file));
-    onChange([...photos, ...nextPhotos].slice(0, MAX_PHOTO_COUNT));
+    const uploadTargets = files.slice(0, remainingCount);
+
+    try {
+      const fileNames = uploadTargets.map((file) => createUploadFileName(file));
+      const presignedItems = await getPresignedUrlsBatch({
+        folder: "JOURNAL",
+        fileNames,
+      });
+
+      await Promise.all(
+        presignedItems.map((item, index) =>
+          uploadFileToPresignedUrl(
+            item.presignedUrl,
+            uploadTargets[index],
+            item.contentType,
+          ),
+        ),
+      );
+
+      const nextPhotos = presignedItems.map((item) => item.imageUrl);
+      onChange([...photos, ...nextPhotos].slice(0, MAX_PHOTO_COUNT));
+    } catch (error) {
+      showToast({
+        message:
+          error instanceof Error
+            ? error.message
+            : "대표 사진 업로드에 실패했습니다.",
+      });
+    }
 
     e.target.value = "";
   }

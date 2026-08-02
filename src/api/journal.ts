@@ -1,5 +1,7 @@
 import { getAccessToken } from "@/api/auth";
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 export type TravelDuration = "SHORT" | "HALF_DAY" | "FULL_DAY";
 
 export interface CreateJournalPlaceReviewRequest {
@@ -22,8 +24,6 @@ export interface CreateJournalRequest {
 export interface CreateJournalResponse {
   journalId: number;
 }
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export async function createJournal(
   body: CreateJournalRequest,

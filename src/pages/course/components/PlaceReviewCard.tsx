@@ -1,6 +1,12 @@
 import PlusIcon from '@/assets/photoPlus.svg?react';
 import DeleteIcon from '@/assets/delete.svg?react';
 import { useRef, useState, useEffect } from 'react';
+import {
+  createUploadFileName,
+  getPresignedUrl,
+  uploadFileToPresignedUrl,
+} from "@/api/image";
+import { showToast } from "./ShowToast";
 
 interface PlaceReviewCardProps {
   id: number;
@@ -23,12 +29,32 @@ export default function PlaceReviewCard({
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [isEditing, setIsEditing] = useState(false);
 
-  const handleChangePhoto = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChangePhoto = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const previewUrl = URL.createObjectURL(file);
-    onChangePhoto(previewUrl);
+    try {
+      const fileName = createUploadFileName(file);
+      const presignedItem = await getPresignedUrl({
+        folder: "JOURNAL",
+        fileName,
+      });
+
+      await uploadFileToPresignedUrl(
+        presignedItem.presignedUrl,
+        file,
+        presignedItem.contentType,
+      );
+
+      onChangePhoto(presignedItem.imageUrl);
+    } catch (error) {
+      showToast({
+        message:
+          error instanceof Error
+            ? error.message
+            : "장소 사진 업로드에 실패했습니다.",
+      });
+    }
 
     e.target.value = '';
   };
