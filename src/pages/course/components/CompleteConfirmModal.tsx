@@ -3,14 +3,17 @@ import type { ComponentPropsWithoutRef } from "react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { completeCourse } from "@/api/savedCourse";
-import { useLogDraft } from "../contexts/logDraft";
+import { getJournalWriteInfo } from "@/api/journal";
+import {
+  useLogDraft,
+  type PlaceReviewDraft,
+} from "../contexts/LogDraftContext";
 import { showToast } from "./ShowToast";
 import { formatAcquiredAtToDisplayDate } from "@/utils/logDate";
 
 interface CompleteConfirmModalProps extends ComponentPropsWithoutRef<"div"> {
   onClose: () => void;
   courseId: number;
-  courseName: string;
   stationName: string;
   onCompleted: (courseId: number) => void;
 }
@@ -18,7 +21,6 @@ interface CompleteConfirmModalProps extends ComponentPropsWithoutRef<"div"> {
 export default function CompleteConfirmModal({
   onClose,
   courseId,
-  courseName,
   stationName,
   onCompleted,
 }: CompleteConfirmModalProps) {
@@ -32,12 +34,25 @@ export default function CompleteConfirmModal({
     setIsSubmitting(true);
     try {
       const result = await completeCourse(courseId);
+      const writeInfo = await getJournalWriteInfo(result.memberStampId);
+      const placeReviews: PlaceReviewDraft[] = writeInfo.places
+        .slice()
+        .sort((a, b) => a.orderNum - b.orderNum)
+        .map((place) => ({
+          id: place.placeId,
+          label: place.placeName,
+          review: "",
+          photo: null,
+        }));
+
       initializeFromStamp({
         memberStampId: result.memberStampId,
         stationId: result.stationId,
-        stationName: result.stationName,
+        stationName: writeInfo.stationName,
         acquiredDate: formatAcquiredAtToDisplayDate(result.acquiredAt),
-        logName: courseName,
+        logName: writeInfo.courseName,
+        tags: writeInfo.tags,
+        placeReviews,
       });
       onCompleted(courseId);
       navigate(`/course/${courseId}/stamp`, {

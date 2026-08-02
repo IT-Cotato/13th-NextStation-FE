@@ -1,19 +1,17 @@
-
-import { useLogDraft } from "../contexts/logDraft";
-
-const tags = ['문화공간', '카페', '산책'];
+import { useLogDraft } from "../contexts/LogDraftContext";
 
 export default function LogPreviewCard() {
   const { draft } = useLogDraft();
   const displayDate = draft.selectedDate ?? draft.acquiredDate;
   const stationName = draft.stationName ?? "환승역";
 
-  const placeLabels = draft.placeReviews.map((place) => place.label);
+  const tags = draft.tags;
+  const places = draft.placeReviews.map((place) => place.label);
   const previewImage = draft.photos[0];
 
   const maxVisiblePlaces = 3;
-  const visiblePlaces = placeLabels.slice(0, maxVisiblePlaces);
-  const hiddenCount = placeLabels.length - visiblePlaces.length;
+  const visiblePlaces = places.slice(0, maxVisiblePlaces);
+  const hiddenCount = places.length - visiblePlaces.length;
 
   return (
     <div className="flex flex-col w-[360px] items-center justify-center rounded-lg p-3 gap-3 bg-white">
@@ -42,20 +40,20 @@ export default function LogPreviewCard() {
 
           <div className="flex items-center justify-center gap-1">
             {tags.map((tag) => (
-            <div 
-              key={tag}
-              className="flex items-center justify-center rounded-lg px-2 py-1 bg-gray-20"
-            >
-              <p className="text-caption text-gray-80 leading-none tracking-[-0.025em]">
-                {tag}
-              </p>
-            </div>
+              <div
+                key={tag}
+                className="flex items-center justify-center rounded-lg px-2 py-1 bg-gray-20"
+              >
+                <p className="text-caption text-gray-80 leading-none tracking-[-0.025em]">
+                  {tag}
+                </p>
+              </div>
             ))}
           </div>
         </div>
       </div>
 
-      {/* 장소 해시태그 */}
+      {/* 장소 */}
       <div className="flex w-full gap-1 overflow-hidden">
         {visiblePlaces.map((label) => (
           <div

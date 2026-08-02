@@ -156,7 +156,6 @@ export default function MainPage() {
         <CompleteConfirmModal
           onClose={closeCompleteModal}
           courseId={selectedCourse.courseId}
-          courseName={selectedCourse.name}
           stationName={selectedCourse.stationName}
           onCompleted={handleCourseCompleted}
         />

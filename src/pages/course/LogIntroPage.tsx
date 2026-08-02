@@ -1,7 +1,7 @@
 import { useNavigate, useParams } from "react-router-dom"
 import CTAButton from "@/components/CTAButton"
 import LogIcon from '@/assets/log.svg?react';
-import { useLogDraft } from "./contexts/logDraft";
+import { useLogDraft } from "./contexts/LogDraftContext";
 
 function LogIntroPage() {
   const navigate = useNavigate();

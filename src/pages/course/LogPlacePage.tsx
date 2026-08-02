@@ -5,7 +5,7 @@ import CTAButton from "@/components/CTAButton";
 import ConfirmModal from "@/components/ConfirmModal";
 import NameEditInput from "./components/NameEditInput";
 import PlaceReviewCard from "./components/PlaceReviewCard";
-import { useLogDraft } from "./contexts/logDraft";
+import { useLogDraft } from "./contexts/LogDraftContext";
 
 function LogPlacePage() {
   const navigate = useNavigate();

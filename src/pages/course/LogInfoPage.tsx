@@ -8,7 +8,7 @@ import LogDatePickerModal from "./components/date-picker/LogDatePickerModal";
 import CalendarIcon from '@/assets/calendar.svg?react';
 import ConfirmModal from "@/components/ConfirmModal";
 import NameEditInput from "./components/NameEditInput";
-import { useLogDraft } from "./contexts/logDraft";
+import { useLogDraft } from "./contexts/LogDraftContext";
 
 const timeOptions = ['3~4시간', '반나절', '하루종일'];
 

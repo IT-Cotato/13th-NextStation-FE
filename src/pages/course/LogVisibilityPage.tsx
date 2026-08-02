@@ -5,7 +5,7 @@ import CTAButton from "@/components/CTAButton";
 import ConfirmModal from "@/components/ConfirmModal";
 import LogPreviewCard from "./components/LogPreviewCrad";
 import VisibilityCard from "./components/VisibilityCard";
-import { useLogDraft } from "./contexts/logDraft";
+import { useLogDraft } from "./contexts/LogDraftContext";
 
 function LogVisibilityPage() {
   const navigate = useNavigate();
