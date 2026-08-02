@@ -44,7 +44,7 @@ export default function LogPreviewCard() {
                 key={tag}
                 className="flex items-center justify-center rounded-lg px-2 py-1 bg-gray-20"
               >
-                <p className="text-caption text-gray-80 leading-none tracking-[-0.025em]">
+                <p className="whitespace-nowrap text-caption text-gray-80 leading-none tracking-[-0.025em]">
                   {tag}
                 </p>
               </div>
@@ -60,7 +60,7 @@ export default function LogPreviewCard() {
             key={label}
             className="flex rounded-lg items-center justify-center px-4 py-2 bg-gray-10"
           >
-            <p className="text-body-02 text-gray-70 leading-[1.4] tracking-[-0.025em]">
+            <p className="whitespace-nowrap text-body-02 text-gray-70 leading-[1.4] tracking-[-0.025em]">
               {label}
             </p>
           </div>

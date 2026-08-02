@@ -24,7 +24,9 @@ function StampAcquiredPage() {
   const lottieRef = useRef<LottieRefCurrentProps | null>(null);
 
   const handleComplete = () => {
-    navigate(`/course/${courseId ?? ""}/log`);
+    navigate(`/course/${courseId ?? ""}/log`, {
+      state: completionResult,
+    });
   };
 
   return (

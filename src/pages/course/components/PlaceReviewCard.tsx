@@ -29,10 +29,18 @@ export default function PlaceReviewCard({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [isEditing, setIsEditing] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
 
   const handleChangePhoto = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (isUploading) {
+      e.target.value = '';
+      return;
+    }
+
     const file = e.target.files?.[0];
     if (!file) return;
+
+    setIsUploading(true);
 
     try {
       const previousPhoto = photo;
@@ -60,12 +68,14 @@ export default function PlaceReviewCard({
             ? error.message
             : "장소 사진 업로드에 실패했습니다.",
       });
+    } finally {
+      setIsUploading(false);
+      e.target.value = '';
     }
-
-    e.target.value = '';
   };
 
   const handleDeletePhoto = async () => {
+    if (isUploading) return;
     if (!photo) return;
 
     try {
@@ -100,6 +110,7 @@ export default function PlaceReviewCard({
             />
             <button
               type="button"
+              disabled={isUploading}
               onClick={() => void handleDeletePhoto()}
               className="absolute top-1 right-1"
             >
@@ -109,6 +120,7 @@ export default function PlaceReviewCard({
       ):(
         <button
           type="button"
+          disabled={isUploading}
           onClick={() => fileInputRef.current?.click()}
           className="flex w-[72px] h-[72px] cursor-pointer shrink-0 items-center justify-center rounded-[12px] bg-secondary-10 border border-dashed border-secondary-40"
         >

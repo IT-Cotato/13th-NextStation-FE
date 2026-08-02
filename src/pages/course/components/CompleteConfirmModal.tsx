@@ -34,27 +34,38 @@ export default function CompleteConfirmModal({
     setIsSubmitting(true);
     try {
       const result = await completeCourse(courseId);
-      const writeInfo = await getJournalWriteInfo(result.memberStampId);
-      const placeReviews: PlaceReviewDraft[] = writeInfo.places
-        .slice()
-        .sort((a, b) => a.orderNum - b.orderNum)
-        .map((place) => ({
-          id: place.placeId,
-          label: place.placeName,
-          review: "",
-          photo: null,
-        }));
-
-      initializeFromStamp({
-        memberStampId: result.memberStampId,
-        stationId: result.stationId,
-        stationName: writeInfo.stationName,
-        acquiredDate: formatAcquiredAtToDisplayDate(result.acquiredAt),
-        logName: writeInfo.courseName,
-        tags: writeInfo.tags,
-        placeReviews,
-      });
       onCompleted(courseId);
+
+      try {
+        const writeInfo = await getJournalWriteInfo(result.memberStampId);
+        const placeReviews: PlaceReviewDraft[] = writeInfo.places
+          .slice()
+          .sort((a, b) => a.orderNum - b.orderNum)
+          .map((place) => ({
+            id: place.placeId,
+            label: place.placeName,
+            review: "",
+            photo: null,
+          }));
+
+        initializeFromStamp({
+          memberStampId: result.memberStampId,
+          stationId: result.stationId,
+          stationName: writeInfo.stationName,
+          acquiredDate: formatAcquiredAtToDisplayDate(result.acquiredAt),
+          logName: writeInfo.courseName,
+          tags: writeInfo.tags,
+          placeReviews,
+        });
+      } catch (error) {
+        showToast({
+          message:
+            error instanceof Error
+              ? error.message
+              : "여행일지 초기 정보를 불러오지 못했습니다.",
+        });
+      }
+
       navigate(`/course/${courseId}/stamp`, {
         state: result,
       });

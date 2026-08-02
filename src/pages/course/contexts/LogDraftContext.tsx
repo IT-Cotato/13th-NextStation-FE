@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import {
   createContext,
   useContext,
@@ -89,6 +90,9 @@ export function useLogDraft() {
 
 export function LogDraftProvider({ children }: PropsWithChildren) {
   const [draft, setDraft] = useState<LogDraft>(INITIAL_LOG_DRAFT);
+  const [initialLogName, setInitialLogName] = useState(
+    INITIAL_LOG_DRAFT.logName,
+  );
 
   const value = useMemo<LogDraftContextValue>(() => {
     const initializeFromStamp = ({
@@ -108,6 +112,7 @@ export function LogDraftProvider({ children }: PropsWithChildren) {
       tags: string[];
       placeReviews: PlaceReviewDraft[];
     }) => {
+      setInitialLogName(logName);
       setDraft({
         ...INITIAL_LOG_DRAFT,
         memberStampId,
@@ -165,7 +170,7 @@ export function LogDraftProvider({ children }: PropsWithChildren) {
     };
 
     const isDirty =
-      draft.logName !== getDefaultLogName(draft.stationName) ||
+      draft.logName !== initialLogName ||
       draft.selectedDate !== null ||
       draft.selectedTime !== null ||
       draft.review.trim() !== '' ||
@@ -189,7 +194,7 @@ export function LogDraftProvider({ children }: PropsWithChildren) {
       updatePlaceReview,
       isDirty,
     };
-  }, [draft]);
+  }, [draft, initialLogName]);
 
   return (
     <LogDraftContext.Provider value={value}>{children}</LogDraftContext.Provider>
