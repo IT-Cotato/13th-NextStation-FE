@@ -22,7 +22,7 @@ export default function SavedPage() {
     const result = await share({
       title: "환승여행",
       text: `${courseInfo.courseName} 코스를 확인해보세요!`,
-      url: `http://172.30.1.48:5173/course/${courseInfo.courseId}/verify`,
+      url: `https://next-station-git-develop-canofmatos-projects.vercel.app/course/${courseInfo.courseId}/verify`,
     });
 
     if (result === "copiedToClipboard") {
