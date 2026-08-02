@@ -1,3 +1,5 @@
+import { getAccessToken } from "./auth";
+
 export interface MemberProfile {
   memberId: number;
   nickname: string;
@@ -5,14 +7,37 @@ export interface MemberProfile {
 }
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+const MEMBER_PROFILE_STORAGE_KEY = "member.profile";
+
+export function saveCachedMyProfile(profile: MemberProfile) {
+  sessionStorage.setItem(MEMBER_PROFILE_STORAGE_KEY, JSON.stringify(profile));
+}
+
+export function getCachedMyProfile(): MemberProfile | null {
+  const storedProfile = sessionStorage.getItem(MEMBER_PROFILE_STORAGE_KEY);
+
+  if (!storedProfile) {
+    return null;
+  }
+
+  try {
+    return JSON.parse(storedProfile) as MemberProfile;
+  } catch {
+    return null;
+  }
+}
+
+export function clearCachedMyProfile() {
+  sessionStorage.removeItem(MEMBER_PROFILE_STORAGE_KEY);
+}
 
 export async function getMyProfile(): Promise<MemberProfile> {
-  const accessToken = localStorage.getItem("accessToken");
+  const accessToken = getAccessToken();
 
-  if(!accessToken) {
+  if (!accessToken) {
     throw new Error("로그인 토큰이 없습니다.");
   }
-  
+
   const response = await fetch(`${API_BASE_URL}/api/v1/members/me`, {
     headers: {
       Authorization: `Bearer ${accessToken}`,
@@ -26,9 +51,13 @@ export async function getMyProfile(): Promise<MemberProfile> {
   const json = await response.json();
   const data = json.data;
 
-  return {
+  const profile = {
     memberId: data.memberId,
     nickname: data.nickname,
     profileImageUrl: data.profileImageUrl,
   };
+
+  saveCachedMyProfile(profile);
+
+  return profile;
 }

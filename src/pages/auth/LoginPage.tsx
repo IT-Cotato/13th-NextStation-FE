@@ -7,6 +7,7 @@ import {
   login,
   saveAccessToken,
 } from '@/api/auth';
+import { getMyProfile } from '@/api/member';
 import AuthInput from './components/AuthInput';
 
 export default function LoginPage() {
@@ -50,6 +51,7 @@ export default function LoginPage() {
       setIsSubmitting(true);
       const { accessToken } = await login(email, password);
       saveAccessToken(accessToken);
+      await getMyProfile();
       navigate('/');
     } catch (error) {
       const message =

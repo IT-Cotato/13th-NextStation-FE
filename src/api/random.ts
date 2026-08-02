@@ -1,5 +1,5 @@
-import type { SubwayLine } from "@/types/subway";
 import { getAccessToken } from "@/api/auth";
+import type { SubwayLine } from "@/types/subway";
 export interface RandomStationLineResponse {
   id: SubwayLine;
   name: string;
@@ -45,10 +45,16 @@ export class RandomDrawNotFoundError extends Error {
 }
 
 export async function drawRandomStation(): Promise<RandomDrawResponseData> {
+  const accessToken = getAccessToken();
+
+  if (!accessToken) {
+    throw new Error("로그인 토큰이 없습니다.");
+  }
+
   const response = await fetch(`${API_BASE_URL}/api/v1/random`, {
     method: "POST",
     headers: {
-      Authorization: `Bearer ${getAccessToken()}`,
+      Authorization: `Bearer ${accessToken}`,
     },
   });
 
@@ -69,24 +75,28 @@ export async function drawRandomStation(): Promise<RandomDrawResponseData> {
       stationName: data.station.stationName,
       description: data.station.description,
       todos: data.station.todos ?? [],
-      lines: (data.station.lines ?? []).map((line: RandomStationLineResponse) => ({
-        id: line.id,
-        name: line.name,
-        code: line.code,
-      })),
+      lines: (data.station.lines ?? []).map(
+        (line: RandomStationLineResponse) => ({
+          id: line.id,
+          name: line.name,
+          code: line.code,
+        }),
+      ),
     },
     course: {
       name: data.course.name,
-      places: (data.course.places ?? []).map((place: RandomCoursePlaceResponse) => ({
-        placeId: place.placeId,
-        placeName: place.placeName,
-        description: place.description,
-        categoryCode: place.categoryCode,
-        categoryName: place.categoryName,
-        imageUrl: place.imageUrl,
-        xCoordinate: place.xCoordinate,
-        yCoordinate: place.yCoordinate,
-      })),
+      places: (data.course.places ?? []).map(
+        (place: RandomCoursePlaceResponse) => ({
+          placeId: place.placeId,
+          placeName: place.placeName,
+          description: place.description,
+          categoryCode: place.categoryCode,
+          categoryName: place.categoryName,
+          imageUrl: place.imageUrl,
+          xCoordinate: place.xCoordinate,
+          yCoordinate: place.yCoordinate,
+        }),
+      ),
     },
   };
 }
