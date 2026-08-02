@@ -5,19 +5,24 @@ import Button from '@/components/Button';
 import Header from '@/components/Header';
 import type { RandomDrawResponseData } from '@/api/random';
 
+type ResultPageState = RandomDrawResponseData & {
+  source?: "random" | "recommend";
+};
+
 function ResultPage() {
   const navigate = useNavigate();
   const location = useLocation();
-  const result = location.state as RandomDrawResponseData | undefined;
+  const result = location.state as ResultPageState | undefined;
 
   if (!result) {
     navigate(`/draw/loading`);
     return null;
   }
 
-  const { station } = result;
+  const { station, source = "random" } = result;
   const primaryLine = station.lines[0];
   const formattedDescription = station.description.replace(/,\s*/g, ",\n");
+  const isRecommendResult = source === "recommend";
 
   return (
     <main className="relative flex flex-col h-dvh overflow-hidden bg-gray-10 gap-8 pt-[calc(var(--safe-top)+12px)]">
@@ -67,24 +72,39 @@ function ResultPage() {
       <section className='absolute bottom-[calc(var(--safe-bottom)+10px)] z-10 flex w-full items-center justify-between px-5'>
         <Button
           direction="left"
-          onClick={() => navigate('/draw/loading')}
+          onClick={() =>
+            navigate('/draw/loading', {
+              state: {
+                source,
+              },
+            })
+          }
         >
           다시 뽑기
         </Button>
         <Button
           direction="right"
           onClick={() =>
-            navigate('/course/verify?from=draw', {
-              state: {
-                course: result.course,
-                stationId: station.stationId,
-                stationName: station.stationName,
-                lineId: primaryLine.id,
-              },
-            })
+            isRecommendResult
+              ? navigate(`/course/${station.stationId}/create`, {
+                  state: {
+                    course: result.course,
+                    stationId: station.stationId,
+                    stationName: station.stationName,
+                    lineId: primaryLine.id,
+                  },
+                })
+              : navigate('/course/verify?from=draw', {
+                  state: {
+                    course: result.course,
+                    stationId: station.stationId,
+                    stationName: station.stationName,
+                    lineId: primaryLine.id,
+                  },
+                })
           }
         >
-          코스 확인하기
+          {isRecommendResult ? "코스 만들기" : "코스 확인하기"}
         </Button>
       </section>     
     </main>
