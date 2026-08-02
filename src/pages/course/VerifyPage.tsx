@@ -26,6 +26,7 @@ import type { RandomCourseResponse } from "@/api/random";
 import Button from "@/components/Button";
 import CTAButton from "@/components/CTAButton";
 import share from "@/utils/share";
+import { showToast } from "./components/ShowToast";
 
 interface DraftCourseState {
   course: RandomCourseResponse;
@@ -82,6 +83,7 @@ export default function VerifyPage() {
   const courseListRef = useRef<HTMLUListElement>(null);
   const [pressedId, setPressedId] = useState<number | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false); // 순서/이름을 바꾸고 아직 저장 안 한 상태인지
   const [searchParams] = useSearchParams(); // 어떤 페이지로부터 진입했는지를 알기 위함
   const from = searchParams.get("from"); // draw (랜덤 뽑기) | recommend (맞춤 추천)
 
@@ -124,6 +126,7 @@ export default function VerifyPage() {
           placeIds: places.map((place) => place.placeId),
         });
         setCourseName(updated.name);
+        setHasUnsavedChanges(false);
         return course.courseId;
       }
 
@@ -135,11 +138,39 @@ export default function VerifyPage() {
       setCourse((prev) =>
         prev ? { ...prev, courseId: created.courseId } : prev,
       );
+      setHasUnsavedChanges(false);
       return created.courseId;
     } catch (e) {
       console.error(e);
       return null;
     }
+  };
+
+  const [isSaving, setIsSaving] = useState(false);
+
+  const handleSaveAndGo = async () => {
+    if (isSaving) return;
+
+    setIsSaving(true);
+    const savedCourseId = await handleSave();
+    setIsSaving(false);
+
+    if (savedCourseId === null) {
+      showToast({ message: "코스 저장에 실패했습니다." });
+      return;
+    }
+
+    navigate("/course/saved", {
+      state: { courseName, courseId: savedCourseId },
+    });
+  };
+
+  const handleSaveOnly = async () => {
+    if (isSaving) return;
+
+    setIsSaving(true);
+    await handleSave();
+    setIsSaving(false);
   };
 
   const toggleModal = () => setIsModalOpen((prev) => !prev);
@@ -161,13 +192,31 @@ export default function VerifyPage() {
     await share({
       title: "환승여행",
       text: `${courseName} 코스를 확인해보세요!`,
-      url: `http://172.30.1.48:5173/course/${courseId}/verify`,
+      url: `https://next-station-git-develop-canofmatos-projects.vercel.app/course/${course.courseId}/verify`,
     });
+  };
+
+  const handleCloseClick = () => {
+    if (course.courseId !== null && !hasUnsavedChanges) {
+      navigate("/");
+      return;
+    }
+    toggleModal();
+  };
+
+  const handleCourseNameChange = (value: string) => {
+    setCourseName(value);
+    setHasUnsavedChanges(true);
+  };
+
+  const handleReorder = (newPlaces: Place[]) => {
+    setPlaces(newPlaces);
+    setHasUnsavedChanges(true);
   };
 
   return (
     <main className="flex flex-col h-dvh  bg-gray-10 gap-8 pt-[calc(var(--safe-top)+12px)] overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
-      <Header showBack showClose onCloseClick={toggleModal} />
+      <Header showBack showClose onCloseClick={handleCloseClick} />
 
       {/* 경고 모달 */}
       {isModalOpen && (
@@ -191,7 +240,10 @@ export default function VerifyPage() {
       {/* 지도 */}
       <section className="flex justify-center">
         <div className="flex flex-col gap-2.5 w-[360px]">
-          <NameEditInput value={courseName} onChange={setCourseName} />
+          <NameEditInput
+            value={courseName}
+            onChange={handleCourseNameChange}
+          />
 
           <div className="flex flex-col border h-[357px] border-gray-40 bg-white rounded-lg overflow-hidden">
             <div className="flex items-center justify-between px-4 py-4">
@@ -240,7 +292,7 @@ export default function VerifyPage() {
           ref={courseListRef}
           axis="y"
           values={places}
-          onReorder={setPlaces}
+          onReorder={handleReorder}
           className="flex flex-col gap-[13px] "
         >
           {places.map((place, index) => (
@@ -275,26 +327,15 @@ export default function VerifyPage() {
             </Button>
             <Button
               direction="right"
-              onClick={async () => {
-                const savedCourseId = await handleSave();
-                navigate("/course/saved", {
-                  state: { courseName, courseId: savedCourseId },
-                });
-              }}
+              disabled={isSaving}
+              onClick={handleSaveAndGo}
             >
               저장하기
             </Button>
           </div>
         ) : from === "recommend" ? ( // 맞춤 추천으로부터 진입
           <div className="flex w-[360px]">
-            <CTAButton
-              onClick={async () => {
-                const savedCourseId = await handleSave();
-                navigate("/course/saved", {
-                  state: { courseName, courseId: savedCourseId },
-                });
-              }}
-            >
+            <CTAButton disabled={isSaving} onClick={handleSaveAndGo}>
               코스 저장하기
             </CTAButton>
           </div>
@@ -304,8 +345,12 @@ export default function VerifyPage() {
             <Button direction="left" mode="share" onClick={handleShareClick}>
               공유하기
             </Button>
-            <Button direction="right" onClick={handleSave}>
-              코스 저장
+            <Button
+              direction="right"
+              disabled={isSaving}
+              onClick={handleSaveOnly}
+            >
+              저장하기
             </Button>
           </div>
         )}
