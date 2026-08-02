@@ -5,12 +5,14 @@ import type { StationLine } from '@/api/stations';
 interface RecentStationChipProps {
   name: string;
   lines: StationLine[],
+  onSelect?: () => void;
   onRemove?: () => void;
 }
 
 export default function RecentStationChip({
   name,
   lines,
+  onSelect,
   onRemove
 }: RecentStationChipProps) {
 
@@ -20,24 +22,31 @@ export default function RecentStationChip({
   };
 
   return (
-    <div className="flex gap-0.5 px-2 py-1 border border-gray-40 rounded-lg items-center justify-center">
-      <div className='flex items-center gap-0.5'>
-        {lines.map((line) => {
-          const badgeLine = getLineBadgeValue(line.name);
+    <div className="flex items-center justify-center gap-0.5 rounded-lg border border-gray-40 px-2 py-1">
+      <button
+        type="button"
+        onClick={onSelect}
+        className="flex items-center gap-0.5"
+        aria-label={`${name} 최근 검색 선택`}
+      >
+        <div className='flex items-center gap-0.5'>
+          {lines.map((line) => {
+            const badgeLine = getLineBadgeValue(line.name);
 
-          if (!badgeLine) return null;
+            if (!badgeLine) return null;
 
-          return (
-            <LineBadge
-              key={`${name}-${line.code}`}
-              line={badgeLine}
-            />
-          );
-        })}
-      </div>
-      <p className="text-body-02 text-gray-70 leading-[1.4] tracking-[-0.025em] text-center">
-        {name}
-      </p>
+            return (
+              <LineBadge
+                key={`${name}-${line.code}`}
+                line={badgeLine}
+              />
+            );
+          })}
+        </div>
+        <p className="text-center text-body-02 leading-[1.4] tracking-[-0.025em] text-gray-70">
+          {name}
+        </p>
+      </button>
       <button
         type="button"
         onClick={onRemove}
@@ -46,7 +55,6 @@ export default function RecentStationChip({
       >
         <DeleteIcon className='size-2' />
       </button>
-      
     </div>
   )
 }

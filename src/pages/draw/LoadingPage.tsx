@@ -5,12 +5,13 @@ import {
 } from "@/api/member";
 import { drawRandomStation, RandomDrawNotFoundError } from "@/api/random";
 import { useEffect, useRef, useState } from "react"
-import { useNavigate } from "react-router-dom"
+import { useLocation, useNavigate } from "react-router-dom"
 
 const MIN_LOADING_MS = 1500;
 
 function LoadingPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [error, setError] = useState<string | null>(null);
   const retryTimeoutRef = useRef<number | null>(null);
   const [displayName, setDisplayName] = useState<string | null>(() => {
@@ -21,6 +22,8 @@ function LoadingPage() {
     Boolean(getCachedMyProfile()?.nickname),
   );
   const isLoggedIn = Boolean(getAccessToken());
+  const source = (location.state as { source?: "random" | "recommend" } | null)
+    ?.source ?? "random";
 
   useEffect(() => {
     let isMounted = true;
@@ -67,7 +70,10 @@ function LoadingPage() {
         if (!isMounted) return;
 
         navigate(`/draw/result`, {
-          state: result,
+          state: {
+            ...result,
+            source,
+          },
           replace: true,
         });
       } catch (error) {
@@ -94,7 +100,7 @@ function LoadingPage() {
         window.clearTimeout(retryTimeoutRef.current);
       }
     }
-  }, [isLoggedIn, navigate]);
+  }, [isLoggedIn, navigate, source]);
 
     return(
     <main className="flex flex-col h-dvh overflow-hidden bg-gray-10 items-center justify-center pt-[var(--safe-top)]">
