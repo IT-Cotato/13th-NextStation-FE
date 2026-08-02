@@ -1,3 +1,4 @@
+import { getAccessToken } from "@/api/auth";
 export interface StationLine {
   id: number;
   name: string;
@@ -43,19 +44,23 @@ export interface StationCourseRecommendation {
   categories: StationCategory[];
 }
 
-import { getAccessToken } from "@/api/auth";
-
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 // 역별 장소 목록 조회 (맞춤 추천용)
 export async function getStationCourseRecommendation(
   stationId: number,
 ): Promise<StationCourseRecommendation> {
+  const accessToken = getAccessToken();
+
+  if (!accessToken) {
+    throw new Error("로그인 토큰이 없습니다.");
+  }
+
   const response = await fetch(
     `${API_BASE_URL}/api/v1/stations/${stationId}/places`,
     {
       headers: {
-        Authorization: `Bearer ${getAccessToken()}`,
+        Authorization: `Bearer ${accessToken}`,
       },
     },
   );
@@ -91,11 +96,17 @@ export async function createCourse(
   name: string,
   placeIds: number[],
 ): Promise<CreatedCourse> {
+  const accessToken = getAccessToken();
+
+  if (!accessToken) {
+    throw new Error("로그인 토큰이 없습니다");
+  }
+
   const response = await fetch(`${API_BASE_URL}/api/v1/courses`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${getAccessToken()}`,
+      Authorization: `Bearer ${accessToken}`,
     },
     body: JSON.stringify({ stationId, name, placeIds }),
   });

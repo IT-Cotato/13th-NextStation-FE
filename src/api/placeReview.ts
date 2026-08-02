@@ -37,11 +37,17 @@ export async function getReviews(
   sort: "RECOMMEND" | "LATEST",
   cursor?: string,
 ): Promise<PlaceReviewListResponse> {
+  const accessToken = getAccessToken();
+
+  if (!accessToken) {
+    throw new Error("로그인 토큰이 없습니다");
+  }
+
   const response = await fetch(
     `${API_BASE_URL}/api/v1/places/${placeId}/reviews?sort=${sort}&size=10${cursor ? `&cursor=${cursor}` : ""}`,
     {
       headers: {
-        Authorization: `Bearer ${getAccessToken()}`,
+        Authorization: `Bearer ${accessToken}`,
       },
     },
   );
@@ -63,12 +69,18 @@ export async function getReviews(
 
 // 장소 리뷰 좋아요
 export async function createReviewLike(reviewId: number): Promise<void> {
+  const accessToken = getAccessToken();
+
+  if (!accessToken) {
+    throw new Error("로그인 토큰이 없습니다");
+  }
+
   const response = await fetch(
     `${API_BASE_URL}/api/v1/places/reviews/${reviewId}/like`,
     {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${getAccessToken()}`,
+        Authorization: `Bearer ${accessToken}`,
       },
     },
   );
@@ -80,12 +92,18 @@ export async function createReviewLike(reviewId: number): Promise<void> {
 
 // 장소 리뷰 좋아요 취소
 export async function deleteReviewLike(reviewId: number): Promise<void> {
+  const accessToken = getAccessToken();
+
+  if (!accessToken) {
+    throw new Error("로그인 토큰이 없습니다");
+  }
+
   const response = await fetch(
     `${API_BASE_URL}/api/v1/places/reviews/${reviewId}/like`,
     {
       method: "DELETE",
       headers: {
-        Authorization: `Bearer ${getAccessToken()}`,
+        Authorization: `Bearer ${accessToken}`,
       },
     },
   );

@@ -36,11 +36,17 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 export async function getSavedCourses(
   cursor?: string,
 ): Promise<SavedCourseResponseItem> {
+  const accessToken = getAccessToken();
+
+  if (!accessToken) {
+    throw new Error("로그인 토큰이 없습니다");
+  }
+
   const response = await fetch(
-    `${API_BASE_URL}/api/v1/members/me/courses?size=10${cursor ? `&cursor=${cursor}` : ""}`,
+    `${API_BASE_URL}/api/v1/members/me/courses?size=10${cursor ? `&cursor=${encodeURIComponent(cursor)}` : ""}`,
     {
       headers: {
-        Authorization: `Bearer ${getAccessToken()}`,
+        Authorization: `Bearer ${accessToken}`,
       },
     },
   );
@@ -63,10 +69,16 @@ export async function getSavedCourses(
 
 // 코스 삭제
 export async function deleteSavedCourses(courseIds: number[]): Promise<void> {
+  const accessToken = getAccessToken();
+
+  if (!accessToken) {
+    throw new Error("로그인 토큰이 없습니다");
+  }
+
   const response = await fetch(`${API_BASE_URL}/api/v1/members/me/courses`, {
     method: "DELETE",
     headers: {
-      Authorization: `Bearer ${getAccessToken()}`,
+      Authorization: `Bearer ${accessToken}`,
       "Content-Type": "application/json",
     },
     body: JSON.stringify({ courseIds }),
@@ -88,21 +100,28 @@ export interface CourseCompletionResult {
 export async function completeCourse(
   courseId: number,
 ): Promise<CourseCompletionResult> {
+  const accessToken = getAccessToken();
+
+  if (!accessToken) {
+    throw new Error("로그인 토큰이 없습니다");
+  }
+
   const response = await fetch(
     `${API_BASE_URL}/api/v1/courses/${courseId}/complete`,
     {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${getAccessToken()}`,
+        Authorization: `Bearer ${accessToken}`,
       },
     },
   );
 
-  const json = await response.json();
-
   if (!response.ok) {
-    throw new Error(json.message ?? "여행 완료 처리에 실패했습니다.");
+    const errorJson = await response.json().catch(() => null);
+    throw new Error(errorJson.message ?? "여행 완료 처리에 실패했습니다.");
   }
+
+  const json = await response.json();
 
   return json.data;
 }

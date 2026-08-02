@@ -1,3 +1,4 @@
+import { getAccessToken } from "@/api/auth";
 export interface PlaceReview {
   // ReviewPreviewCard에서 사용됨
   reviewId: number;
@@ -67,15 +68,19 @@ export interface Course {
   imageUrl: string | null;
 }
 
-import { getAccessToken } from "@/api/auth";
-
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 // 장소 상세 조회
 export async function getPlaceDetail(placeId: number): Promise<Place> {
+  const accessToken = getAccessToken();
+
+  if (!accessToken) {
+    throw new Error("로그인 토큰이 없습니다");
+  }
+
   const response = await fetch(`${API_BASE_URL}/api/v1/places/${placeId}`, {
     headers: {
-      Authorization: `Bearer ${getAccessToken()}`,
+      Authorization: `Bearer ${accessToken}`,
     },
   });
 
@@ -103,11 +108,17 @@ export async function getPlaceDetail(placeId: number): Promise<Place> {
 
 // 장소를 포함한 코스 조회
 export async function getPlaceCourses(placeId: number): Promise<Course[]> {
+  const accessToken = getAccessToken();
+
+  if (!accessToken) {
+    throw new Error("로그인 토큰이 없습니다");
+  }
+
   const response = await fetch(
     `${API_BASE_URL}/api/v1/places/${placeId}/courses`,
     {
       headers: {
-        Authorization: `Bearer ${getAccessToken()}`,
+        Authorization: `Bearer ${accessToken}`,
       },
     },
   );
