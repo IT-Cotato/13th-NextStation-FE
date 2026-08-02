@@ -7,13 +7,13 @@ import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { SubwayLine } from '@/components/LineBadge';
 import LikeCard from './components/LikeCard';
+import LikeEmpty from '@/assets/like/like-empty.svg?react';
 import {
   deleteAllLikedCourses,
   deleteLikedCourses,
   getLikedCourses,
   type LikedCourse,
 } from '@/api/member';
-import { mockLikedCourses } from '@/mocks/mockLikedCourses';
 
 
 function LikePage() {
@@ -32,7 +32,6 @@ function LikePage() {
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmittingUnlike, setIsSubmittingUnlike] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const isDev = import.meta.env.DEV;
 
   const handleBackClick = () => {
     navigate(-1);
@@ -107,25 +106,10 @@ function LikePage() {
 
         const data = await getLikedCourses();
 
-        if (isDev && data.courses.length === 0) {
-          setLikedCourses(mockLikedCourses);
-          setNextCursor(null);
-          setHasNext(false);
-          return;
-        }
-
         setLikedCourses(data.courses);
         setNextCursor(data.nextCursor);
         setHasNext(data.hasNext);
       } catch {
-        if (isDev) {
-          setLikedCourses(mockLikedCourses);
-          setNextCursor(null);
-          setHasNext(false);
-          setError(null);
-          return;
-        }
-
         setError('좋아요한 코스 목록을 불러오지 못했어요.');
       } finally {
         setIsLoading(false);
@@ -133,7 +117,7 @@ function LikePage() {
     };
 
     void fetchInitialCourses();
-  }, [isDev]);
+  }, []);
 
   useEffect(() => {
     if (!loadMoreRef.current || !nextCursor || !hasNext) return;
@@ -192,8 +176,12 @@ function LikePage() {
     };
   }, [isDropdownOpen]);
 
+  const hasLikedCourses = likedCourses.length > 0;
+  const showEmptyState = !isLoading && !error && !hasLikedCourses;
+  const showErrorState = Boolean(error) && !hasLikedCourses;
+
   const renderContent = () => {
-    if (error && likedCourses.length === 0) {
+    if (showErrorState) {
       return (
         <section className="w-full px-4 py-6">
           <p className="text-body-02 text-gray-60">{error}</p>
@@ -201,12 +189,16 @@ function LikePage() {
       );
     }
 
-    if (!isLoading && likedCourses.length === 0) {
+    if (showEmptyState) {
       return (
-        <section className="w-full px-4 py-6">
-          <p className="text-body-02 text-gray-60">
-            아직 좋아요한 코스가 없어요.
-          </p>
+        <section className="w-full px-4 py-6 mt-[180px] flex justify-center">
+          <div className='flex flex-col items-center justify-center gap-5'>
+            <LikeEmpty className='w-[220px] h-[200px]'/>
+            <p className='text-subtitle text-gray-80 leading-[1.4] tracking-[-0.025em] text-center'>
+              아직 좋아요를 누른 게시물이 없어요!<br />
+              마음에 드는 코스를 저장해보세요.
+            </p>
+          </div>
         </section>
       );
     }

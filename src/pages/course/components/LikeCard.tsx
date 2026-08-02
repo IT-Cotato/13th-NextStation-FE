@@ -1,5 +1,5 @@
 import LineBadge, { type SubwayLine} from "@/components/LineBadge";
-import likeBg from '@/assets/like/likebg.jpg';
+import CardBG from '@/assets/like/card-background.svg?react';
 import LikeCheckIcon from '@/assets/like/likeCheck.svg?react';
 import LikeSelectIcon from '@/assets/like/likeSelect.svg?react';
 
@@ -23,11 +23,8 @@ export default function LikeCard({
 }: LikeCardProps) {
   return (
     <div className="relative h-40 w-full overflow-hidden rounded-[20px]">
-      <div
-        className="absolute inset-0 bg-cover bg-center"
-        style={{ backgroundImage: `url(${likeBg})` }}
-      />
-      <div className="absolute inset-0 bg-linear-to-b from-white/0 via-white/10 to-white/80" />
+      <CardBG className="absolute inset-0 h-full w-full" />
+      {/* <div className="absolute inset-0 bg-linear-to-b from-white/0 via-white/10 to-white/80" /> */}
 
       {isSelectMode ? (
         <button
