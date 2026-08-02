@@ -109,6 +109,30 @@ export async function uploadFileToPresignedUrl(
   }
 }
 
+// 이미지 삭제
+export async function deleteImage(imageUrl: string): Promise<void> {
+  const accessToken = getAccessToken();
+
+  if (!accessToken) {
+    throw new Error("로그인 토큰이 없습니다.");
+  }
+
+  const response = await fetch(
+    `${API_BASE_URL}/api/v1/images?imageUrl=${encodeURIComponent(imageUrl)}`,
+    {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    },
+  );
+
+  if (!response.ok) {
+    const errorJson = await response.json().catch(() => null);
+    throw new Error(errorJson?.message ?? "이미지 삭제에 실패했습니다.");
+  }
+}
+
 // 파일명 중복 방지용
 export function createUploadFileName(file: File) {
   const extension = file.name.split(".").pop() ?? "jpg";

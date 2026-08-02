@@ -3,6 +3,7 @@ import PlusIcon from '@/assets/photoPlus.svg?react';
 import DeleteIcon from '@/assets/delete.svg?react';
 import {
   createUploadFileName,
+  deleteImage,
   getPresignedUrlsBatch,
   uploadFileToPresignedUrl,
 } from "@/api/image";
@@ -64,8 +65,21 @@ export default function LogPhotoUploader({
     e.target.value = "";
   }
 
-  const handleDeletePhoto = (targetIndex: number) => {
-    onChange(photos.filter((_, index) => index !== targetIndex));
+  const handleDeletePhoto = async (targetIndex: number) => {
+    const targetPhoto = photos[targetIndex];
+    if (!targetPhoto) return;
+
+    try {
+      await deleteImage(targetPhoto);
+      onChange(photos.filter((_, index) => index !== targetIndex));
+    } catch (error) {
+      showToast({
+        message:
+          error instanceof Error
+            ? error.message
+            : "대표 사진 삭제에 실패했습니다.",
+      });
+    }
   };
 
   return (
@@ -94,7 +108,7 @@ export default function LogPhotoUploader({
 
             <button
               type="button"
-              onClick={() => handleDeletePhoto(index)}
+              onClick={() => void handleDeletePhoto(index)}
               className="absolute top-[10px] right-2"
             >
               <DeleteIcon className="size-5"/>

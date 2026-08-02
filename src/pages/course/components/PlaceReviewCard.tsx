@@ -3,6 +3,7 @@ import DeleteIcon from '@/assets/delete.svg?react';
 import { useRef, useState, useEffect } from 'react';
 import {
   createUploadFileName,
+  deleteImage,
   getPresignedUrl,
   uploadFileToPresignedUrl,
 } from "@/api/image";
@@ -34,6 +35,7 @@ export default function PlaceReviewCard({
     if (!file) return;
 
     try {
+      const previousPhoto = photo;
       const fileName = createUploadFileName(file);
       const presignedItem = await getPresignedUrl({
         folder: "JOURNAL",
@@ -47,6 +49,10 @@ export default function PlaceReviewCard({
       );
 
       onChangePhoto(presignedItem.imageUrl);
+
+      if (previousPhoto) {
+        await deleteImage(previousPhoto);
+      }
     } catch (error) {
       showToast({
         message:
@@ -59,8 +65,20 @@ export default function PlaceReviewCard({
     e.target.value = '';
   };
 
-  const handleDeletePhoto = () => {
-    onChangePhoto(null);
+  const handleDeletePhoto = async () => {
+    if (!photo) return;
+
+    try {
+      await deleteImage(photo);
+      onChangePhoto(null);
+    } catch (error) {
+      showToast({
+        message:
+          error instanceof Error
+            ? error.message
+            : "장소 사진 삭제에 실패했습니다.",
+      });
+    }
   };
 
   useEffect(() => {
@@ -82,7 +100,7 @@ export default function PlaceReviewCard({
             />
             <button
               type="button"
-              onClick={() => handleDeletePhoto()}
+              onClick={() => void handleDeletePhoto()}
               className="absolute top-1 right-1"
             >
               <DeleteIcon className="size-4"/>
