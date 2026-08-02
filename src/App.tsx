@@ -1,93 +1,127 @@
+import { lazy, Suspense } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import MainPage from "@/pages/MainPage";
-
-// auth
-import FinishPage from "@/pages/auth/FinishPage";
-import LoginPage from "@/pages/auth/LoginPage";
-import KakaoCallbackPage from "@/pages/auth/KakaoCallbackPage";
-import PasswordResetPage from "@/pages/auth/PasswordResetPage";
-import ProfileSetupPage from "@/pages/auth/ProfileSetupPage";
-import SignUpPage from "@/pages/auth/SignUpPage";
-import TermsAgreementPage from "@/pages/auth/TermsAgreementPage";
-import WelcomePage from "@/pages/auth/WelcomePage";
-
-// draw
-import LoadingPage from "@/pages/draw/LoadingPage";
-import ResultPage from "@/pages/draw/ResultPage";
-import RecommendPage from "@/pages/draw/RecommendPage";
-import ConditionPage from "@/pages/draw/ConditionPage";
-import PreferencePage from "@/pages/draw/PreferencePage";
-
-// course
-import CourseMainPage from "@/pages/course/MainPage";
-import SavedPage from "@/pages/course/SavedPage";
-import CreatePage from "@/pages/course/CreatePage";
-import LogIntroPage from "@/pages/course/LogIntroPage";
-import LogInfoPage from "@/pages/course/LogInfoPage";
-import LogPlacePage from "@/pages/course/LogPlacePage";
-import LogVisibilityPage from "@/pages/course/LogVisibilityPage";
-import StampAcquiredPage from "@/pages/course/StampAcquiredPage";
-import VerifyPage from "@/pages/course/VerifyPage";
-import LikePage from "@/pages/course/LikePage";
 import { LogDraftProvider } from "@/pages/course/contexts/LogDraftContext";
-
-// place
-import DetailPage from "./pages/place/DetailPage";
-import ReviewListPage from "./pages/place/ReviewListPage";
-
-// toast
 import "react-toastify/dist/ReactToastify.css";
 import Toast from "@/pages/course/components/Toast";
+
+const MainPage = lazy(() => import("@/pages/MainPage"));
+
+// auth pages
+const FinishPage = lazy(() => import("@/pages/auth/FinishPage"));
+const KakaoCallbackPage = lazy(() => import("@/pages/auth/KakaoCallbackPage"));
+const LoginPage = lazy(() => import("@/pages/auth/LoginPage"));
+const PasswordResetPage = lazy(() => import("@/pages/auth/PasswordResetPage"));
+const ProfileSetupPage = lazy(() => import("@/pages/auth/ProfileSetupPage"));
+const SignUpPage = lazy(() => import("@/pages/auth/SignUpPage"));
+const TermsAgreementPage = lazy(
+  () => import("@/pages/auth/TermsAgreementPage"),
+);
+const WelcomePage = lazy(() => import("@/pages/auth/WelcomePage"));
+
+// draw pages
+const ConditionPage = lazy(() => import("@/pages/draw/ConditionPage"));
+const LoadingPage = lazy(() => import("@/pages/draw/LoadingPage"));
+const PreferencePage = lazy(() => import("@/pages/draw/PreferencePage"));
+const RecommendPage = lazy(() => import("@/pages/draw/RecommendPage"));
+const ResultPage = lazy(() => import("@/pages/draw/ResultPage"));
+
+// course pages
+const CourseMainPage = lazy(() => import("@/pages/course/MainPage"));
+const CreatePage = lazy(() => import("@/pages/course/CreatePage"));
+const LogIntroPage = lazy(() => import("@/pages/course/LogIntroPage"));
+const LogInfoPage = lazy(() => import("@/pages/course/LogInfoPage"));
+const LogPlacePage = lazy(() => import("@/pages/course/LogPlacePage"));
+const LogVisibilityPage = lazy(
+  () => import("@/pages/course/LogVisibilityPage"),
+);
+const LikePage = lazy(() => import("@/pages/course/LikePage"));
+const SavedPage = lazy(() => import("@/pages/course/SavedPage"));
+const StampAcquiredPage = lazy(
+  () => import("@/pages/course/StampAcquiredPage"),
+);
+const VerifyPage = lazy(() => import("@/pages/course/VerifyPage"));
+
+// place pages
+const DetailPage = lazy(() => import("./pages/place/DetailPage"));
+const ReviewListPage = lazy(() => import("./pages/place/ReviewListPage"));
+
+function RouteFallback() {
+  return (
+    <main className="flex h-dvh items-center justify-center bg-gray-10 text-body-01 text-gray-70">
+      로딩 중...
+    </main>
+  );
+}
 
 function App() {
   return (
     <LogDraftProvider>
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<MainPage />} />
+        <Suspense fallback={<RouteFallback />}>
+          <Routes>
+            <Route path="/" element={<MainPage />} />
 
-          {/* auth */}
-          <Route path="/auth" element={<WelcomePage />} />
-          <Route path="/auth/login" element={<LoginPage />} />
-          <Route path="/auth/kakao/callback" element={<KakaoCallbackPage />} />
-          <Route path="/auth/sign-up" element={<SignUpPage />} />
-          <Route path="/auth/terms" element={<TermsAgreementPage />} />
-          <Route path="/auth/reset-password" element={<PasswordResetPage />} />
-          <Route path="/auth/profile" element={<ProfileSetupPage />} />
-          <Route path="/auth/finish" element={<FinishPage />} />
+            {/* auth */}
+            <Route path="/auth" element={<WelcomePage />} />
+            <Route path="/auth/login" element={<LoginPage />} />
+            <Route
+              path="/auth/kakao/callback"
+              element={<KakaoCallbackPage />}
+            />
+            <Route path="/auth/sign-up" element={<SignUpPage />} />
+            <Route path="/auth/terms" element={<TermsAgreementPage />} />
+            <Route
+              path="/auth/reset-password"
+              element={<PasswordResetPage />}
+            />
+            <Route path="/auth/profile" element={<ProfileSetupPage />} />
+            <Route path="/auth/finish" element={<FinishPage />} />
 
-          {/* draw */}
-          <Route path="/draw/loading" element={<LoadingPage />} />
-          <Route path="/draw/result" element={<ResultPage />} />
-          <Route path="/draw/recommend" element={<RecommendPage />} />
-          <Route path="/draw/condition" element={<ConditionPage />} />
-          <Route path="/draw/preference" element={<PreferencePage />} />
+            {/* draw */}
+            <Route path="/draw/loading" element={<LoadingPage />} />
+            <Route path="/draw/result" element={<ResultPage />} />
+            <Route path="/draw/recommend" element={<RecommendPage />} />
+            <Route path="/draw/condition" element={<ConditionPage />} />
+            <Route path="/draw/preference" element={<PreferencePage />} />
 
-          {/* course */}
-          <Route path="/course" element={<CourseMainPage />} />
-          <Route path="/course/like" element={<LikePage />} />
-          <Route path="/course/:stationId/create" element={<CreatePage />} />
-          <Route path="/course/:courseId?/verify" element={<VerifyPage />} />
-          <Route path="/course/saved" element={<SavedPage />} />
-          <Route
-            path="/course/:courseId/stamp"
-            element={<StampAcquiredPage />}
-          />
-          <Route path="/course/:courseId/log" element={<LogIntroPage />} />
-          <Route path="/course/:courseId/log/info" element={<LogInfoPage />} />
-          <Route
-            path="/course/:courseId/log/place"
-            element={<LogPlacePage />}
-          />
-          <Route
-            path="/course/:courseId/log/visibility"
-            element={<LogVisibilityPage />}
-          />
+            {/* course */}
+            <Route path="/course" element={<CourseMainPage />} />
+            <Route path="/course/like" element={<LikePage />} />
+            <Route
+              path="/course/:stationId/create"
+              element={<CreatePage />}
+            />
+            <Route
+              path="/course/:courseId?/verify"
+              element={<VerifyPage />}
+            />
+            <Route path="/course/saved" element={<SavedPage />} />
+            <Route
+              path="/course/:courseId/stamp"
+              element={<StampAcquiredPage />}
+            />
+            <Route path="/course/:courseId/log" element={<LogIntroPage />} />
+            <Route
+              path="/course/:courseId/log/info"
+              element={<LogInfoPage />}
+            />
+            <Route
+              path="/course/:courseId/log/place"
+              element={<LogPlacePage />}
+            />
+            <Route
+              path="/course/:courseId/log/visibility"
+              element={<LogVisibilityPage />}
+            />
 
-          {/* place */}
-          <Route path="/place/:placeId" element={<DetailPage />} />
-          <Route path="/place/:placeId/reviews" element={<ReviewListPage />} />
-        </Routes>
+            {/* place */}
+            <Route path="/place/:placeId" element={<DetailPage />} />
+            <Route
+              path="/place/:placeId/reviews"
+              element={<ReviewListPage />}
+            />
+          </Routes>
+        </Suspense>
 
         <Toast />
       </BrowserRouter>
