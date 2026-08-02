@@ -1,8 +1,8 @@
 import { useMemo, useState, type PropsWithChildren } from 'react';
 import {
-  DEFAULT_LOG_NAME,
   INITIAL_LOG_DRAFT,
   LogDraftContext,
+  getDefaultLogName,
   type LogDraft,
   type LogDraftContextValue,
   type PlaceReviewDraft,
@@ -13,6 +13,29 @@ export function LogDraftProvider({ children }: PropsWithChildren) {
   const [draft, setDraft] = useState<LogDraft>(INITIAL_LOG_DRAFT);
 
   const value = useMemo<LogDraftContextValue>(() => {
+    const initializeFromStamp = ({
+      memberStampId,
+      stationId,
+      stationName,
+      acquiredDate,
+      logName,
+    }: {
+      memberStampId: number;
+      stationId: number;
+      stationName: string;
+      acquiredDate: string;
+      logName: string;
+    }) => {
+      setDraft({
+        ...INITIAL_LOG_DRAFT,
+        memberStampId,
+        stationId,
+        stationName,
+        acquiredDate,
+        logName,
+      });
+    };
+
     const setLogName = (value: string) => {
       setDraft((prev) => ({ ...prev, logName: value }));
     };
@@ -58,7 +81,7 @@ export function LogDraftProvider({ children }: PropsWithChildren) {
     };
 
     const isDirty =
-      draft.logName !== DEFAULT_LOG_NAME ||
+      draft.logName !== getDefaultLogName(draft.stationName) ||
       draft.selectedDate !== null ||
       draft.selectedTime !== null ||
       draft.review.trim() !== '' ||
@@ -70,6 +93,7 @@ export function LogDraftProvider({ children }: PropsWithChildren) {
 
     return {
       draft,
+      initializeFromStamp,
       setLogName,
       setAcquiredDate,
       setMemberStampId,

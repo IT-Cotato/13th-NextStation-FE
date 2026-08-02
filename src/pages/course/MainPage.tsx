@@ -25,7 +25,7 @@ export default function MainPage() {
     null,
   );
   const [isCompleteModalOpen, setIsCompleteModalOpen] = useState(false);
-  const [selectedCourseId, setSelectedCourseId] = useState<number | null>(null);
+  const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedLine, setSelectedLine] = useState("전체");
   const [selectedStation, setSelectedStation] = useState("전체");
@@ -82,14 +82,14 @@ export default function MainPage() {
   if (initialLoadError) return <p>{initialLoadError}</p>;
   if (!courses) return null;
 
-  const handleCompletedClick = (courseId: number) => {
-    setSelectedCourseId(courseId);
+  const handleCompletedClick = (course: Course) => {
+    setSelectedCourse(course);
     setIsCompleteModalOpen(true);
   };
 
   const closeCompleteModal = () => {
     setIsCompleteModalOpen(false);
-    setSelectedCourseId(null);
+    setSelectedCourse(null);
   };
 
   const handleCourseCompleted = (courseId: number) => {
@@ -152,10 +152,12 @@ export default function MainPage() {
         </div>
       </section>
 
-      {isCompleteModalOpen && selectedCourseId !== null && (
+      {isCompleteModalOpen && selectedCourse && (
         <CompleteConfirmModal
           onClose={closeCompleteModal}
-          courseId={selectedCourseId}
+          courseId={selectedCourse.courseId}
+          courseName={selectedCourse.name}
+          stationName={selectedCourse.stationName}
           onCompleted={handleCourseCompleted}
         />
       )}
@@ -207,7 +209,7 @@ export default function MainPage() {
               line={course.line.name}
               stationName={course.stationName}
               isCompleted={course.isCompleted}
-              onCompletedClick={handleCompletedClick}
+              onCompletedClick={() => handleCompletedClick(course)}
               isDeleteMode={isDeleteMode}
               isSelect={selectedIds.includes(course.courseId)}
               handleSelected={handleSelected}

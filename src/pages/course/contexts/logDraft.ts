@@ -10,6 +10,8 @@ export interface PlaceReviewDraft {
 }
 
 export interface LogDraft {
+  stationId: number | null;
+  stationName: string | null;
   logName: string;
   acquiredDate: string | null;
   selectedDate: string | null;
@@ -21,7 +23,9 @@ export interface LogDraft {
   memberStampId: number | null;
 }
 
-export const DEFAULT_LOG_NAME = '보문역 환승여행 코스';
+export function getDefaultLogName(stationName: string | null) {
+  return stationName ? `${stationName} 환승여행 코스` : "환승여행 코스";
+}
 
 const DEFAULT_PLACE_REVIEWS: PlaceReviewDraft[] = [
   { id: 1, label: '보문숲길도서관', review: '', photo: null },
@@ -31,7 +35,9 @@ const DEFAULT_PLACE_REVIEWS: PlaceReviewDraft[] = [
 ];
 
 export const INITIAL_LOG_DRAFT: LogDraft = {
-  logName: DEFAULT_LOG_NAME,
+  stationId: null,
+  stationName: null,
+  logName: getDefaultLogName(null),
   acquiredDate: null,
   selectedDate: null,
   selectedTime: null,
@@ -45,6 +51,13 @@ export const INITIAL_LOG_DRAFT: LogDraft = {
 export interface LogDraftContextValue {
   draft: LogDraft;
   setLogName: (value: string) => void;
+  initializeFromStamp: (value: {
+    memberStampId: number;
+    stationId: number;
+    stationName: string;
+    acquiredDate: string;
+    logName: string;
+  }) => void;
   setAcquiredDate: (value: string | null) => void;
   setMemberStampId: (value: number | null) => void;
   setSelectedDate: (value: string | null) => void;

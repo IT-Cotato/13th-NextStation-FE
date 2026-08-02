@@ -6,6 +6,7 @@ const tags = ['문화공간', '카페', '산책'];
 export default function LogPreviewCard() {
   const { draft } = useLogDraft();
   const displayDate = draft.selectedDate ?? draft.acquiredDate;
+  const stationName = draft.stationName ?? "환승역";
 
   const placeLabels = draft.placeReviews.map((place) => place.label);
   const previewImage = draft.photos[0];
@@ -30,7 +31,7 @@ export default function LogPreviewCard() {
         <div className="flex flex-col w-full gap-2 bg-white items-start">
           {/* 기록 제목 및 시간 */}
           <h3 className="text-title-02 font-semibold text-gray-100 leading-[1.4] tracking-[-0.025em]">
-            [보문역] {draft.logName}
+            [{stationName}] {draft.logName}
           </h3>
 
           <div className="flex gap-2 items-center justify-center text-body-02 text-gray-70 leading-[1.4] tracking-[-0.025em]">

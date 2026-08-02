@@ -5,20 +5,25 @@ import { useNavigate } from "react-router-dom";
 import { completeCourse } from "@/api/savedCourse";
 import { useLogDraft } from "../contexts/logDraft";
 import { showToast } from "./ShowToast";
+import { formatAcquiredAtToDisplayDate } from "@/utils/logDate";
 
 interface CompleteConfirmModalProps extends ComponentPropsWithoutRef<"div"> {
   onClose: () => void;
   courseId: number;
+  courseName: string;
+  stationName: string;
   onCompleted: (courseId: number) => void;
 }
 
 export default function CompleteConfirmModal({
   onClose,
   courseId,
+  courseName,
+  stationName,
   onCompleted,
 }: CompleteConfirmModalProps) {
   const navigate = useNavigate();
-  const { setMemberStampId } = useLogDraft();
+  const { initializeFromStamp } = useLogDraft();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleComplete = async () => {
@@ -27,9 +32,17 @@ export default function CompleteConfirmModal({
     setIsSubmitting(true);
     try {
       const result = await completeCourse(courseId);
-      setMemberStampId(result.memberStampId);
+      initializeFromStamp({
+        memberStampId: result.memberStampId,
+        stationId: result.stationId,
+        stationName: result.stationName,
+        acquiredDate: formatAcquiredAtToDisplayDate(result.acquiredAt),
+        logName: courseName,
+      });
       onCompleted(courseId);
-      navigate(`/course/${courseId}/stamp`);
+      navigate(`/course/${courseId}/stamp`, {
+        state: result,
+      });
     } catch (e) {
       showToast({
         message:
@@ -52,7 +65,7 @@ export default function CompleteConfirmModal({
         {/* text */}
         <div className="flex flex-col gap-2 items-center">
           <span className="text-center text-black text-headline font-semibold leading-[1.4] tracking-[-0.6px]">
-            보문역 여행을 <br />
+            {stationName} 여행을 <br />
             마치셨나요?
           </span>
           <span className="text-gray-60 text-body-02 leading-[1.4] tracking-[-0.35px]">

@@ -1,19 +1,21 @@
 import { useNavigate, useParams } from "react-router-dom"
 import CTAButton from "@/components/CTAButton"
 import LogIcon from '@/assets/log.svg?react';
+import { useLogDraft } from "./contexts/logDraft";
 
 function LogIntroPage() {
   const navigate = useNavigate();
   const { courseId } = useParams();
+  const { draft } = useLogDraft();
+  const stationName = draft.stationName ?? "오늘의 환승역";
 
   return (
     <main className="flex flex-col h-dvh overflow-hidden bg-white items-center pt-[var(--safe-top)]">
       <section className="flex h-full flex-col items-center justify-between pt-[100px] pb-[calc(var(--safe-bottom)+10px)]">
         <div className="flex flex-col items-center gap-[60px]">
           <div className="flex flex-col items-center justify-center gap-4">
-            {/* 역이름 변경 필요 */}
             <h1 className="text-headline font-semibold text-gray-100 leading-[1.4] tracking-[-0.025em] text-center">
-              오늘의 보문역을<br />
+              오늘의 {stationName}을<br />
               조금 더 오래 기억해볼까요?
             </h1>
             <p className="text-body-01 text-gray-70 leading-[1.4] tracking-[-0.025em] text-center">

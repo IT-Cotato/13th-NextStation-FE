@@ -24,6 +24,7 @@ function LogInfoPage() {
     setPhotos,
     isDirty,
   } = useLogDraft();
+  const stationName = draft.stationName ?? "환승역";
   const displayDate = draft.selectedDate ?? draft.acquiredDate;
   const isInfoComplete =
     draft.logName.trim() !== "" &&
@@ -142,7 +143,7 @@ function LogInfoPage() {
             <textarea
               value={draft.review}
               onChange={(e) => setReview(e.target.value)}
-              placeholder="오늘 보문역 여행은 어땠나요?"
+              placeholder={`오늘 ${stationName} 여행은 어땠나요?`}
               className="w-full h-full resize-none bg-transparent caret-primary-50 text-body-01 text-gray-100 placeholder:text-gray-50 focus:outline-none"
             />
           </div>

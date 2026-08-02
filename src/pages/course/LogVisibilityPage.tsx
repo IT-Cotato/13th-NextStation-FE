@@ -11,6 +11,7 @@ function LogVisibilityPage() {
   const navigate = useNavigate();
   const [isLogConfirmOpen, setIsLogConfirmOpen] = useState(false);
   const { draft, setVisibility, isDirty } = useLogDraft();
+  const stationName = draft.stationName ?? "환승역";
 
   return (
     <main className="flex flex-col h-dvh overflow-y-auto bg-gray-10 items-center pt-[var(--safe-top)] pb-[calc(var(--safe-bottom)+140px)] [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
@@ -55,7 +56,7 @@ function LogVisibilityPage() {
 
         <div className="flex items-center justify-center p-10">
           <p className="text-body-02 text-gray-60 leading-[1.4] tracking-[-0.025em] text-center">
-            공유한 장소 후기와 사진은 보문역 코스와 장소 상세화면에서 다른 사용자에게<br />
+            공유한 장소 후기와 사진은 {stationName} 코스와 장소 상세화면에서 다른 사용자에게<br />
             보여질 수 있어요. 공개 범위는 언제든 변경 가능해요.
           </p>
         </div>

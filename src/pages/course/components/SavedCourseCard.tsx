@@ -21,7 +21,7 @@ export default function SavedCourseCard({
   line: string;
   stationName: string;
   isCompleted: boolean;
-  onCompletedClick: (id: number) => void;
+  onCompletedClick: () => void;
   isDeleteMode: boolean;
   isSelect: boolean;
   handleSelected: (targetId: number) => void;
@@ -53,7 +53,7 @@ export default function SavedCourseCard({
           </CardActionButton>
           <CardActionButton
             onClick={() => {
-              if (!isDeleteMode) onCompletedClick(courseId);
+              if (!isDeleteMode) onCompletedClick();
             }}
           >
             여행 완료
