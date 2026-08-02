@@ -11,6 +11,7 @@ import {
   saveKakaoSignupToken,
   saveSignupToken,
 } from '@/api/auth';
+import { getMyProfile } from '@/api/member';
 
 export default function KakaoCallbackPage() {
   const navigate = useNavigate();
@@ -52,6 +53,7 @@ export default function KakaoCallbackPage() {
 
         if (result.resultType === 'LOGIN_SUCCESS' && result.accessToken) {
           saveAccessToken(result.accessToken);
+          await getMyProfile();
           clearSignupFlow();
           navigate('/', { replace: true });
           return;
