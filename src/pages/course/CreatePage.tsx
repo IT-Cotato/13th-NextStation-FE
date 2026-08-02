@@ -71,9 +71,10 @@ export default function CreatePage() {
   ) => {
     try {
       const course = await createCourse(stationId, name, placeIds);
-      navigate(`/course/${course.courseId}/verify`);
+      navigate(`/course/${course.courseId}/verify?from=recommend`);
     } catch (e) {
       console.error(e);
+      setStationError("코스 생성에 실패했습니다.");
     }
   };
 
