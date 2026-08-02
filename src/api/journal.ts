@@ -1,0 +1,54 @@
+import { getAccessToken } from "@/api/auth";
+
+export type TravelDuration = "SHORT" | "HALF_DAY" | "FULL_DAY";
+
+export interface CreateJournalPlaceReviewRequest {
+  placeId: number;
+  review: string;
+  imageUrl: string | null;
+}
+
+export interface CreateJournalRequest {
+  memberStampId: number;
+  title: string;
+  overallReview: string;
+  traveledAt: string; // "2026-07-08" 형태
+  travelDuration: TravelDuration;
+  isPublic: boolean;
+  journalImageUrls: string[];
+  placeReviews: CreateJournalPlaceReviewRequest[];
+}
+
+export interface CreateJournalResponse {
+  journalId: number;
+}
+
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
+export async function createJournal(
+  body: CreateJournalRequest,
+): Promise<CreateJournalResponse> {
+  const accessToken = getAccessToken();
+
+  if (!accessToken) {
+    throw new Error("로그인 토큰이 없습니다.");
+  }
+
+  const response = await fetch(`${API_BASE_URL}/api/v1/journals`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(body),
+  });
+
+  if (!response.ok) {
+    const errorJson = await response.json().catch(() => null);
+    throw new Error(errorJson?.message ?? "여행일지 작성에 실패했습니다.");
+  }
+
+  const json = await response.json();
+
+  return json.data;
+}
