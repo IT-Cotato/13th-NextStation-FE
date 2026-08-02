@@ -169,8 +169,12 @@ export default function VerifyPage() {
     if (isSaving) return;
 
     setIsSaving(true);
-    await handleSave();
+    const savedCourseId = await handleSave();
     setIsSaving(false);
+
+    if (savedCourseId === null) {
+      showToast({ message: "코스 저장에 실패했습니다." });
+    }
   };
 
   const toggleModal = () => setIsModalOpen((prev) => !prev);
@@ -240,10 +244,7 @@ export default function VerifyPage() {
       {/* 지도 */}
       <section className="flex justify-center">
         <div className="flex flex-col gap-2.5 w-[360px]">
-          <NameEditInput
-            value={courseName}
-            onChange={handleCourseNameChange}
-          />
+          <NameEditInput value={courseName} onChange={handleCourseNameChange} />
 
           <div className="flex flex-col border h-[357px] border-gray-40 bg-white rounded-lg overflow-hidden">
             <div className="flex items-center justify-between px-4 py-4">
