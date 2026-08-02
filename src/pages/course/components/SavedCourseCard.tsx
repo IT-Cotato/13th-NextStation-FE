@@ -6,7 +6,7 @@ import { STATION_STAMP_MAP } from "@/constants/stationStampMap";
 import { DISABLED_LINE_STAMP_MAP } from "@/constants/disabledLineStampMap";
 
 export default function SavedCourseCard({
-  id,
+  courseId,
   name,
   line,
   stationName,
@@ -16,7 +16,7 @@ export default function SavedCourseCard({
   isSelect,
   handleSelected,
 }: {
-  id: number;
+  courseId: number;
   name: string;
   line: string;
   stationName: string;
@@ -35,7 +35,7 @@ export default function SavedCourseCard({
     <div
       className={`${isSelect ? "border border-primary-50 bg-secondary-10" : "border border-white bg-white"} flex w-[361px] p-3 gap-4 rounded-lg`}
       onClick={() => {
-        if (isDeleteMode) handleSelected(id);
+        if (isDeleteMode) handleSelected(courseId);
       }}
     >
       <div>{StampIcon ? <StampIcon className="w-16 h-16" /> : null}</div>
@@ -46,14 +46,14 @@ export default function SavedCourseCard({
         <div className="flex gap-1">
           <CardActionButton
             onClick={() => {
-              if (!isDeleteMode) navigate(`/course/${id}/verify`);
+              if (!isDeleteMode) navigate(`/course/${courseId}/verify`);
             }}
           >
             코스 확인
           </CardActionButton>
           <CardActionButton
             onClick={() => {
-              if (!isDeleteMode) onCompletedClick(id);
+              if (!isDeleteMode) onCompletedClick(courseId);
             }}
           >
             여행 완료

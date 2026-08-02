@@ -11,6 +11,7 @@ import {
   type Course,
 } from "@/api/savedCourse";
 import { useInView } from "react-intersection-observer";
+import { showToast } from "./components/ShowToast";
 
 export default function MainPage() {
   const [courses, setCourses] = useState<Course[]>([]);
@@ -18,7 +19,9 @@ export default function MainPage() {
   const [hasNext, setHasNext] = useState(false);
   const [isCoursesLoading, setIsCoursesLoading] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false); // 무한스크롤
-  const [coursesError, setCoursesError] = useState<string | null>(null);
+  const [initialLoadError, setInitialLoadError] = useState<string | null>(
+    null,
+  );
 
   const [isCompleteModalOpen, setIsCompleteModalOpen] = useState(false);
   const [selectedCourseId, setSelectedCourseId] = useState<number | null>(null); // 여행 완료 모달용 단일 선택
@@ -39,7 +42,7 @@ export default function MainPage() {
         setHasNext(data.hasNext);
       } catch (e) {
         console.error(e);
-        setCoursesError("내가 만든 코스 목록을 불러오지 못했습니다.");
+        setInitialLoadError("내가 만든 코스 목록을 불러오지 못했습니다.");
       } finally {
         setIsCoursesLoading(false);
       }
@@ -58,9 +61,9 @@ export default function MainPage() {
       setHasNext(data.hasNext);
     } catch (e) {
       console.error(e);
-      setCoursesError("코스 목록을 불러오지 못했습니다.");
+      showToast({ message: "코스 목록을 더 불러오지 못했습니다." });
     } finally {
-      setIsCoursesLoading(false);
+      setIsLoadingMore(false);
     }
   };
 
@@ -75,7 +78,7 @@ export default function MainPage() {
   });
 
   if (isCoursesLoading) return <p>로딩 중...</p>;
-  if (coursesError) return <p>{coursesError}</p>;
+  if (initialLoadError) return <p>{initialLoadError}</p>;
   if (!courses) return null;
 
   const handleCompletedClick = (id: number) => {
@@ -131,7 +134,7 @@ export default function MainPage() {
       setIsDeleteModalOpen(false);
     } catch (e) {
       console.error(e);
-      setCoursesError("코스 삭제에 실패했습니다.");
+      showToast({ message: "코스 삭제에 실패했습니다." });
     }
   };
 
@@ -203,7 +206,7 @@ export default function MainPage() {
           {filteredCourses.map((course) => (
             <SavedCourseCard
               key={course.courseId}
-              id={course.courseId}
+              courseId={course.courseId}
               name={course.name}
               line={course.line.name}
               stationName={course.stationName}
