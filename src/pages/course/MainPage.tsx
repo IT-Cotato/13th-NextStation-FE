@@ -198,7 +198,7 @@ export default function MainPage() {
         </div>
       </section>
 
-      <section className="flex justify-center">
+      <section className="flex justify-center pb-25">
         <div className="flex flex-col gap-[9px]">
           {filteredCourses.map((course) => (
             <SavedCourseCard
