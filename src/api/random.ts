@@ -75,24 +75,28 @@ export async function drawRandomStation(): Promise<RandomDrawResponseData> {
       stationName: data.station.stationName,
       description: data.station.description,
       todos: data.station.todos ?? [],
-      lines: (data.station.lines ?? []).map((line: RandomStationLineResponse) => ({
-        id: line.id,
-        name: line.name,
-        code: line.code,
-      })),
+      lines: (data.station.lines ?? []).map(
+        (line: RandomStationLineResponse) => ({
+          id: line.id,
+          name: line.name,
+          code: line.code,
+        }),
+      ),
     },
     course: {
       name: data.course.name,
-      places: (data.course.places ?? []).map((place: RandomCoursePlaceResponse) => ({
-        placeId: place.placeId,
-        placeName: place.placeName,
-        description: place.description,
-        categoryCode: place.categoryCode,
-        categoryName: place.categoryName,
-        imageUrl: place.imageUrl,
-        xCoordinate: place.xCoordinate,
-        yCoordinate: place.yCoordinate,
-      })),
+      places: (data.course.places ?? []).map(
+        (place: RandomCoursePlaceResponse) => ({
+          placeId: place.placeId,
+          placeName: place.placeName,
+          description: place.description,
+          categoryCode: place.categoryCode,
+          categoryName: place.categoryName,
+          imageUrl: place.imageUrl,
+          xCoordinate: place.xCoordinate,
+          yCoordinate: place.yCoordinate,
+        }),
+      ),
     },
   };
 }

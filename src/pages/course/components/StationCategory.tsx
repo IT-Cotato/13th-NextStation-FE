@@ -25,7 +25,7 @@ export default function StationCategory({
 
   return (
     // 탭과 카테고리가 담길 컨테이너
-    <div className="flex flex-col w-[390px] pt-4 max-w-[calc(100%_-_40px)] bg-gray-10">
+    <div className="flex flex-col w-full pt-4 bg-gray-10">
       {/* 상단 메뉴 (호선 탭) */}
       <nav className="border-b border-gray-40 px-[10px]">
         <ul className="flex w-full overflow-x-auto overflow-y-hidden p-0 m-0 list-none font-semibold [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
@@ -40,7 +40,9 @@ export default function StationCategory({
               }}
               onClick={() => handleSelectLine(item)}
             >
-              <span className="text-subtitle">{item}</span>
+              <span className="text-subtitle font-semibold leading-[1.4] tracking-[-0.4px]">
+                {item}
+              </span>
 
               {/* 탭 메뉴 밑의 밑줄 */}
               {item === selectedLine ? (

@@ -73,7 +73,16 @@ function ResultPage() {
         </Button>
         <Button
           direction="right"
-          onClick={() => navigate('/course/verify')}
+          onClick={() =>
+            navigate('/course/verify?from=draw', {
+              state: {
+                course: result.course,
+                stationId: station.stationId,
+                stationName: station.stationName,
+                lineId: primaryLine.id,
+              },
+            })
+          }
         >
           코스 확인하기
         </Button>

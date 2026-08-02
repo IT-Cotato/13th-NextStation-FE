@@ -18,6 +18,7 @@ export interface LogDraft {
   photos: string[];
   visibility: Visibility;
   placeReviews: PlaceReviewDraft[];
+  memberStampId: number | null;
 }
 
 export const DEFAULT_LOG_NAME = '보문역 환승여행 코스';
@@ -38,12 +39,14 @@ export const INITIAL_LOG_DRAFT: LogDraft = {
   photos: [],
   visibility: 'private',
   placeReviews: DEFAULT_PLACE_REVIEWS,
+  memberStampId: null,
 };
 
 export interface LogDraftContextValue {
   draft: LogDraft;
   setLogName: (value: string) => void;
   setAcquiredDate: (value: string | null) => void;
+  setMemberStampId: (value: number | null) => void;
   setSelectedDate: (value: string | null) => void;
   setSelectedTime: (value: string | null) => void;
   setReview: (value: string) => void;
