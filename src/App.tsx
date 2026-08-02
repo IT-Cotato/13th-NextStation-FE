@@ -27,12 +27,13 @@ import LogInfoPage from "@/pages/course/LogInfoPage";
 import LogPlacePage from "@/pages/course/LogPlacePage";
 import LogVisibilityPage from "@/pages/course/LogVisibilityPage";
 import StampAcquiredPage from "@/pages/course/StampAcquiredPage";
+import VerifyPage from "@/pages/course/VerifyPage";
+import LikePage from "@/pages/course/LikePage";
 import { LogDraftProvider } from "@/pages/course/contexts/LogDraftContext";
 
 // place
 import DetailPage from "./pages/place/DetailPage";
 import ReviewListPage from "./pages/place/ReviewListPage";
-import VerifyPage from "./pages/course/VerifyPage";
 
 // toast
 import "react-toastify/dist/ReactToastify.css";
@@ -64,6 +65,7 @@ function App() {
 
           {/* course */}
           <Route path="/course" element={<CourseMainPage />} />
+          <Route path="/course/like" element={<LikePage />} />
           <Route path="/course/:stationId/create" element={<CreatePage />} />
           <Route path="/course/:courseId?/verify" element={<VerifyPage />} />
           <Route path="/course/saved" element={<SavedPage />} />
