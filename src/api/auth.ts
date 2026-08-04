@@ -183,6 +183,63 @@ interface ProfileResponse {
   status: 'ACTIVE';
 }
 
+interface PresignedImageResponse {
+  presignedUrl: string;
+  imageUrl: string;
+  contentType: string;
+}
+
+export class ProfileImageUploadError extends Error {
+  constructor() {
+    super('프로필 사진 업로드에 실패했습니다.');
+    this.name = 'ProfileImageUploadError';
+  }
+}
+
+export function getProfileImagePresignedUrl(
+  signupToken: string,
+  fileName: string,
+) {
+  return authRequest<PresignedImageResponse>(
+    '/api/v1/images/presigned-url',
+    {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${signupToken}`,
+      },
+      body: JSON.stringify({
+        folder: 'PROFILE',
+        journalId: null,
+        fileName,
+      }),
+    },
+  );
+}
+
+export async function uploadProfileImage(
+  presignedUrl: string,
+  file: File,
+  contentType: string,
+) {
+  let response: Response;
+
+  try {
+    response = await fetch(presignedUrl, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': contentType,
+      },
+      body: file,
+    });
+  } catch {
+    throw new ProfileImageUploadError();
+  }
+
+  if (!response.ok) {
+    throw new ProfileImageUploadError();
+  }
+}
+
 export function setupProfile(
   signupToken: string,
   profile: {
