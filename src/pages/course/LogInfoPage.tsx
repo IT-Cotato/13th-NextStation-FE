@@ -8,7 +8,7 @@ import LogDatePickerModal from "./components/date-picker/LogDatePickerModal";
 import CalendarIcon from '@/assets/calendar.svg?react';
 import ConfirmModal from "@/components/ConfirmModal";
 import NameEditInput from "./components/NameEditInput";
-import { useLogDraft } from "./contexts/logDraft";
+import { useLogDraft } from "./contexts/LogDraftContext";
 
 const timeOptions = ['3~4시간', '반나절', '하루종일'];
 
@@ -24,6 +24,7 @@ function LogInfoPage() {
     setPhotos,
     isDirty,
   } = useLogDraft();
+  const stationName = draft.stationName ?? "환승역";
   const displayDate = draft.selectedDate ?? draft.acquiredDate;
   const isInfoComplete =
     draft.logName.trim() !== "" &&
@@ -142,7 +143,7 @@ function LogInfoPage() {
             <textarea
               value={draft.review}
               onChange={(e) => setReview(e.target.value)}
-              placeholder="오늘 보문역 여행은 어땠나요?"
+              placeholder={`오늘 ${stationName} 여행은 어땠나요?`}
               className="w-full h-full resize-none bg-transparent caret-primary-50 text-body-01 text-gray-100 placeholder:text-gray-50 focus:outline-none"
             />
           </div>

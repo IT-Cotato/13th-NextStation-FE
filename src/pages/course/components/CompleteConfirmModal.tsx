@@ -1,17 +1,83 @@
 import CTAButton from "@/components/CTAButton";
 import type { ComponentPropsWithoutRef } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { completeCourse } from "@/api/savedCourse";
+import { getJournalWriteInfo } from "@/api/journal";
+import {
+  useLogDraft,
+  type PlaceReviewDraft,
+} from "../contexts/LogDraftContext";
+import { showToast } from "./ShowToast";
+import { formatAcquiredAtToDisplayDate } from "@/utils/logDate";
 
 interface CompleteConfirmModalProps extends ComponentPropsWithoutRef<"div"> {
   onClose: () => void;
   courseId: number;
+  stationName: string;
+  onCompleted: (courseId: number) => void;
 }
 
 export default function CompleteConfirmModal({
   onClose,
   courseId,
+  stationName,
+  onCompleted,
 }: CompleteConfirmModalProps) {
   const navigate = useNavigate();
+  const { initializeFromStamp } = useLogDraft();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleComplete = async () => {
+    if (isSubmitting) return;
+
+    setIsSubmitting(true);
+    try {
+      const result = await completeCourse(courseId);
+      onCompleted(courseId);
+
+      try {
+        const writeInfo = await getJournalWriteInfo(result.memberStampId);
+        const placeReviews: PlaceReviewDraft[] = writeInfo.places
+          .slice()
+          .sort((a, b) => a.orderNum - b.orderNum)
+          .map((place) => ({
+            id: place.placeId,
+            label: place.placeName,
+            review: "",
+            photo: null,
+          }));
+
+        initializeFromStamp({
+          memberStampId: result.memberStampId,
+          stationId: result.stationId,
+          stationName: writeInfo.stationName,
+          acquiredDate: formatAcquiredAtToDisplayDate(result.acquiredAt),
+          logName: writeInfo.courseName,
+          tags: writeInfo.tags,
+          placeReviews,
+        });
+      } catch (error) {
+        showToast({
+          message:
+            error instanceof Error
+              ? error.message
+              : "여행일지 초기 정보를 불러오지 못했습니다.",
+        });
+      }
+
+      navigate(`/course/${courseId}/stamp`, {
+        state: result,
+      });
+    } catch (e) {
+      showToast({
+        message:
+          e instanceof Error ? e.message : "여행 완료 처리에 실패했습니다.",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <div
@@ -24,22 +90,22 @@ export default function CompleteConfirmModal({
       >
         {/* text */}
         <div className="flex flex-col gap-2 items-center">
-          <span className="text-center text-black text-headline font-semibold">
-            보문역 여행을 <br />
+          <span className="text-center text-black text-headline font-semibold leading-[1.4] tracking-[-0.6px]">
+            {stationName} 여행을 <br />
             마치셨나요?
           </span>
-          <span className="text-gray-60 text-body-02">
+          <span className="text-gray-60 text-body-02 leading-[1.4] tracking-[-0.35px]">
             다녀온 역에는 스탬프를 찍을 수 있어요.
           </span>
         </div>
 
         {/* button */}
-        <div className="flex flex-col gap-2">
+        <div className="flex w-[300px] flex-col gap-2">
           <CTAButton
             variant="primary"
             width={300}
-            className="w-[300px]"
-            onClick={() => navigate(`/course/${courseId}/stamp`)}
+            disabled={isSubmitting}
+            onClick={handleComplete}
           >
             네, 다녀왔어요
           </CTAButton>

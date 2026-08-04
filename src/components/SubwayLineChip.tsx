@@ -18,7 +18,7 @@ export default function SubwayLineChip({
       ${variantStyles[variant]}
       `}
     >
-      <p className="text-body-01 text-gray-100 leading-[1.4] tracking-[-0.025em] text-center">
+      <p className="whitespace-nowrap text-body-01 text-gray-100 leading-[1.4] tracking-[-0.025em] text-center">
         {label}
       </p>
     </div>

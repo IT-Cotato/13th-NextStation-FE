@@ -30,9 +30,11 @@ export default function NameEditInput({
   }, [isEditing]);
 
   return (
-    <div className={`flex relative items-center rounded-lg p-2.5 bg-white border border-gray-40 font-semibold placeholder:text-gray-50 ${className} `}>
+    <div
+      className={`flex relative items-center rounded-lg p-2.5 bg-white border border-gray-40 font-semibold placeholder:text-gray-50 ${className} `}
+    >
       <input
-        className="w-full text-center outline-none text-subtitle font-semibold placeholder:text-gray-50 caret-primary-50"
+        className="w-full text-center outline-none text-subtitle font-semibold leading-[1.4] tracking-[-0.4px] placeholder:text-gray-50 caret-primary-50"
         readOnly={!isEditing}
         ref={inputRef}
         value={value}

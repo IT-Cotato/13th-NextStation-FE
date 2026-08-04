@@ -59,6 +59,11 @@ function ConditionPage() {
     saveRecentStations(nextRecentStations);
   };
 
+  const handleSelectRecentStation = (station: Station) => {
+    setQuery(station.name);
+    handleSelectStation(station);
+  };
+
   const isFormValid =
   selectedStation !== null &&
   selectedTime !== null &&
@@ -96,6 +101,7 @@ function ConditionPage() {
                       key={station.id}
                       name={station.name}
                       lines={station.lines}
+                      onSelect={() => handleSelectRecentStation(station)}
                       onRemove={() => handleRemoveRecent(station.id)}
                     />
                   ))}

@@ -27,9 +27,9 @@ export interface PlaceReviewListResponse {
   hasNext: boolean;
 }
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+import { getAccessToken } from "@/api/auth";
 
-const MEMBER_ID = 1;
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 // 장소 리뷰 목록 조회
 export async function getReviews(
@@ -37,11 +37,17 @@ export async function getReviews(
   sort: "RECOMMEND" | "LATEST",
   cursor?: string,
 ): Promise<PlaceReviewListResponse> {
+  const accessToken = getAccessToken();
+
+  if (!accessToken) {
+    throw new Error("로그인 토큰이 없습니다");
+  }
+
   const response = await fetch(
     `${API_BASE_URL}/api/v1/places/${placeId}/reviews?sort=${sort}&size=10${cursor ? `&cursor=${cursor}` : ""}`,
     {
       headers: {
-        "X-Member-Id": String(MEMBER_ID),
+        Authorization: `Bearer ${accessToken}`,
       },
     },
   );
@@ -63,12 +69,18 @@ export async function getReviews(
 
 // 장소 리뷰 좋아요
 export async function createReviewLike(reviewId: number): Promise<void> {
+  const accessToken = getAccessToken();
+
+  if (!accessToken) {
+    throw new Error("로그인 토큰이 없습니다");
+  }
+
   const response = await fetch(
     `${API_BASE_URL}/api/v1/places/reviews/${reviewId}/like`,
     {
       method: "POST",
       headers: {
-        "X-Member-Id": String(MEMBER_ID),
+        Authorization: `Bearer ${accessToken}`,
       },
     },
   );
@@ -80,12 +92,18 @@ export async function createReviewLike(reviewId: number): Promise<void> {
 
 // 장소 리뷰 좋아요 취소
 export async function deleteReviewLike(reviewId: number): Promise<void> {
+  const accessToken = getAccessToken();
+
+  if (!accessToken) {
+    throw new Error("로그인 토큰이 없습니다");
+  }
+
   const response = await fetch(
     `${API_BASE_URL}/api/v1/places/reviews/${reviewId}/like`,
     {
       method: "DELETE",
       headers: {
-        "X-Member-Id": String(MEMBER_ID),
+        Authorization: `Bearer ${accessToken}`,
       },
     },
   );

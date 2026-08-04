@@ -1,45 +1,120 @@
 import Heart from "@/assets/heart.svg?react";
 import SavedCourseCard from "./components/SavedCourseCard";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import CompleteConfirmModal from "./components/CompleteConfirmModal";
 import StationCategory from "./components/StationCategory";
-import { mockSavedCourses } from "@/mocks/mockSavedCourses";
 import ConfirmModal from "@/components/ConfirmModal";
 import BottomNav from "@/components/BottomNav";
+import {
+  deleteSavedCourses,
+  getSavedCourses,
+  type Course,
+} from "@/api/savedCourse";
+import { useInView } from "react-intersection-observer";
+import { useNavigate } from "react-router-dom";
+import { showToast } from "./components/ShowToast";
 
 export default function MainPage() {
-  const [savedCourses, setSavedCourses] = useState(mockSavedCourses);
+  const navigate = useNavigate();
+  const [courses, setCourses] = useState<Course[]>([]);
+  const [nextCursor, setNextCursor] = useState<string | null>(null);
+  const [hasNext, setHasNext] = useState(false);
+  const [isCoursesLoading, setIsCoursesLoading] = useState(true);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [initialLoadError, setInitialLoadError] = useState<string | null>(
+    null,
+  );
   const [isCompleteModalOpen, setIsCompleteModalOpen] = useState(false);
+  const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [selectedLine, setSelectedLine] = useState("전체"); // 호선
-  const [selectedStation, setSelectedStation] = useState("전체"); // 역
+  const [selectedLine, setSelectedLine] = useState("전체");
+  const [selectedStation, setSelectedStation] = useState("전체");
   const [isDeleteMode, setIsDeleteMode] = useState(false);
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
-  const courseId = 2; // 임시 하드코딩 --> 추후 id 수정
 
-  const toggleCompleteModal = () => setIsCompleteModalOpen((prev) => !prev);
+  useEffect(() => {
+    const fetchCourses = async () => {
+      try {
+        setIsCoursesLoading(true);
+        const data = await getSavedCourses();
+        setCourses(data.courses ?? []);
+        setNextCursor(data.nextCursor);
+        setHasNext(data.hasNext);
+      } catch (e) {
+        console.error(e);
+        setInitialLoadError("내가 만든 코스 목록을 불러오지 못했습니다.");
+      } finally {
+        setIsCoursesLoading(false);
+      }
+    };
+
+    void fetchCourses();
+  }, []);
+
+  const loadMoreCourses = async () => {
+    if (!nextCursor) return;
+
+    try {
+      setIsLoadingMore(true);
+      const data = await getSavedCourses(nextCursor);
+      setCourses((prev) => [...prev, ...(data.courses ?? [])]);
+      setNextCursor(data.nextCursor);
+      setHasNext(data.hasNext);
+    } catch (e) {
+      console.error(e);
+      showToast({ message: "코스 목록을 더 불러오지 못했습니다." });
+    } finally {
+      setIsLoadingMore(false);
+    }
+  };
+
+  const { ref } = useInView({
+    threshold: 0.5,
+    rootMargin: "200px",
+    onChange: (inView) => {
+      if (inView && hasNext && !isLoadingMore) {
+        void loadMoreCourses();
+      }
+    },
+  });
+
+  if (isCoursesLoading) return <p>로딩 중...</p>;
+  if (initialLoadError) return <p>{initialLoadError}</p>;
+  if (!courses) return null;
+
+  const handleCompletedClick = (course: Course) => {
+    setSelectedCourse(course);
+    setIsCompleteModalOpen(true);
+  };
+
+  const closeCompleteModal = () => {
+    setIsCompleteModalOpen(false);
+    setSelectedCourse(null);
+  };
+
+  const handleCourseCompleted = (courseId: number) => {
+    setCourses((prev) =>
+      prev.map((course) =>
+        course.courseId === courseId
+          ? { ...course, isCompleted: true }
+          : course,
+      ),
+    );
+  };
 
   const handleCancelDelete = () => {
     setIsDeleteModalOpen(false);
     setSelectedIds([]);
   };
 
-  const filteredCourses = savedCourses.filter((course) => {
-    const matchedLine = selectedLine === "전체" || course.line === selectedLine;
+  const filteredCourses = courses.filter((course) => {
+    const matchedLine =
+      selectedLine === "전체" || course.line.name === selectedLine;
     const matchedStation =
-      selectedStation === "전체" || course.station === selectedStation;
+      selectedStation === "전체" || course.stationName === selectedStation;
 
     return matchedLine && matchedStation;
   });
-
-  const handleConfirmDelete = () => {
-    setSavedCourses((prev) =>
-      prev.filter((savedCourse) => !selectedIds.includes(savedCourse.id)),
-    );
-    setSelectedIds([]);
-    setIsDeleteMode(false);
-    setIsDeleteModalOpen(false);
-  };
 
   const handleSelected = (targetId: number) => {
     setSelectedIds((prev) =>
@@ -49,26 +124,43 @@ export default function MainPage() {
     );
   };
 
+  const handleConfirmDelete = async () => {
+    try {
+      await deleteSavedCourses(selectedIds);
+      setCourses((prev) =>
+        prev.filter((course) => !selectedIds.includes(course.courseId)),
+      );
+      setSelectedIds([]);
+      setIsDeleteMode(false);
+      setIsDeleteModalOpen(false);
+    } catch (e) {
+      console.error(e);
+      showToast({ message: "코스 삭제에 실패했습니다." });
+    }
+  };
+
   return (
-    <main className="flex flex-col h-dvh  bg-gray-10 pt-[calc(var(--safe-top)+12px)] overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
-      {/* Header */}
+    <main className="flex h-dvh flex-col overflow-y-auto bg-gray-10 pt-[calc(var(--safe-top)+12px)] [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
       <section className="flex justify-center">
-        <div className="flex w-[390px] px-[15px] items-center justify-between">
-          <span className="text-title-02 font-semibold">내가 만든 코스</span>
-          {/* 스크랩 페이지 경로 나오면 연결 */}
-          <Heart />
+        <div className="flex w-[390px] items-center justify-between px-[15px]">
+          <span className="text-title-02 font-semibold leading-[1.4] tracking-[-0.45px]">
+            내가 만든 코스
+          </span>
+          <button type="button" onClick={() => navigate("/course/like")}>
+            <Heart />
+          </button>
         </div>
       </section>
 
-      {/* 여행 확인 모달 */}
-      {isCompleteModalOpen && (
+      {isCompleteModalOpen && selectedCourse && (
         <CompleteConfirmModal
-          onClose={toggleCompleteModal}
-          courseId={courseId}
+          onClose={closeCompleteModal}
+          courseId={selectedCourse.courseId}
+          stationName={selectedCourse.stationName}
+          onCompleted={handleCourseCompleted}
         />
       )}
 
-      {/* 삭제 확인 모달 */}
       {isDeleteModalOpen && selectedIds.length > 0 && (
         <ConfirmModal
           message="저장한 코스를 삭제하시겠습니까?"
@@ -77,7 +169,6 @@ export default function MainPage() {
         />
       )}
 
-      {/* 카테고리 */}
       <section className="flex justify-center">
         <div className="flex w-[390px]">
           <StationCategory
@@ -89,11 +180,11 @@ export default function MainPage() {
         </div>
       </section>
 
-      {/* 삭제 */}
       <section className="flex justify-center">
         <div className="flex w-[390px]">
           <button
-            className={`flex text-body-01 ${isDeleteMode && selectedIds.length > 0 ? "text-primary-60" : "text-gray-70"} pt-2 pb-4 pl-[346px]`}
+            type="button"
+            className={`flex pt-2 pb-4 pl-[346px] text-body-01 leading-[1.4] tracking-[-0.35px] ${isDeleteMode && selectedIds.length > 0 ? "text-primary-60" : "text-gray-70"}`}
             onClick={() =>
               isDeleteMode
                 ? selectedIds.length > 0
@@ -107,26 +198,26 @@ export default function MainPage() {
         </div>
       </section>
 
-      {/* 저장된 코스 */}
-      {/* 백엔드 연동 후 mockSavedCourses 대신 API 응답으로 교체 */}
-      <section className="flex justify-center">
+      <section className="flex justify-center pb-25">
         <div className="flex flex-col gap-[9px]">
           {filteredCourses.map((course) => (
             <SavedCourseCard
-              key={course.id}
-              id={course.id}
+              key={course.courseId}
+              courseId={course.courseId}
               name={course.name}
-              line={course.line}
-              stationName={course.station}
-              isCourseCompleted={course.isCompleted}
-              onCompletedClick={toggleCompleteModal}
+              line={course.line.name}
+              stationName={course.stationName}
+              isCompleted={course.isCompleted}
+              onCompletedClick={() => handleCompletedClick(course)}
               isDeleteMode={isDeleteMode}
-              isSelect={selectedIds.includes(course.id)}
+              isSelect={selectedIds.includes(course.courseId)}
               handleSelected={handleSelected}
             />
           ))}
         </div>
       </section>
+
+      <div ref={ref} className="h-1 w-full" />
 
       <BottomNav mode="course" />
     </main>

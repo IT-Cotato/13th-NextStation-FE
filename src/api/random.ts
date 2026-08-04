@@ -1,3 +1,4 @@
+import { getAccessToken } from "@/api/auth";
 import type { SubwayLine } from "@/types/subway";
 export interface RandomStationLineResponse {
   id: SubwayLine;
@@ -36,8 +37,6 @@ export interface RandomDrawResponseData {
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-const MEMBER_ID = 1;
-
 export class RandomDrawNotFoundError extends Error {
   constructor(message = "뽑기 대상 역이 없음") {
     super(message);
@@ -46,10 +45,16 @@ export class RandomDrawNotFoundError extends Error {
 }
 
 export async function drawRandomStation(): Promise<RandomDrawResponseData> {
+  const accessToken = getAccessToken();
+
+  if (!accessToken) {
+    throw new Error("로그인 토큰이 없습니다.");
+  }
+
   const response = await fetch(`${API_BASE_URL}/api/v1/random`, {
     method: "POST",
     headers: {
-      "X-Member-Id": String(MEMBER_ID),
+      Authorization: `Bearer ${accessToken}`,
     },
   });
 
@@ -70,24 +75,28 @@ export async function drawRandomStation(): Promise<RandomDrawResponseData> {
       stationName: data.station.stationName,
       description: data.station.description,
       todos: data.station.todos ?? [],
-      lines: (data.station.lines ?? []).map((line: RandomStationLineResponse) => ({
-        id: line.id,
-        name: line.name,
-        code: line.code,
-      })),
+      lines: (data.station.lines ?? []).map(
+        (line: RandomStationLineResponse) => ({
+          id: line.id,
+          name: line.name,
+          code: line.code,
+        }),
+      ),
     },
     course: {
       name: data.course.name,
-      places: (data.course.places ?? []).map((place: RandomCoursePlaceResponse) => ({
-        placeId: place.placeId,
-        placeName: place.placeName,
-        description: place.description,
-        categoryCode: place.categoryCode,
-        categoryName: place.categoryName,
-        imageUrl: place.imageUrl,
-        xCoordinate: place.xCoordinate,
-        yCoordinate: place.yCoordinate,
-      })),
+      places: (data.course.places ?? []).map(
+        (place: RandomCoursePlaceResponse) => ({
+          placeId: place.placeId,
+          placeName: place.placeName,
+          description: place.description,
+          categoryCode: place.categoryCode,
+          categoryName: place.categoryName,
+          imageUrl: place.imageUrl,
+          xCoordinate: place.xCoordinate,
+          yCoordinate: place.yCoordinate,
+        }),
+      ),
     },
   };
 }
