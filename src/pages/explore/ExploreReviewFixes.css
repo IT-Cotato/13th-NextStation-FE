@@ -9,6 +9,27 @@
   background: var(--color-white);
 }
 
+.explore-search-icon {
+  position: relative;
+  flex: 0 0 20px;
+  width: 20px;
+  height: 20px;
+  border: 1.5px solid #696969;
+  border-radius: 50%;
+}
+
+.explore-search-icon::after {
+  position: absolute;
+  right: -4px;
+  bottom: 0;
+  width: 7px;
+  height: 1.5px;
+  background: #696969;
+  content: "";
+  transform: rotate(45deg);
+  transform-origin: left center;
+}
+
 .explore-search-results__form input,
 .explore-concept-card,
 .explore-course-item,
@@ -33,4 +54,19 @@
   .explore-sort > button span {
     transition: none;
   }
+}
+
+.explore-popular-card__veil {
+  border-radius: var(--radius-lg);
+  background: linear-gradient(
+    180deg,
+    rgb(255 255 255 / 0%) 0%,
+    var(--color-white) 100%
+  );
+  pointer-events: none;
+}
+
+.explore-popular-scroll {
+  margin-top: -12px;
+  padding-top: 20px;
 }

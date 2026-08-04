@@ -1,5 +1,7 @@
 .explore-ranking-page{min-height:100dvh;padding-bottom:16px}
 .explore-ranking-header{padding:57px 15px 10px}
+.explore-ranking-header>.explore-ranking-header__nav{height:24px;margin:0 0 16px;padding:0;grid-template-columns:24px 1fr 24px}
+.explore-ranking-header>.explore-ranking-header__nav button{width:24px;height:24px;margin:0}
 .explore-ranking-header>button{width:24px;height:24px;margin:0 0 16px;padding:0;border:0;background:transparent;color:#696969;display:grid;place-items:center}
 .explore-ranking-header>button span{display:block;font-family:Arial,sans-serif;font-size:39px;font-weight:200;line-height:20px;transform:translate(-1px,-1px)}
 .explore-ranking-header h1{margin:0;font-size:20px;font-weight:600;line-height:1.4;letter-spacing:-.5px}

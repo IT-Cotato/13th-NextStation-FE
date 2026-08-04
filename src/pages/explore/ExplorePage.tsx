@@ -4,43 +4,11 @@ import BottomNav from "@/components/BottomNav";
 import ExploreCourseCard from "./components/ExploreCourseCard";
 import ExploreCourseItem from "./components/ExploreCourseItem";
 import { stationsByLine } from "@/mocks/StationByLine";
+import { featuredConceptTours } from "./data/conceptTours";
+import ExploreSearchForm from "./components/ExploreSearchForm";
 import "./ExplorePage.css";
 import "./ExplorePage.additions.css";
 import "./ExploreReviewFixes.css";
-
-const concepts = [
-  {
-    slug: "stationery",
-    title: "문구 투어",
-    description: "작은 문구점과 책방을 찾아가는 코스",
-    image: "/explore/concept-stationery-figma.png",
-    iconStyle: { right: 34, top: 20, width: 75, height: 57 },
-    stars: [
-      { image: "/explore/main-concept-stationery-star.svg", style: { right: 14, top: -6, width: 88, height: 88 } },
-    ],
-  },
-  {
-    slug: "value",
-    title: "가성비 투어",
-    description: "돈은 적게, 만족은 충분한 알뜰 코스",
-    image: "/explore/concept-value-figma.png",
-    iconStyle: { right: 37, top: 15, width: 57, height: 57 },
-    stars: [
-      { image: "/explore/main-concept-value-star.svg", style: { right: 74, top: 23, width: 70, height: 68 } },
-      { image: "/explore/main-concept-value-star-small.svg", style: { right: 14, top: 8, width: 33, height: 32, transform: "rotate(14.42deg)" } },
-    ],
-  },
-  {
-    slug: "culture",
-    title: "문화재 투어",
-    description: "서울 속 오래된 흔적을 만나는 코스",
-    image: "/explore/concept-culture-figma.png",
-    iconStyle: { right: 41, top: 16, width: 56, height: 56 },
-    stars: [
-      { image: "/explore/main-concept-culture-star.svg", style: { right: -5, top: -1, width: 83, height: 83, transform: "rotate(-20.62deg)" } },
-    ],
-  },
-];
 
 export default function ExplorePage() {
   const navigate = useNavigate();
@@ -48,25 +16,24 @@ export default function ExplorePage() {
   const [query, setQuery] = useState("");
 
   return (
-    <main className="explore-page">
-      <header className="explore-header">
+    <main className="explore-page pt-[calc(var(--safe-top)+12px)]">
+      <header className="explore-header !h-[123px] !pt-[45px]">
         <h1>오늘은 어떤 환승여행을<br />둘러볼까요?</h1>
         <button aria-label="관심 코스"><img src="/explore/heart-outline.svg" alt="" /></button>
       </header>
 
-      <label className="explore-search">
-        <span>⌕</span>
-        <input
-          value={query}
-          onChange={(event) => setQuery(event.target.value)}
-          onKeyDown={(event) => {
-            if (event.key === "Enter" && query.trim()) {
-              navigate(`/explore/search?q=${encodeURIComponent(query.trim())}`);
-            }
-          }}
-          placeholder="역 이름, 동네, 코스명 검색"
-        />
-      </label>
+      <ExploreSearchForm
+        className="explore-search explore-concept-search"
+        icon={<span aria-hidden="true" className="explore-search-icon" />}
+        onSubmit={(keyword) => {
+          if (keyword) {
+            navigate(`/explore/search?q=${encodeURIComponent(keyword)}`);
+          }
+        }}
+        value={query}
+        onChange={(event) => setQuery(event.target.value)}
+        placeholder="역 이름, 동네, 코스명 검색"
+      />
 
       <section>
         <div className="explore-section-heading"><h2>사람들이 많이 찾는 코스</h2><button type="button" onClick={() => navigate("/explore/popular")}>더보기 〉</button></div>
@@ -90,7 +57,7 @@ export default function ExplorePage() {
       <section>
         <div className="explore-section-heading"><h2>컨셉별 투어</h2><button type="button" onClick={() => navigate("/explore/concepts")}>더보기 〉</button></div>
         <div className="explore-concept-list">
-          {concepts.map(({ slug, title, description, image, iconStyle, stars }) => (
+          {featuredConceptTours.map(({ slug, title, description, image, iconStyle, stars }) => (
             <button className="explore-concept-card" key={title} onClick={() => navigate(`/explore/concepts/${slug}`)}>
               <span><strong>{title}</strong><small>{description}</small></span>
               <span className="explore-concept-art">

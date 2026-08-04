@@ -3,12 +3,13 @@ import { useSearchParams } from "react-router-dom";
 import { stationsByLine } from "@/mocks/StationByLine";
 import ExploreCourseItem from "./components/ExploreCourseItem";
 import useSafeBack from "./hooks/useSafeBack";
+import type { SubwayLine } from "@/types/subway";
+import Header from "@/components/Header";
 import "./ExplorePage.css";
 import "./ExplorePage.additions.css";
 import "./ExploreReviewFixes.css";
 import "./LineCoursesPage.css";
 
-type SubwayLine = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
 type SortOption = "전체" | "인기순" | "최신순";
 
 const lines: SubwayLine[] = [1, 2, 3, 4, 5, 6, 7, 8, 9];
@@ -108,12 +109,14 @@ export default function LineCoursesPage() {
 
   return (
     <main className="line-courses-page">
-      <header className="line-courses-header">
-        <button type="button" onClick={goBack} aria-label="뒤로가기">
-          <span aria-hidden="true" />
-        </button>
+      <div className="line-courses-header">
+        <Header
+          className="line-courses-header__nav !h-6 !grid-cols-[24px_1fr_24px] !p-0"
+          showBack
+          onBackClick={goBack}
+        />
         <h1>노선따라 둘러보기</h1>
-      </header>
+      </div>
 
       <div
         className="line-courses-tabs"

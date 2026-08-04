@@ -1,11 +1,12 @@
 import { useState } from "react";
 import StationLineList from "@/components/StationLineList";
+import type { SubwayLine } from "@/types/subway";
 
 type ExploreCourseItemProps = {
   filledImage?: boolean;
   imageSrc?: string;
   rank?: number;
-  line?: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
+  line?: SubwayLine;
   stationName?: string;
 };
 

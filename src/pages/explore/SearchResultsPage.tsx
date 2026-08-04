@@ -4,6 +4,7 @@ import { stationsByLine } from "@/mocks/StationByLine";
 import ExploreCourseItem from "./components/ExploreCourseItem";
 import useSafeBack from "./hooks/useSafeBack";
 import { conceptTours } from "./data/conceptTours";
+import ExploreSearchForm from "./components/ExploreSearchForm";
 import "./ExplorePage.css";
 import "./ExplorePage.additions.css";
 import "./ExploreReviewFixes.css";
@@ -57,13 +58,10 @@ export default function SearchResultsPage() {
         <button type="button" className="explore-search-results__back" aria-label="이전" onClick={goBack}>
           <span aria-hidden="true" />
         </button>
-        <form
+        <ExploreSearchForm
           key={urlQuery}
           className="explore-search-results__form"
-          onSubmit={(event) => {
-            event.preventDefault();
-            const formData = new FormData(event.currentTarget);
-            const nextQuery = String(formData.get("query") ?? "").trim();
+          onSubmit={(nextQuery) => {
             setSearchParams(
               nextQuery
                 ? {
@@ -73,13 +71,8 @@ export default function SearchResultsPage() {
                 : {},
             );
           }}
-        >
-          <input
-            aria-label="코스 검색"
-            name="query"
-            defaultValue={urlQuery}
-          />
-        </form>
+          defaultValue={urlQuery}
+        />
       </header>
 
       {hasResults ? (

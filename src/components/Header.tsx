@@ -3,6 +3,7 @@ import CloseIcon from '@/assets/close.svg?react';
 import { useNavigate } from 'react-router-dom';
 
 interface HeaderProps {
+  className?: string;
   title?: string;
   showBack?: boolean;
   showClose?: boolean;
@@ -11,6 +12,7 @@ interface HeaderProps {
 }
 
 export default function Header({
+  className = '',
   title,
   showBack = false,
   showClose = false,
@@ -34,7 +36,7 @@ export default function Header({
   };
 
   return (
-    <header className="grid h-[50px] w-full shrink-0 grid-cols-[40px_1fr_40px] items-center px-3">
+    <header className={`grid h-[50px] w-full shrink-0 grid-cols-[40px_1fr_40px] items-center px-3 ${className}`}>
       <div className="flex items-center justify-start">
         {showBack && (
           <button
