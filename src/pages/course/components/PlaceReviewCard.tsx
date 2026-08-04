@@ -1,6 +1,13 @@
 import PlusIcon from '@/assets/photoPlus.svg?react';
 import DeleteIcon from '@/assets/delete.svg?react';
 import { useRef, useState, useEffect } from 'react';
+import {
+  createUploadFileName,
+  deleteImage,
+  getPresignedUrl,
+  uploadFileToPresignedUrl,
+} from "@/api/image";
+import { showToast } from "./ShowToast";
 
 interface PlaceReviewCardProps {
   id: number;
@@ -22,19 +29,66 @@ export default function PlaceReviewCard({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [isEditing, setIsEditing] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
 
-  const handleChangePhoto = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChangePhoto = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (isUploading) {
+      e.target.value = '';
+      return;
+    }
+
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const previewUrl = URL.createObjectURL(file);
-    onChangePhoto(previewUrl);
+    setIsUploading(true);
 
-    e.target.value = '';
+    try {
+      const previousPhoto = photo;
+      const fileName = createUploadFileName(file);
+      const presignedItem = await getPresignedUrl({
+        folder: "JOURNAL",
+        fileName,
+      });
+
+      await uploadFileToPresignedUrl(
+        presignedItem.presignedUrl,
+        file,
+        presignedItem.contentType,
+      );
+
+      onChangePhoto(presignedItem.imageUrl);
+
+      if (previousPhoto) {
+        await deleteImage(previousPhoto);
+      }
+    } catch (error) {
+      showToast({
+        message:
+          error instanceof Error
+            ? error.message
+            : "장소 사진 업로드에 실패했습니다.",
+      });
+    } finally {
+      setIsUploading(false);
+      e.target.value = '';
+    }
   };
 
-  const handleDeletePhoto = () => {
-    onChangePhoto(null);
+  const handleDeletePhoto = async () => {
+    if (isUploading) return;
+    if (!photo) return;
+
+    try {
+      await deleteImage(photo);
+      onChangePhoto(null);
+    } catch (error) {
+      showToast({
+        message:
+          error instanceof Error
+            ? error.message
+            : "장소 사진 삭제에 실패했습니다.",
+      });
+    }
   };
 
   useEffect(() => {
@@ -56,7 +110,8 @@ export default function PlaceReviewCard({
             />
             <button
               type="button"
-              onClick={() => handleDeletePhoto()}
+              disabled={isUploading}
+              onClick={() => void handleDeletePhoto()}
               className="absolute top-1 right-1"
             >
               <DeleteIcon className="size-4"/>
@@ -65,6 +120,7 @@ export default function PlaceReviewCard({
       ):(
         <button
           type="button"
+          disabled={isUploading}
           onClick={() => fileInputRef.current?.click()}
           className="flex w-[72px] h-[72px] cursor-pointer shrink-0 items-center justify-center rounded-[12px] bg-secondary-10 border border-dashed border-secondary-40"
         >

@@ -23,19 +23,21 @@ export default function CourseCard({
       className={`flex items-center gap-3 px-3 py-3 border rounded-lg ${isActive ? "border-primary-50 bg-secondary-10" : "border-gray-40 bg-white"}`}
     >
       <div className="flex items-center justify-center w-[67px] h-[50px] bg-gray-30 rounded-md">
-        {category === "culturalSpace" ? (
+        {category === "CULTURE" ? (
           <CulturalSpace className="w-[32px]" />
-        ) : category === "cafe" ? (
+        ) : category === "CAFE" ? (
           <Cafe className="w-[32px]" />
-        ) : category === "restaurant" ? (
+        ) : category === "FOOD" ? (
           <Restaurant className="w-[32px]" />
         ) : (
           <Walk className="w-[32px]" />
         )}
       </div>
       <div className="flex flex-col flex-1 min-w-0 gap-1">
-        <p className="text-subtitle font-semibold">{name}</p>
-        <p className="text-body-02 text-gray-70 align-items truncate">
+        <p className="text-subtitle font-semibold leading-[1.4] tracking-[-0.4px]">
+          {name}
+        </p>
+        <p className="text-body-02 text-gray-70 leading-[1.4] tracking-[-0.35px] align-items truncate">
           {description}
         </p>
       </div>

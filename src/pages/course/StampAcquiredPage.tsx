@@ -1,13 +1,10 @@
-import { useEffect, useRef, type ComponentType } from "react";
+import { useRef, type ComponentType } from "react";
 import LottieModule, { type LottieRefCurrentProps } from "lottie-react";
 import { motion } from "motion/react";
-import { useNavigate, useParams } from "react-router-dom";
-import { useLogDraft } from "./contexts/logDraft";
-import {
-  MOCK_STAMP_ACQUIRED_AT,
-  getStationAcquiredDate,
-} from "@/utils/logDate";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useLogDraft } from "./contexts/LogDraftContext";
 import { STATION_STAMP_MAP } from "@/constants/stationStampMap";
+import type { CourseCompletionResult } from "@/api/savedCourse";
 import confetti from "@/assets/lottie/confetti.json";
 
 const Lottie = (
@@ -18,21 +15,18 @@ const Lottie = (
 
 function StampAcquiredPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { courseId } = useParams();
-  const { draft, setAcquiredDate } = useLogDraft();
-  const acquiredDate = getStationAcquiredDate(MOCK_STAMP_ACQUIRED_AT);
-  const stationName = "보문역";
+  const { draft } = useLogDraft();
+  const completionResult = location.state as CourseCompletionResult | null;
+  const stationName = completionResult?.stationName ?? draft.stationName ?? "";
   const StampIcon = STATION_STAMP_MAP[stationName] ?? null;
   const lottieRef = useRef<LottieRefCurrentProps | null>(null);
 
-  useEffect(() => {
-    if (draft.acquiredDate !== acquiredDate) {
-      setAcquiredDate(acquiredDate);
-    }
-  }, [acquiredDate, courseId, draft.acquiredDate, navigate, setAcquiredDate]);
-
   const handleComplete = () => {
-    navigate(`/course/${courseId ?? ""}/log`);
+    navigate(`/course/${courseId ?? ""}/log`, {
+      state: completionResult,
+    });
   };
 
   return (

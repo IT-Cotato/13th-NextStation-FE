@@ -67,7 +67,13 @@ function PreferencePage() {
         <section className='flex w-full items-center justify-center'>
           <CTAButton 
             disabled={!isFormValid}
-            onClick={() => navigate('/draw/loading')}
+            onClick={() =>
+              navigate('/draw/loading', {
+                state: {
+                  source: 'recommend',
+                },
+              })
+            }
           >
             나만의 환승역 찾기
           </CTAButton>
