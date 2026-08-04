@@ -246,6 +246,7 @@ export default function ProfileSetupPage() {
               ref={fileInputRef}
               type="file"
               accept=".jpg,.jpeg,.png,.webp,.gif,image/jpeg,image/png,image/webp,image/gif"
+              disabled={isSubmitting}
               onChange={handleProfileImageChange}
               className="sr-only"
               aria-label="프로필 사진 파일 선택"
