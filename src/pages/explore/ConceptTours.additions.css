@@ -1,4 +1,4 @@
-.explore-concepts-page{height:100dvh;min-height:0;overflow-y:auto;padding-bottom:28px;scrollbar-width:none;-ms-overflow-style:none}.explore-concepts-page::-webkit-scrollbar{display:none}.explore-concepts-page>.explore-ranking-header{height:156px}.explore-concept-search{margin-top:9px}
+.explore-concepts-page{height:100dvh;min-height:0;overflow-y:auto;padding-bottom:28px;scrollbar-width:none;-ms-overflow-style:none}.explore-concepts-page::-webkit-scrollbar{display:none}.explore-concept-search{margin-top:9px}
 .explore-search-icon{position:relative;flex:0 0 20px;width:20px;height:20px;border:1.5px solid #696969;border-radius:50%}
 .explore-search-icon:after{content:"";position:absolute;right:-4px;bottom:0;width:7px;height:1.5px;background:#696969;transform:rotate(45deg);transform-origin:left center}
 .explore-concept-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;padding:0 15px}

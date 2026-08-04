@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { stationsByLine } from "@/mocks/StationByLine";
+import Header from "@/components/Header";
+import type { SubwayLine } from "@/types/subway";
 import ExploreCourseItem from "./components/ExploreCourseItem";
 import useSafeBack from "./hooks/useSafeBack";
 import "./ExplorePage.css";
@@ -8,7 +10,6 @@ import "./ExplorePage.additions.css";
 import "./ExploreReviewFixes.css";
 import "./LineCoursesPage.css";
 
-type SubwayLine = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
 type SortOption = "전체" | "인기순" | "최신순";
 
 const lines: SubwayLine[] = [1, 2, 3, 4, 5, 6, 7, 8, 9];
@@ -107,13 +108,11 @@ export default function LineCoursesPage() {
   }, [isStationMenuOpen]);
 
   return (
-    <main className="line-courses-page">
-      <header className="line-courses-header">
-        <button type="button" onClick={goBack} aria-label="뒤로가기">
-          <span aria-hidden="true" />
-        </button>
-        <h1>노선따라 둘러보기</h1>
-      </header>
+    <main className="line-courses-page pt-[calc(var(--safe-top)+12px)]">
+      <Header showBack onBackClick={goBack} />
+      <h1 className="px-[15px] pb-[5px] text-headline font-semibold leading-[1.4]">
+        노선따라 둘러보기
+      </h1>
 
       <div
         className="line-courses-tabs"

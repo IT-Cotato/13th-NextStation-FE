@@ -1,11 +1,12 @@
 import { useState } from "react";
-import StationLineList from "@/components/StationLineList";
+import LineBadge from "@/components/LineBadge";
+import type { SubwayLine } from "@/types/subway";
 
 type ExploreCourseItemProps = {
   filledImage?: boolean;
   imageSrc?: string;
   rank?: number;
-  line?: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
+  line?: SubwayLine;
   stationName?: string;
 };
 
@@ -31,10 +32,12 @@ export default function ExploreCourseItem({
       </div>
       <div className="explore-course-item__body">
         <div className="explore-course-item__meta">
-          <StationLineList
-            className="explore-card-station"
-            items={[{ line, stationName }]}
-          />
+          <div className="explore-card-station flex items-center gap-1">
+            <LineBadge line={line} />
+            <span className="whitespace-nowrap text-body-02 font-regular leading-[1.4] text-gray-100">
+              {stationName}
+            </span>
+          </div>
           <button
             type="button"
             className="explore-scrap-count"

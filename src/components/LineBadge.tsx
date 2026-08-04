@@ -1,4 +1,6 @@
-export type SubwayLine = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
+import type { SubwayLine } from "@/types/subway";
+
+export type { SubwayLine } from "@/types/subway";
 
 const LINE_STYLES: Record<SubwayLine, string> = {
   "1": "bg-subway-1-dark text-subway-1-light",
