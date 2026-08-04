@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import BottomNav from "@/components/BottomNav";
 import ExploreCourseCard from "./components/ExploreCourseCard";
 import ExploreCourseItem from "./components/ExploreCourseItem";
-import ExploreSearchBar from "./components/ExploreSearchBar";
 import { stationsByLine } from "@/mocks/StationByLine";
 import type { SubwayLine } from "@/types/subway";
 import { featuredConceptTours } from "./data/conceptTours";
@@ -27,18 +26,19 @@ export default function ExplorePage() {
         </button>
       </header>
 
-      <ExploreSearchBar
-        value={query}
-        onChange={setQuery}
-        onSubmit={() => {
-          const keyword = query.trim();
-
-          if (keyword) {
-            navigate(`/explore/search?q=${encodeURIComponent(keyword)}`);
-          }
-        }}
-        placeholder="역 이름, 동네, 코스명 검색"
-      />
+      <label className="explore-search">
+        <span>⌕</span>
+        <input
+          value={query}
+          onChange={(event) => setQuery(event.target.value)}
+          onKeyDown={(event) => {
+            if (event.key === "Enter" && query.trim()) {
+              navigate(`/explore/search?q=${encodeURIComponent(query.trim())}`);
+            }
+          }}
+          placeholder="역 이름, 동네, 코스명 검색"
+        />
+      </label>
 
       <section>
         <div className="explore-section-heading"><h2>사람들이 많이 찾는 코스</h2><button type="button" onClick={() => navigate("/explore/popular")}>더보기 〉</button></div>
