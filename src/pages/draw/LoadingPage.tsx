@@ -184,10 +184,10 @@ function LoadingPage() {
         <p className="text-body-01 text-gray-70">{loadingError}</p>
         <button
           type="button"
-          onClick={() => navigate(-1)}
+          onClick={() => navigate(`/`)}
           className="rounded-full bg-primary-60 px-5 py-3 text-body-01 font-semibold text-white"
         >
-          이전으로 돌아가기
+          홈으로 돌아가기
         </button>
       </main>
     );
