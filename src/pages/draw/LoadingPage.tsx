@@ -196,7 +196,7 @@ function LoadingPage() {
   return (
     <main className="relative flex h-dvh overflow-hidden bg-gray-10 px-8 pt-[var(--safe-top)]">
       <div className="pointer-events-none absolute left-1/2 top-1/2 w-[240px] -translate-x-1/2 -translate-y-1/2">
-        <div className="relative w-full">
+        <div className="relative h-[184px] w-full">
           <div className="absolute bottom-full left-[-50px] mb-[100px] w-[262px]">
             <h1 className="text-title-01 font-semibold leading-[1.4] tracking-[-0.025em] text-gray-90 text-start">
               {isLoggedIn && isProfileResolved ? (
@@ -213,13 +213,13 @@ function LoadingPage() {
             </h1>
           </div>
 
-          <div className={isSearchPhase ? "w-full" : "mx-auto w-[184px]"}>
+          <div className="absolute inset-0 flex items-center justify-center">
             <Lottie
               lottieRef={isSearchPhase ? searchLottieRef : completeLottieRef}
               animationData={isSearchPhase ? loadingSearch : loadingComplete}
               autoplay
               loop={isSearchPhase}
-              className="h-auto w-full"
+              className={isSearchPhase ? "h-auto w-full" : "h-auto w-[184px]"}
               onDOMLoaded={() => {
                 if (isSearchPhase) {
                   searchLottieRef.current?.setSpeed(SEARCH_ANIMATION_SPEED);
