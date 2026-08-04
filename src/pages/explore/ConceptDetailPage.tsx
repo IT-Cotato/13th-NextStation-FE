@@ -2,17 +2,27 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import useSafeBack from "./hooks/useSafeBack";
 import ExploreCourseItem from "./components/ExploreCourseItem";
-import { stationsByLine } from "@/mocks/StationByLine";
 import { conceptDetails, type ConceptId } from "./data/conceptDetails";
 import Header from "@/components/Header";
+import {
+  conceptCourses,
+  sortExploreCourses,
+  type ExploreSortOption,
+} from "./data/exploreCourses";
 
 export default function ConceptDetailPage() {
   const goBack = useSafeBack("/explore/concepts");
   const { conceptId = "stationery" } = useParams();
-  const detail = conceptDetails[conceptId as ConceptId] ?? conceptDetails.stationery;
+  const selectedConceptId = conceptId in conceptDetails
+    ? (conceptId as ConceptId)
+    : "stationery";
+  const detail = conceptDetails[selectedConceptId];
   const [sortOpen, setSortOpen] = useState(false);
-  const [sort, setSort] = useState<"전체" | "최신순" | "인기순">("전체");
-  const stations = stationsByLine["2호선"];
+  const [sort, setSort] = useState<ExploreSortOption>("전체");
+  const courses = sortExploreCourses(
+    conceptCourses.filter((course) => course.conceptId === selectedConceptId),
+    sort,
+  );
 
   useEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: "auto" });
@@ -44,10 +54,12 @@ export default function ConceptDetailPage() {
           {sort} <span className={`text-lg transition-transform ${sortOpen ? "rotate-0" : "rotate-180"}`}>⌃</span>
         </button>
         {sortOpen && (
-          <div className="absolute right-0 top-12 flex w-24 flex-col gap-3 rounded-[20px] border border-white bg-white/85 px-5 py-3 shadow-[0_0_28px_rgb(118_118_118/25%)] backdrop-blur-[10px]">
+          <div className="absolute right-0 top-12 flex w-24 flex-col gap-3 rounded-[20px] border border-white bg-white/85 px-5 py-3 shadow-[0_0_28px_rgb(118_118_118/25%)] backdrop-blur-[10px]" role="menu">
             {(["최신순", "인기순"] as const).map((option) => (
               <button
                 type="button"
+                role="menuitemradio"
+                aria-checked={sort === option}
                 className={`border-0 bg-transparent p-0 text-left text-sm font-semibold leading-[1.4] ${sort === option ? "text-gray-100" : "text-gray-70"}`}
                 key={option}
                 onClick={() => { setSort(option); setSortOpen(false); }}
@@ -60,11 +72,11 @@ export default function ConceptDetailPage() {
       </div>
 
       <section className="flex flex-col gap-3 px-[15px] pb-4 pt-4 [&>article]:min-h-[120px]" aria-label={`${detail.title} ${sort}`}>
-        {stations.slice(0, 6).map((stationName, index) => (
+        {courses.map((course, index) => (
           <ExploreCourseItem
-            key={stationName}
-            line={2}
-            stationName={stationName}
+            key={course.id}
+            line={course.line}
+            stationName={course.stationName}
             filledImage={index === 0}
           />
         ))}

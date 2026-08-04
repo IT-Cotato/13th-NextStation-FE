@@ -101,7 +101,7 @@ export default function SearchResultsPage() {
                     />
                   </span>
                   <span className="absolute left-4 top-[90px] z-[2] flex flex-col items-start gap-2 [&>small]:flex [&>small]:items-center [&>small]:gap-2 [&>small]:text-[10px] [&>small]:text-gray-60 [&>small>i]:grid [&>small>i]:size-[18px] [&>small>i]:place-items-center [&>small>i]:rounded-full [&>small>i]:bg-gray-60 [&>small>i]:not-italic [&>small>i]:text-white">
-                    <strong className="whitespace-nowrap text-xl font-semibold leading-[1.4]">{title}</strong>
+                    <strong className="max-w-full text-xl font-semibold leading-[1.4] [overflow-wrap:anywhere]">{title}</strong>
                     <span className="flex flex-col text-sm leading-[1.4] text-gray-70">
                       {description.split("\n").map((line) => (
                         <span key={line}>{line}</span>

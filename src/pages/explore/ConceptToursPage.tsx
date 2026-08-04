@@ -68,7 +68,7 @@ export default function ConceptToursPage() {
                 />
               </span>
               <span className="absolute left-4 top-[90px] z-[2] flex flex-col items-start gap-2 [&>small]:flex [&>small]:items-center [&>small]:gap-2 [&>small]:text-[10px] [&>small]:font-normal [&>small]:leading-none [&>small]:text-gray-60 [&>small>i]:grid [&>small>i]:size-[18px] [&>small>i]:place-items-center [&>small>i]:rounded-full [&>small>i]:bg-gray-60 [&>small>i]:text-[10px] [&>small>i]:not-italic [&>small>i]:text-white">
-                <strong className="block whitespace-nowrap text-xl font-semibold leading-[1.4] tracking-[-0.5px] max-[360px]:text-lg">{title}</strong>
+                <strong className="block max-w-full text-xl font-semibold leading-[1.4] tracking-[-0.5px] [overflow-wrap:anywhere] max-[360px]:text-lg">{title}</strong>
                 <span className="flex flex-col text-sm leading-[1.4] tracking-[-0.35px] text-gray-70 max-[360px]:text-[13px]">
                   {description.split("\n").map((line) => (
                     <span key={line}>{line}</span>

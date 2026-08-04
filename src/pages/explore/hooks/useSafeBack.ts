@@ -1,17 +1,16 @@
 import { useCallback } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 export default function useSafeBack(fallback = "/explore") {
   const navigate = useNavigate();
+  const location = useLocation();
 
   return useCallback(() => {
-    const historyIndex: unknown = window.history.state?.idx;
-
-    if (typeof historyIndex === "number" && historyIndex > 0) {
+    if (location.key !== "default") {
       navigate(-1);
       return;
     }
 
     navigate(fallback, { replace: true });
-  }, [fallback, navigate]);
+  }, [fallback, location.key, navigate]);
 }

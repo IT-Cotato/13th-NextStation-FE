@@ -5,8 +5,13 @@ import ExploreCourseItem from "./components/ExploreCourseItem";
 import useSafeBack from "./hooks/useSafeBack";
 import type { SubwayLine } from "@/types/subway";
 import Header from "@/components/Header";
+import {
+  createLineCourses,
+  sortExploreCourses,
+  type ExploreSortOption,
+} from "./data/exploreCourses";
 
-type SortOption = "전체" | "인기순" | "최신순";
+type SortOption = ExploreSortOption;
 
 const lines: SubwayLine[] = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 const sortOptions: Exclude<SortOption, "전체">[] = ["최신순", "인기순"];
@@ -14,12 +19,10 @@ const sortOptions: Exclude<SortOption, "전체">[] = ["최신순", "인기순"];
 export default function LineCoursesPage() {
   const goBack = useSafeBack();
   const [searchParams, setSearchParams] = useSearchParams();
-  const [line, setLine] = useState<SubwayLine>(() => {
-    const requestedLine = Number(searchParams.get("line"));
-    return lines.includes(requestedLine as SubwayLine)
-      ? (requestedLine as SubwayLine)
-      : 1;
-  });
+  const requestedLine = Number(searchParams.get("line"));
+  const line = lines.includes(requestedLine as SubwayLine)
+    ? (requestedLine as SubwayLine)
+    : 1;
   const [station, setStation] = useState("");
   const [sortOption, setSortOption] = useState<SortOption>("전체");
   const [isStationMenuOpen, setIsStationMenuOpen] = useState(false);
@@ -35,9 +38,12 @@ export default function LineCoursesPage() {
   );
   const courseStations =
     visibleStations.length > 0 ? visibleStations : stationNames;
+  const courses = sortExploreCourses(
+    createLineCourses(line, courseStations),
+    sortOption,
+  );
 
   const handleLineChange = (nextLine: SubwayLine) => {
-    setLine(nextLine);
     setStation("");
     setSearchParams({ line: String(nextLine) }, { replace: true });
   };
@@ -112,9 +118,8 @@ export default function LineCoursesPage() {
 
       <div
         className="flex snap-x snap-proximity flex-nowrap gap-2 overflow-x-auto overflow-y-hidden px-[15px] py-2 [scrollbar-width:none] [touch-action:pan-x] focus:outline-none [&::-webkit-scrollbar]:hidden"
-        role="tablist"
+        role="group"
         aria-label="지하철 노선 선택"
-        tabIndex={0}
         onWheel={(event) => {
           if (Math.abs(event.deltaY) > Math.abs(event.deltaX)) {
             event.currentTarget.scrollLeft += event.deltaY;
@@ -124,8 +129,7 @@ export default function LineCoursesPage() {
         {lines.map((number) => (
           <button
             type="button"
-            role="tab"
-            aria-selected={line === number}
+            aria-pressed={line === number}
             className={`shrink-0 snap-start rounded-[20px] border px-4 py-[7px] text-sm leading-[1.4] tracking-[-0.35px] ${line === number ? "border-primary-50 bg-primary-50 font-semibold text-gray-10" : "border-gray-50 bg-transparent text-gray-90"}`}
             onClick={() => handleLineChange(number)}
             key={number}
@@ -171,7 +175,8 @@ export default function LineCoursesPage() {
               {sortOptions.map((option) => (
                 <button
                   type="button"
-                  role="menuitem"
+                  role="menuitemradio"
+                  aria-checked={sortOption === option}
                   className={`border-0 bg-transparent p-0 text-left text-sm font-semibold leading-[1.4] ${sortOption === option ? "text-gray-100" : "text-gray-70"}`}
                   onClick={() => {
                     setSortOption(option);
@@ -188,11 +193,11 @@ export default function LineCoursesPage() {
       </div>
 
       <section className="flex flex-col gap-3 px-[15px] py-7 [&>article]:min-h-[120px] [&_article>div:first-child>img]:block [&_article>div:first-child>img]:size-full [&_article>div:first-child>img]:object-cover" aria-label={`${line}호선 코스 목록`}>
-        {courseStations.map((stationName, index) => (
+        {courses.map((course, index) => (
             <ExploreCourseItem
-              key={`${line}-${stationName}-${index}`}
-              line={line}
-              stationName={stationName}
+              key={course.id}
+              line={course.line}
+              stationName={course.stationName}
               imageSrc={index === 0 ? "/explore/line-course-sky.png" : undefined}
             />
           ))}
