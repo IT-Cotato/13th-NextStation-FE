@@ -3,6 +3,11 @@ import {
   getCachedMyProfile,
   getMyProfile,
 } from "@/api/member";
+import {
+  getCustomRecommendation,
+  type CustomRecommendationRequest,
+  type CustomRecommendationResponseData,
+} from "@/api/recommendation";
 import { drawRandomStation, RandomDrawNotFoundError } from "@/api/random";
 import loadingComplete from "@/assets/lottie/loading-complete.json";
 import loadingSearch from "@/assets/lottie/loading-search.json";
@@ -19,11 +24,18 @@ const Lottie = (
     : LottieModule
 ) as ComponentType<Record<string, unknown>>;
 type LoadingPhase = "search" | "complete";
-type DrawResult = Awaited<ReturnType<typeof drawRandomStation>>;
+type DrawResult =
+  | Awaited<ReturnType<typeof drawRandomStation>>
+  | CustomRecommendationResponseData;
+type LoadingPageState = {
+  source?: "random" | "recommend";
+  recommendationRequest?: CustomRecommendationRequest;
+};
 
 function LoadingPage() {
   const navigate = useNavigate();
   const location = useLocation();
+  const loadingState = location.state as LoadingPageState | null;
   const retryTimeoutRef = useRef<number | null>(null);
   const phaseTimeoutRef = useRef<number | null>(null);
   const searchLottieRef = useRef<LottieRefCurrentProps | null>(null);
@@ -31,6 +43,7 @@ function LoadingPage() {
   const pendingResultRef = useRef<DrawResult | null>(null);
   const searchStartedAtRef = useRef<number>(0);
   const [phase, setPhase] = useState<LoadingPhase>("search");
+  const [loadingError, setLoadingError] = useState<string | null>(null);
   const [displayName, setDisplayName] = useState<string | null>(() => {
     const cachedProfile = getCachedMyProfile();
     return cachedProfile?.nickname || null;
@@ -39,8 +52,8 @@ function LoadingPage() {
     Boolean(getCachedMyProfile()?.nickname),
   );
   const isLoggedIn = Boolean(getAccessToken());
-  const source = (location.state as { source?: "random" | "recommend" } | null)
-    ?.source ?? "random";
+  const source = loadingState?.source ?? "random";
+  const recommendationRequest = loadingState?.recommendationRequest;
 
   useEffect(() => {
     let isMounted = true;
@@ -97,9 +110,16 @@ function LoadingPage() {
       }, remaining);
     };
 
-    const requestRandomResult = async () => {
+    const requestResult = async () => {
       try {
-        const result = await drawRandomStation();
+        if (source === "recommend" && !recommendationRequest) {
+          throw new Error("추천 조건이 없어 다시 선택이 필요합니다.");
+        }
+
+        const result =
+          source === "recommend" && recommendationRequest
+            ? await getCustomRecommendation(recommendationRequest)
+            : await drawRandomStation();
         if (!isMounted) return;
 
         pendingResultRef.current = result;
@@ -107,17 +127,24 @@ function LoadingPage() {
       } catch (error) {
         if (!isMounted) return;
 
-        if (error instanceof RandomDrawNotFoundError) {
+        if (source === "random" && error instanceof RandomDrawNotFoundError) {
           retryTimeoutRef.current = window.setTimeout(() => {
-            void requestRandomResult();
+            void requestResult();
           }, 1000);
           return;
         }
+
+        console.error(error);
+        setLoadingError(
+          error instanceof Error
+            ? error.message
+            : "추천 결과를 불러오지 못했어요.",
+        );
       }
     };
 
     void fetchMyProfile();
-    void requestRandomResult();
+    void requestResult();
 
     return () => {
       isMounted = false;
@@ -130,7 +157,7 @@ function LoadingPage() {
         window.clearTimeout(phaseTimeoutRef.current);
       }
     };
-  }, [isLoggedIn, navigate, source]);
+  }, [isLoggedIn, navigate, recommendationRequest, source]);
 
   const handleCompleteAnimationEnd = () => {
     const result = pendingResultRef.current;
@@ -139,6 +166,7 @@ function LoadingPage() {
     navigate(`/draw/result`, {
       state: {
         ...result,
+        recommendationRequest,
         source,
       },
       replace: true,
@@ -146,6 +174,24 @@ function LoadingPage() {
   };
 
   const isSearchPhase = phase === "search";
+
+  if (loadingError) {
+    return (
+      <main className="flex h-dvh flex-col items-center justify-center gap-4 bg-gray-10 px-6 pt-[var(--safe-top)] text-center">
+        <h1 className="text-title-02 font-semibold text-gray-90">
+          추천을 불러오지 못했어요
+        </h1>
+        <p className="text-body-01 text-gray-70">{loadingError}</p>
+        <button
+          type="button"
+          onClick={() => navigate(-1)}
+          className="rounded-full bg-primary-60 px-5 py-3 text-body-01 font-semibold text-white"
+        >
+          이전으로 돌아가기
+        </button>
+      </main>
+    );
+  }
 
   return (
     <main className="relative flex h-dvh overflow-hidden bg-gray-10 px-8 pt-[var(--safe-top)]">

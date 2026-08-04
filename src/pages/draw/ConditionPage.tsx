@@ -2,23 +2,53 @@ import Header from "@/components/Header"
 import ChoiceChip from "@/pages/draw/components/ChoiceChip"
 import CTAButton from "@/components/CTAButton"
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import type { RecommendationTravelTime } from "@/api/recommendation";
+import { useLocation, useNavigate } from "react-router-dom";
 import SearchBar from "./components/SearchBar";
 import RecentStationChip from "./components/RecentStationChip";
 import type { Station } from "@/api/stations";
 
-const timeOptions = ['30분 이내', '1시간 이내', '상관 없음'];
+const timeOptions = ["30분 이내", "1시간 이내", "상관 없음"] as const;
+
+const mapTravelTime = (
+  value: string,
+): "THIRTY_MINUTES" | "ONE_HOUR" | "ANY" => {
+  if (value === "30분 이내") return "THIRTY_MINUTES";
+  if (value === "1시간 이내") return "ONE_HOUR";
+  return "ANY";
+};
+
 const companionOptions = ['혼자', '친구와', '연인과', '부모님과', '아이와'];
 
 const RECENT_STATIONS_KEY = "recentStations";
 const MAX_RECENT_STATIONS = 5;
 
+type ConditionPageState = {
+  selectedStation?: Station | null;
+  selectedTime?: string | null;
+  selectedCompanion?: string | null;
+  selectedTags?: string[];
+  departureStationId?: number;
+  departureStationName?: string;
+  travelTime?: RecommendationTravelTime;
+  companion?: string | null;
+};
+
 function ConditionPage() {
   const navigate = useNavigate();
-  const [query, setQuery] = useState('');
-  const [selectedStation, setSelectedStation] = useState<Station | null>(null);
-  const [selectedTime, setSelectedTime] = useState<string |null>(null);
-  const [selectedCompanion, setSelectedCompanion] = useState<string | null>(null);
+  const location = useLocation();
+  const conditionState = location.state as ConditionPageState | null;
+  const initialSelectedStation = conditionState?.selectedStation ?? null;
+  const [query, setQuery] = useState(initialSelectedStation?.name ?? '');
+  const [selectedStation, setSelectedStation] = useState<Station | null>(
+    initialSelectedStation,
+  );
+  const [selectedTime, setSelectedTime] = useState<string | null>(
+    conditionState?.selectedTime ?? null,
+  );
+  const [selectedCompanion, setSelectedCompanion] = useState<string | null>(
+    conditionState?.selectedCompanion ?? null,
+  );
 
   const [recentStations, setRecentStations] = useState<Station[]>(() => {
   const stored = localStorage.getItem(RECENT_STATIONS_KEY);
@@ -150,7 +180,17 @@ function ConditionPage() {
         <section className='flex w-full items-center justify-center'>
           <CTAButton 
             disabled={!isFormValid}
-            onClick={() => navigate('/draw/preference')}
+            onClick={() => navigate('/draw/preference', {
+              state: {
+                selectedStation,
+                selectedTime,
+                selectedCompanion,
+                departureStationId: selectedStation!.id,
+                departureStationName: selectedStation!.name,
+                travelTime: mapTravelTime(selectedTime!),
+                companion: selectedCompanion, // UI용만 보관
+              },
+            })}
           >
             다음
           </CTAButton>
