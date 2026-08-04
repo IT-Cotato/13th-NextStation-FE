@@ -9,6 +9,27 @@
   background: var(--color-white);
 }
 
+.explore-search-icon {
+  position: relative;
+  width: 20px;
+  height: 20px;
+  flex: 0 0 20px;
+  border: 1.5px solid #696969;
+  border-radius: 50%;
+}
+
+.explore-search-icon::after {
+  position: absolute;
+  right: -4px;
+  bottom: 0;
+  width: 7px;
+  height: 1.5px;
+  background: #696969;
+  content: "";
+  transform: rotate(45deg);
+  transform-origin: left center;
+}
+
 .explore-search-results__form input,
 .explore-concept-card,
 .explore-course-item,

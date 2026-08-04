@@ -1,5 +1,4 @@
 import type { FormEvent } from "react";
-import SearchIcon from "@/assets/search.svg?react";
 
 interface ExploreSearchBarProps {
   value: string;
@@ -29,7 +28,7 @@ export default function ExploreSearchBar({
       role="search"
       onSubmit={handleSubmit}
     >
-      <SearchIcon className="size-5 shrink-0" aria-hidden="true" />
+      <span aria-hidden="true" className="explore-search-icon" />
       <input
         aria-label={ariaLabel}
         value={value}
