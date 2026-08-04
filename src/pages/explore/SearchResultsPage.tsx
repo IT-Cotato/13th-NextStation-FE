@@ -5,9 +5,6 @@ import ExploreCourseItem from "./components/ExploreCourseItem";
 import useSafeBack from "./hooks/useSafeBack";
 import { conceptTours } from "./data/conceptTours";
 import ExploreSearchForm from "./components/ExploreSearchForm";
-import "./ExplorePage.css";
-import "./ExplorePage.additions.css";
-import "./ExploreReviewFixes.css";
 
 export default function SearchResultsPage() {
   const goBack = useSafeBack();
@@ -53,14 +50,14 @@ export default function SearchResultsPage() {
     : results.length > 0;
 
   return (
-    <main className="explore-search-results">
-      <header className="explore-search-results__top">
-        <button type="button" className="explore-search-results__back" aria-label="이전" onClick={goBack}>
+    <main className="min-h-dvh bg-gray-10 text-gray-100">
+      <header className="flex h-[115px] items-stretch gap-4 px-[15px] pb-2.5 pt-[57px]">
+        <button type="button" className="relative w-6 shrink-0 border-0 bg-transparent p-0 before:absolute before:left-2 before:top-1/2 before:size-2.5 before:-translate-y-1/2 before:rotate-45 before:border-b-2 before:border-l-2 before:border-gray-70 before:content-['']" aria-label="이전" onClick={goBack}>
           <span aria-hidden="true" />
         </button>
         <ExploreSearchForm
           key={urlQuery}
-          className="explore-search-results__form"
+          className="flex min-w-0 flex-1 [&_input]:h-11 [&_input]:w-full [&_input]:rounded-[20px] [&_input]:border [&_input]:border-gray-40 [&_input]:bg-gray-20 [&_input]:px-4 [&_input]:py-3 [&_input]:text-sm [&_input]:text-gray-90 [&_input]:outline-none focus-within:[&_input]:border-primary-50 focus-within:[&_input]:bg-white"
           onSubmit={(nextQuery) => {
             setSearchParams(
               nextQuery
@@ -78,34 +75,34 @@ export default function SearchResultsPage() {
       {hasResults ? (
         isConceptSearch ? (
           <section
-            className="explore-concept-grid"
+            className="grid grid-cols-2 gap-3 px-[15px]"
             aria-label={`${urlQuery} 검색 결과`}
           >
             {conceptResults.map(
               ({ slug, title, description, image, star, starStyle, iconStyle }) => (
                 <button
                   type="button"
-                  className="explore-concept-tile"
+                  className="relative h-52 overflow-hidden rounded-[20px] border-0 bg-white p-0 text-left shadow-[0_0_20px_rgb(118_118_118/10%)] outline-none focus-visible:ring-2 focus-visible:ring-primary-50"
                   key={slug}
                   onClick={() => navigate(`/explore/concepts/${slug}`)}
                 >
-                  <span className="explore-concept-tile__art">
+                  <span className="absolute inset-0">
                     <img
-                      className="explore-concept-tile__star"
+                      className="absolute object-contain"
                       src={star}
                       alt=""
                       style={starStyle}
                     />
                     <img
-                      className="explore-concept-tile__icon"
+                      className="absolute z-[1] object-contain"
                       src={image}
                       alt=""
                       style={iconStyle}
                     />
                   </span>
-                  <span className="explore-concept-tile__content">
-                    <strong>{title}</strong>
-                    <span className="explore-concept-tile__description">
+                  <span className="absolute left-4 top-[90px] z-[2] flex flex-col items-start gap-2 [&>small]:flex [&>small]:items-center [&>small]:gap-2 [&>small]:text-[10px] [&>small]:text-gray-60 [&>small>i]:grid [&>small>i]:size-[18px] [&>small>i]:place-items-center [&>small>i]:rounded-full [&>small>i]:bg-gray-60 [&>small>i]:not-italic [&>small>i]:text-white">
+                    <strong className="whitespace-nowrap text-xl font-semibold leading-[1.4]">{title}</strong>
+                    <span className="flex flex-col text-sm leading-[1.4] text-gray-70">
                       {description.split("\n").map((line) => (
                         <span key={line}>{line}</span>
                       ))}
@@ -119,7 +116,7 @@ export default function SearchResultsPage() {
             )}
           </section>
         ) : (
-          <section className="explore-search-results__list" aria-label={`${urlQuery} 검색 결과`}>
+          <section className="flex flex-col gap-3 px-[15px] py-4 [&>article]:min-h-[120px]" aria-label={`${urlQuery} 검색 결과`}>
             {results.map(({ line, stationName }, index) => (
               <ExploreCourseItem
                 key={`${line}-${stationName}`}
@@ -131,7 +128,7 @@ export default function SearchResultsPage() {
           </section>
         )
       ) : (
-        <section className="explore-search-results__empty">
+        <section className="flex flex-col items-center gap-5 pt-[163px] [&_img]:block [&_img]:h-[200px] [&_img]:w-[222px] [&_img]:object-contain [&_p]:m-0 [&_p]:w-[222px] [&_p]:text-center [&_p]:text-base [&_p]:leading-[1.4] [&_p]:tracking-[-0.4px] [&_p]:text-gray-80">
           <img src="/explore/search-empty-figma.png" alt="" />
           <p>일치하는 검색 결과가 없어요!</p>
         </section>

@@ -6,9 +6,6 @@ import ExploreCourseItem from "./components/ExploreCourseItem";
 import { stationsByLine } from "@/mocks/StationByLine";
 import { featuredConceptTours } from "./data/conceptTours";
 import ExploreSearchForm from "./components/ExploreSearchForm";
-import "./ExplorePage.css";
-import "./ExplorePage.additions.css";
-import "./ExploreReviewFixes.css";
 
 export default function ExplorePage() {
   const navigate = useNavigate();
@@ -16,15 +13,15 @@ export default function ExplorePage() {
   const [query, setQuery] = useState("");
 
   return (
-    <main className="explore-page pt-[calc(var(--safe-top)+12px)]">
-      <header className="explore-header !h-[123px] !pt-[45px]">
-        <h1>오늘은 어떤 환승여행을<br />둘러볼까요?</h1>
-        <button aria-label="관심 코스"><img src="/explore/heart-outline.svg" alt="" /></button>
+    <main className="relative min-h-dvh overflow-x-hidden bg-gray-10 pb-[130px] pt-[calc(var(--safe-top)+12px)] text-gray-100">
+      <header className="flex h-[123px] items-start justify-between px-[15px] pb-2.5 pt-[45px]">
+        <h1 className="m-0 text-xl font-semibold leading-[1.4] tracking-[-0.5px]">오늘은 어떤 환승여행을<br />둘러볼까요?</h1>
+        <button className="size-6 border-0 bg-transparent p-0" aria-label="관심 코스"><img className="block size-6" src="/explore/heart-outline.svg" alt="" /></button>
       </header>
 
       <ExploreSearchForm
-        className="explore-search explore-concept-search"
-        icon={<span aria-hidden="true" className="explore-search-icon" />}
+        className="mx-[15px] mb-4 mt-[9px] flex h-12 items-center gap-2 rounded-[20px] border border-gray-40 bg-gray-20 p-3 text-gray-70 focus-within:border-primary-50 focus-within:bg-white [&_input]:w-full [&_input]:border-0 [&_input]:bg-transparent [&_input]:text-sm [&_input]:text-gray-90 [&_input]:outline-none"
+        icon={<span aria-hidden="true" className="relative size-5 shrink-0 rounded-full border-[1.5px] border-gray-70 after:absolute after:-right-1 after:bottom-0 after:h-[1.5px] after:w-[7px] after:origin-left after:rotate-45 after:bg-gray-70 after:content-['']" />}
         onSubmit={(keyword) => {
           if (keyword) {
             navigate(`/explore/search?q=${encodeURIComponent(keyword)}`);
@@ -36,9 +33,9 @@ export default function ExplorePage() {
       />
 
       <section>
-        <div className="explore-section-heading"><h2>사람들이 많이 찾는 코스</h2><button type="button" onClick={() => navigate("/explore/popular")}>더보기 〉</button></div>
+        <div className="flex h-[49px] items-center justify-between px-[15px] py-3"><h2 className="m-0 text-lg font-semibold leading-[1.4] tracking-[-0.45px]">사람들이 많이 찾는 코스</h2><button className="border-0 bg-transparent p-0 text-xs font-semibold text-gray-60" type="button" onClick={() => navigate("/explore/popular")}>더보기 〉</button></div>
         <div
-          className="explore-popular-scroll"
+          className="mt-[-12px] flex snap-x snap-proximity flex-nowrap gap-3 overflow-x-auto overflow-y-hidden px-[15px] pb-6 pt-5 [scrollbar-width:none] [touch-action:pan-x] focus:outline-none"
           role="region"
           aria-label="사람들이 많이 찾는 코스 가로 목록"
           tabIndex={0}
@@ -55,22 +52,22 @@ export default function ExplorePage() {
       </section>
 
       <section>
-        <div className="explore-section-heading"><h2>컨셉별 투어</h2><button type="button" onClick={() => navigate("/explore/concepts")}>더보기 〉</button></div>
-        <div className="explore-concept-list">
+        <div className="flex h-[49px] items-center justify-between px-[15px] py-3"><h2 className="m-0 text-lg font-semibold leading-[1.4] tracking-[-0.45px]">컨셉별 투어</h2><button className="border-0 bg-transparent p-0 text-xs font-semibold text-gray-60" type="button" onClick={() => navigate("/explore/concepts")}>더보기 〉</button></div>
+        <div className="flex flex-col gap-2 px-[15px] pb-6 pt-2">
           {featuredConceptTours.map(({ slug, title, description, image, iconStyle, stars }) => (
-            <button className="explore-concept-card" key={title} onClick={() => navigate(`/explore/concepts/${slug}`)}>
-              <span><strong>{title}</strong><small>{description}</small></span>
-              <span className="explore-concept-art">
+            <button className="relative h-20 w-full overflow-hidden rounded-[20px] border-0 bg-gray-20 p-5 text-left outline-none focus-visible:ring-2 focus-visible:ring-primary-50" key={title} onClick={() => navigate(`/explore/concepts/${slug}`)}>
+              <span className="relative z-[2] flex flex-col gap-1"><strong className="text-base leading-[1.4]">{title}</strong><small className="text-xs text-gray-70">{description}</small></span>
+              <span className="absolute inset-0">
                 {stars.map((star) => (
                   <img
-                    className="explore-concept-art__star"
+                    className="absolute max-h-none max-w-none object-contain"
                     src={star.image}
                     style={star.style}
                     alt=""
                     key={star.image}
                   />
                 ))}
-                <img className="explore-concept-art__icon" src={image} style={iconStyle} alt="" />
+                <img className="absolute z-[1] max-h-none max-w-none object-contain" src={image} style={iconStyle} alt="" />
               </span>
             </button>
           ))}
@@ -78,9 +75,10 @@ export default function ExplorePage() {
       </section>
 
       <section>
-        <div className="explore-section-heading">
-          <h2>노선 따라 둘러보기</h2>
+        <div className="flex h-[49px] items-center justify-between px-[15px] py-3">
+          <h2 className="m-0 text-lg font-semibold leading-[1.4] tracking-[-0.45px]">노선 따라 둘러보기</h2>
           <button
+            className="border-0 bg-transparent p-0 text-xs font-semibold text-gray-60"
             type="button"
             onClick={() => navigate(`/explore/lines?line=${line}`)}
           >
@@ -88,7 +86,7 @@ export default function ExplorePage() {
           </button>
         </div>
         <div
-          className="explore-line-filter"
+          className="flex snap-x snap-proximity flex-nowrap gap-2 overflow-x-auto overflow-y-hidden px-[15px] py-2 [scrollbar-width:none] [touch-action:pan-x] focus:outline-none"
           role="tablist"
           aria-label="지하철 노선 선택"
           tabIndex={0}
@@ -104,14 +102,14 @@ export default function ExplorePage() {
               role="tab"
               aria-selected={line === number}
               key={number}
-              className={line === number ? "is-active" : ""}
+              className={`shrink-0 snap-start rounded-[20px] border px-4 py-[7px] text-sm ${line === number ? "border-primary-50 bg-primary-50 font-semibold text-gray-10" : "border-gray-50 bg-transparent text-gray-90"}`}
               onClick={() => setLine(number)}
             >
               {number}호선
             </button>
           ))}
         </div>
-        <div className="explore-course-list">
+        <div className="flex flex-col gap-3 px-[15px] py-2">
           {stationsByLine[`${line}호선`].slice(0, 3).map((stationName, index) => (
             <ExploreCourseItem
               key={`${line}-${stationName}`}

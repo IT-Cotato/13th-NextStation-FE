@@ -5,10 +5,6 @@ import ExploreCourseItem from "./components/ExploreCourseItem";
 import useSafeBack from "./hooks/useSafeBack";
 import type { SubwayLine } from "@/types/subway";
 import Header from "@/components/Header";
-import "./ExplorePage.css";
-import "./ExplorePage.additions.css";
-import "./ExploreReviewFixes.css";
-import "./LineCoursesPage.css";
 
 type SortOption = "전체" | "인기순" | "최신순";
 
@@ -108,18 +104,14 @@ export default function LineCoursesPage() {
   }, [isStationMenuOpen]);
 
   return (
-    <main className="line-courses-page">
-      <div className="line-courses-header">
-        <Header
-          className="line-courses-header__nav !h-6 !grid-cols-[24px_1fr_24px] !p-0"
-          showBack
-          onBackClick={goBack}
-        />
-        <h1>노선따라 둘러보기</h1>
+    <main className="h-dvh min-h-0 overflow-y-auto bg-gray-10 text-gray-100 tracking-[-0.025em] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      <div className="flex h-[135px] flex-col items-start gap-4 px-[15px] pb-2.5 pt-[57px]">
+        <div className="h-6 w-full [&>header]:h-6 [&>header]:grid-cols-[24px_1fr_24px] [&>header]:p-0"><Header showBack onBackClick={goBack} /></div>
+        <h1 className="m-0 text-xl font-semibold leading-[1.4] tracking-[-0.5px]">노선따라 둘러보기</h1>
       </div>
 
       <div
-        className="line-courses-tabs"
+        className="flex snap-x snap-proximity flex-nowrap gap-2 overflow-x-auto overflow-y-hidden px-[15px] py-2 [scrollbar-width:none] [touch-action:pan-x] focus:outline-none [&::-webkit-scrollbar]:hidden"
         role="tablist"
         aria-label="지하철 노선 선택"
         tabIndex={0}
@@ -134,7 +126,7 @@ export default function LineCoursesPage() {
             type="button"
             role="tab"
             aria-selected={line === number}
-            className={line === number ? "is-active" : ""}
+            className={`shrink-0 snap-start rounded-[20px] border px-4 py-[7px] text-sm leading-[1.4] tracking-[-0.35px] ${line === number ? "border-primary-50 bg-primary-50 font-semibold text-gray-10" : "border-gray-50 bg-transparent text-gray-90"}`}
             onClick={() => handleLineChange(number)}
             key={number}
           >
@@ -143,11 +135,11 @@ export default function LineCoursesPage() {
         ))}
       </div>
 
-      <div className="line-courses-filters">
+      <div className="flex items-center justify-between px-[15px] py-2">
         <button
           ref={stationButtonRef}
           type="button"
-          className="line-courses-filter"
+          className="flex h-9 min-w-[111px] items-center justify-between gap-3 rounded-[20px] border border-white bg-white/50 px-5 py-2 text-sm font-semibold leading-[1.4] text-gray-70 backdrop-blur-[10px] [&>span]:h-2 [&>span]:w-2 [&>span]:-translate-y-0.5 [&>span]:rotate-45 [&>span]:border-b-[1.5px] [&>span]:border-r-[1.5px] [&>span]:border-gray-70"
           aria-haspopup="dialog"
           aria-expanded={isStationMenuOpen}
           onClick={() => {
@@ -159,11 +151,11 @@ export default function LineCoursesPage() {
           <span aria-hidden="true" />
         </button>
 
-        <div className="line-courses-sort" ref={sortContainerRef}>
+        <div className="relative z-[5]" ref={sortContainerRef}>
           <button
             ref={sortButtonRef}
             type="button"
-            className="line-courses-filter"
+            className="flex h-9 min-w-[111px] items-center justify-between gap-3 rounded-[20px] border border-white bg-white/50 px-5 py-2 text-sm font-semibold leading-[1.4] text-gray-70 backdrop-blur-[10px] [&>span]:h-2 [&>span]:w-2 [&>span]:border-b-[1.5px] [&>span]:border-r-[1.5px] [&>span]:border-gray-70"
             aria-haspopup="menu"
             aria-expanded={isSortMenuOpen}
             onClick={() => {
@@ -172,15 +164,15 @@ export default function LineCoursesPage() {
             }}
           >
             {sortOption}
-            <span className={isSortMenuOpen ? "is-open" : ""} aria-hidden="true" />
+            <span className={isSortMenuOpen ? "translate-y-0.5 rotate-[225deg]" : "-translate-y-0.5 rotate-45"} aria-hidden="true" />
           </button>
           {isSortMenuOpen && (
-            <div className="line-courses-sort__menu" role="menu">
+            <div className="absolute right-0 top-12 flex w-[111px] flex-col gap-3 rounded-[20px] border border-white bg-white/85 px-5 py-3 shadow-[0_0_28px_rgb(118_118_118/25%)] backdrop-blur-[10px]" role="menu">
               {sortOptions.map((option) => (
                 <button
                   type="button"
                   role="menuitem"
-                  className={sortOption === option ? "is-selected" : ""}
+                  className={`border-0 bg-transparent p-0 text-left text-sm font-semibold leading-[1.4] ${sortOption === option ? "text-gray-100" : "text-gray-70"}`}
                   onClick={() => {
                     setSortOption(option);
                     setIsSortMenuOpen(false);
@@ -195,7 +187,7 @@ export default function LineCoursesPage() {
         </div>
       </div>
 
-      <section className="line-courses-list" aria-label={`${line}호선 코스 목록`}>
+      <section className="flex flex-col gap-3 px-[15px] py-7 [&>article]:min-h-[120px] [&_article>div:first-child>img]:block [&_article>div:first-child>img]:size-full [&_article>div:first-child>img]:object-cover" aria-label={`${line}호선 코스 목록`}>
         {courseStations.map((stationName, index) => (
             <ExploreCourseItem
               key={`${line}-${stationName}-${index}`}
@@ -208,7 +200,7 @@ export default function LineCoursesPage() {
 
       {isStationMenuOpen && (
         <div
-          className="line-courses-modal-backdrop"
+          className="fixed inset-0 z-[60] bg-gray-100/15"
           role="presentation"
           onMouseDown={(event) => {
             if (event.target === event.currentTarget) {
@@ -218,14 +210,15 @@ export default function LineCoursesPage() {
         >
           <section
             ref={stationDialogRef}
-            className="line-courses-modal"
+            className="absolute bottom-[50px] left-[15px] right-[15px] max-h-[361px] rounded-[20px] border border-white bg-white/90 px-6 py-8 shadow-[0_0_20px_rgb(118_118_118/12%)] backdrop-blur-[10px] max-h-[calc(100dvh-48px)]"
             role="dialog"
             aria-modal="true"
             aria-labelledby="station-menu-title"
           >
-            <div className="line-courses-modal__header">
-              <h2 id="station-menu-title">역 선택</h2>
+            <div className="mb-[22px] flex items-center justify-between">
+              <h2 className="m-0 text-base font-semibold leading-[1.4] text-gray-70" id="station-menu-title">역 선택</h2>
               <button
+                className="relative size-6 border-0 bg-transparent p-0 before:absolute before:left-[11px] before:top-[3px] before:h-[19px] before:w-0.5 before:rotate-45 before:rounded-sm before:bg-gray-70 before:content-[''] after:absolute after:left-[11px] after:top-[3px] after:h-[19px] after:w-0.5 after:-rotate-45 after:rounded-sm after:bg-gray-70 after:content-['']"
                 type="button"
                 onClick={() => setIsStationMenuOpen(false)}
                 aria-label="역 선택 닫기"
@@ -233,10 +226,10 @@ export default function LineCoursesPage() {
                 <span aria-hidden="true" />
               </button>
             </div>
-            <div className="line-courses-stations">
+            <div className="flex max-h-[250px] flex-col items-start gap-[18px] overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden [&_button]:border-0 [&_button]:bg-transparent [&_button]:p-0 [&_button]:text-base [&_button]:font-semibold [&_button]:leading-[1.4]">
               <button
                 type="button"
-                className={!station ? "is-active" : ""}
+                className={!station ? "text-gray-100" : "text-gray-60"}
                 onClick={() => {
                   setStation("");
                   setIsStationMenuOpen(false);
@@ -247,7 +240,7 @@ export default function LineCoursesPage() {
               {stationNames.map((stationName) => (
                 <button
                   type="button"
-                  className={station === stationName ? "is-active" : ""}
+                  className={station === stationName ? "text-gray-100" : "text-gray-60"}
                   onClick={() => {
                     setStation(stationName);
                     setIsStationMenuOpen(false);

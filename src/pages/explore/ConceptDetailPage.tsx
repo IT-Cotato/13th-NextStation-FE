@@ -4,10 +4,7 @@ import useSafeBack from "./hooks/useSafeBack";
 import ExploreCourseItem from "./components/ExploreCourseItem";
 import { stationsByLine } from "@/mocks/StationByLine";
 import { conceptDetails, type ConceptId } from "./data/conceptDetails";
-import "./ExplorePage.css";
-import "./ExplorePage.additions.css";
-import "./ConceptDetail.additions.css";
-import "./ExploreReviewFixes.css";
+import Header from "@/components/Header";
 
 export default function ConceptDetailPage() {
   const goBack = useSafeBack("/explore/concepts");
@@ -22,12 +19,12 @@ export default function ConceptDetailPage() {
   }, [conceptId]);
 
   return (
-    <main className="explore-page explore-concept-detail">
-      <header className="explore-concept-detail__header" style={{ height: detail.headerHeight }}>
-        <button type="button" onClick={goBack} aria-label="뒤로가기"><span>‹</span></button>
-        <div className="explore-concept-detail__copy">
-          <h1>{detail.title}</h1>
-          <p>
+    <main className="relative min-h-dvh overflow-x-hidden bg-gray-10 pb-6 text-gray-100">
+      <header className="relative px-[15px] pt-[57px]" style={{ height: detail.headerHeight }}>
+        <div className="h-6 [&>header]:h-6 [&>header]:grid-cols-[24px_1fr_24px] [&>header]:p-0"><Header showBack onBackClick={goBack} /></div>
+        <div className="absolute left-[15px] right-[15px] top-[121px]">
+          <h1 className="mb-1 text-xl font-semibold leading-[1.4] tracking-[-0.5px]">{detail.title}</h1>
+          <p className="m-0 text-sm leading-[1.4] tracking-[-0.35px] text-gray-70">
             {detail.description.map((line, index) => (
               <span key={line}>
                 {index > 0 && <br />}
@@ -36,22 +33,22 @@ export default function ConceptDetailPage() {
             ))}
           </p>
         </div>
-        <div className="explore-concept-detail__art">
-          <img className="explore-concept-detail__star" src={detail.star} alt="" style={detail.starStyle} />
-          <img className="explore-concept-detail__icon" src={detail.icon} alt="" style={detail.iconStyle} />
+        <div className="pointer-events-none absolute inset-0">
+          <img className="absolute object-fill" src={detail.star} alt="" style={detail.starStyle} />
+          <img className="absolute object-fill" src={detail.icon} alt="" style={detail.iconStyle} />
         </div>
       </header>
 
-      <div className="explore-sort">
-        <button type="button" aria-expanded={sortOpen} onClick={() => setSortOpen((open) => !open)}>
-          {sort} <span className={sortOpen ? "is-open" : ""}>⌃</span>
+      <div className="relative z-[5] mx-[15px] h-9">
+        <button className="absolute right-0 top-0 flex h-9 min-w-24 items-center justify-between gap-3 rounded-[20px] border border-white bg-white/50 px-5 py-2 text-sm font-semibold text-gray-70 backdrop-blur-[10px]" type="button" aria-expanded={sortOpen} onClick={() => setSortOpen((open) => !open)}>
+          {sort} <span className={`text-lg transition-transform ${sortOpen ? "rotate-0" : "rotate-180"}`}>⌃</span>
         </button>
         {sortOpen && (
-          <div className="explore-sort__menu">
+          <div className="absolute right-0 top-12 flex w-24 flex-col gap-3 rounded-[20px] border border-white bg-white/85 px-5 py-3 shadow-[0_0_28px_rgb(118_118_118/25%)] backdrop-blur-[10px]">
             {(["최신순", "인기순"] as const).map((option) => (
               <button
                 type="button"
-                className={sort === option ? "is-selected" : ""}
+                className={`border-0 bg-transparent p-0 text-left text-sm font-semibold leading-[1.4] ${sort === option ? "text-gray-100" : "text-gray-70"}`}
                 key={option}
                 onClick={() => { setSort(option); setSortOpen(false); }}
               >
@@ -62,7 +59,7 @@ export default function ConceptDetailPage() {
         )}
       </div>
 
-      <section className="explore-ranking-list explore-concept-detail__list" aria-label={`${detail.title} ${sort}`}>
+      <section className="flex flex-col gap-3 px-[15px] pb-4 pt-4 [&>article]:min-h-[120px]" aria-label={`${detail.title} ${sort}`}>
         {stations.slice(0, 6).map((stationName, index) => (
           <ExploreCourseItem
             key={stationName}

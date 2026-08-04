@@ -2,7 +2,7 @@ import type { ChangeEventHandler, ReactNode } from "react";
 
 interface ExploreSearchFormProps {
   ariaLabel?: string;
-  className: string;
+  className?: string;
   defaultValue?: string;
   icon?: ReactNode;
   onChange?: ChangeEventHandler<HTMLInputElement>;
