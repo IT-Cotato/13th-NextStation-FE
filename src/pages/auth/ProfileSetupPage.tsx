@@ -225,7 +225,11 @@ export default function ProfileSetupPage() {
               type="button"
               onClick={() => fileInputRef.current?.click()}
               disabled={isSubmitting}
-              className="flex size-[100px] items-center justify-center rounded-lg border border-dashed border-secondary-40 bg-secondary-10 text-[28px] font-light leading-none text-secondary-50"
+              className={`flex size-[100px] items-center justify-center rounded-lg border bg-secondary-10 text-[28px] font-light leading-none text-secondary-50 ${
+                profileImagePreview
+                  ? 'border-solid border-transparent'
+                  : 'border-dashed border-secondary-40'
+              }`}
               aria-label="프로필 사진 추가"
             >
               {profileImagePreview ? (
