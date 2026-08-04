@@ -4,26 +4,54 @@ import BottomNav from "@/components/BottomNav";
 import ExploreCourseCard from "./components/ExploreCourseCard";
 import ExploreCourseItem from "./components/ExploreCourseItem";
 import { stationsByLine } from "@/mocks/StationByLine";
-import type { SubwayLine } from "@/types/subway";
-import { featuredConceptTours } from "./data/conceptTours";
 import "./ExplorePage.css";
 import "./ExplorePage.additions.css";
 import "./ExploreReviewFixes.css";
 
+const concepts = [
+  {
+    slug: "stationery",
+    title: "문구 투어",
+    description: "작은 문구점과 책방을 찾아가는 코스",
+    image: "/explore/concept-stationery-figma.png",
+    iconStyle: { right: 34, top: 20, width: 75, height: 57 },
+    stars: [
+      { image: "/explore/main-concept-stationery-star.svg", style: { right: 14, top: -6, width: 88, height: 88 } },
+    ],
+  },
+  {
+    slug: "value",
+    title: "가성비 투어",
+    description: "돈은 적게, 만족은 충분한 알뜰 코스",
+    image: "/explore/concept-value-figma.png",
+    iconStyle: { right: 37, top: 15, width: 57, height: 57 },
+    stars: [
+      { image: "/explore/main-concept-value-star.svg", style: { right: 74, top: 23, width: 70, height: 68 } },
+      { image: "/explore/main-concept-value-star-small.svg", style: { right: 14, top: 8, width: 33, height: 32, transform: "rotate(14.42deg)" } },
+    ],
+  },
+  {
+    slug: "culture",
+    title: "문화재 투어",
+    description: "서울 속 오래된 흔적을 만나는 코스",
+    image: "/explore/concept-culture-figma.png",
+    iconStyle: { right: 41, top: 16, width: 56, height: 56 },
+    stars: [
+      { image: "/explore/main-concept-culture-star.svg", style: { right: -5, top: -1, width: 83, height: 83, transform: "rotate(-20.62deg)" } },
+    ],
+  },
+];
+
 export default function ExplorePage() {
   const navigate = useNavigate();
-  const [line, setLine] = useState<SubwayLine>(1);
+  const [line, setLine] = useState(1);
   const [query, setQuery] = useState("");
 
   return (
-    <main className="explore-page pt-[calc(var(--safe-top)+12px)] tracking-[-0.025em]">
-      <header className="flex h-[83px] items-start justify-between px-[15px] pb-[10px] pt-[5px]">
-        <h1 className="text-headline font-semibold leading-[1.4]">
-          오늘은 어떤 환승여행을<br />둘러볼까요?
-        </h1>
-        <button type="button" className="size-6" aria-label="관심 코스">
-          <img className="size-6" src="/explore/heart-outline.svg" alt="" />
-        </button>
+    <main className="explore-page">
+      <header className="explore-header">
+        <h1>오늘은 어떤 환승여행을<br />둘러볼까요?</h1>
+        <button aria-label="관심 코스"><img src="/explore/heart-outline.svg" alt="" /></button>
       </header>
 
       <label className="explore-search">
@@ -62,11 +90,11 @@ export default function ExplorePage() {
       <section>
         <div className="explore-section-heading"><h2>컨셉별 투어</h2><button type="button" onClick={() => navigate("/explore/concepts")}>더보기 〉</button></div>
         <div className="explore-concept-list">
-          {featuredConceptTours.map(({ slug, title, image, featured }) => (
+          {concepts.map(({ slug, title, description, image, iconStyle, stars }) => (
             <button className="explore-concept-card" key={title} onClick={() => navigate(`/explore/concepts/${slug}`)}>
-              <span><strong>{title}</strong><small>{featured.description}</small></span>
+              <span><strong>{title}</strong><small>{description}</small></span>
               <span className="explore-concept-art">
-                {featured.stars.map((star) => (
+                {stars.map((star) => (
                   <img
                     className="explore-concept-art__star"
                     src={star.image}
@@ -75,7 +103,7 @@ export default function ExplorePage() {
                     key={star.image}
                   />
                 ))}
-                <img className="explore-concept-art__icon" src={image} style={featured.iconStyle} alt="" />
+                <img className="explore-concept-art__icon" src={image} style={iconStyle} alt="" />
               </span>
             </button>
           ))}
@@ -110,7 +138,7 @@ export default function ExplorePage() {
               aria-selected={line === number}
               key={number}
               className={line === number ? "is-active" : ""}
-              onClick={() => setLine(number as SubwayLine)}
+              onClick={() => setLine(number)}
             >
               {number}호선
             </button>
@@ -120,7 +148,7 @@ export default function ExplorePage() {
           {stationsByLine[`${line}호선`].slice(0, 3).map((stationName, index) => (
             <ExploreCourseItem
               key={`${line}-${stationName}`}
-              line={line}
+              line={line as 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9}
               stationName={stationName}
               filledImage={index === 0}
             />
