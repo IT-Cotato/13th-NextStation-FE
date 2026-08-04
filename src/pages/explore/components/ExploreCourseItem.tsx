@@ -22,7 +22,7 @@ export default function ExploreCourseItem({
   return (
     <article className="flex min-h-[128px] w-full items-stretch gap-3 rounded-[20px] bg-white p-3">
       <div className={`relative basis-[90px] shrink-0 overflow-hidden rounded-lg bg-[#ffdcc5] ${filledImage ? "bg-[url('/explore/course-photo.png')] bg-cover bg-center" : ""}`}>
-        {imageSrc && <img src={imageSrc} alt="" />}
+        {imageSrc && <img className="select-none" src={imageSrc} alt="" draggable={false} />}
         {rank && (
           <span className="absolute left-0 top-0.5 grid size-[42px] place-items-center leading-none" aria-label={`${rank}위`}>
             <img className="h-[39px] w-[35px] object-fill" src="/explore/rank-star-figma.png" alt="" />

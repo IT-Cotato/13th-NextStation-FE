@@ -8,8 +8,8 @@ export default function ExploreCourseCard({ rank }: ExploreCourseCardProps) {
   const [isScrapped, setIsScrapped] = useState(false);
 
   return (
-    <article className="relative h-[200px] basis-36 shrink-0 snap-start overflow-hidden rounded-[20px] shadow-[0_0_20px_rgb(118_118_118/20%)]">
-      <img className="size-full object-cover" src="/explore/course-photo.png" alt="" />
+    <article className="relative h-[200px] basis-36 shrink-0 overflow-hidden rounded-[20px] shadow-[0_0_20px_rgb(118_118_118/20%)]">
+      <img className="size-full select-none object-cover" src="/explore/course-photo.png" alt="" draggable={false} />
       <div className="pointer-events-none absolute inset-0 rounded-[20px] bg-linear-to-b from-transparent from-30% via-white/60 via-66% to-white" />
       <span className="absolute right-[7px] top-[13px] grid size-[43px] place-items-center" aria-label={`${rank}위`}>
         <img className="h-[39px] w-[35px] object-fill" src="/explore/rank-star-figma.png" alt="" />

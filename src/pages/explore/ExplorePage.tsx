@@ -35,7 +35,7 @@ export default function ExplorePage() {
       <section>
         <div className="flex h-[49px] items-center justify-between px-[15px] py-3"><h2 className="m-0 text-lg font-semibold leading-[1.4] tracking-[-0.45px]">사람들이 많이 찾는 코스</h2><button className="border-0 bg-transparent p-0 text-xs font-semibold text-gray-60" type="button" onClick={() => navigate("/explore/popular")}>더보기 〉</button></div>
         <div
-          className="mt-[-12px] flex snap-x snap-proximity flex-nowrap gap-3 overflow-x-auto overflow-y-hidden px-[15px] pb-6 pt-5 [scrollbar-width:none] [touch-action:pan-x] focus:outline-none"
+          className="mt-[-12px] flex flex-nowrap gap-3 overflow-x-auto overflow-y-hidden overscroll-x-contain px-[15px] pb-6 pt-5 [scrollbar-width:none] [touch-action:pan-x] focus:outline-none"
           role="region"
           aria-label="사람들이 많이 찾는 코스 가로 목록"
           tabIndex={0}
@@ -86,7 +86,7 @@ export default function ExplorePage() {
           </button>
         </div>
         <div
-          className="flex snap-x snap-proximity flex-nowrap gap-2 overflow-x-auto overflow-y-hidden px-[15px] py-2 [scrollbar-width:none] [touch-action:pan-x] focus:outline-none"
+          className="flex flex-nowrap gap-2 overflow-x-auto overflow-y-hidden overscroll-x-contain px-[15px] py-2 [scrollbar-width:none] [touch-action:pan-x] focus:outline-none"
           role="tablist"
           aria-label="지하철 노선 선택"
           tabIndex={0}
@@ -102,7 +102,7 @@ export default function ExplorePage() {
               role="tab"
               aria-selected={line === number}
               key={number}
-              className={`shrink-0 snap-start rounded-[20px] border px-4 py-[7px] text-sm ${line === number ? "border-primary-50 bg-primary-50 font-semibold text-gray-10" : "border-gray-50 bg-transparent text-gray-90"}`}
+              className={`shrink-0 rounded-[20px] border px-4 py-[7px] text-sm ${line === number ? "border-primary-50 bg-primary-50 font-semibold text-gray-10" : "border-gray-50 bg-transparent text-gray-90"}`}
               onClick={() => setLine(number)}
             >
               {number}호선

@@ -117,7 +117,7 @@ export default function LineCoursesPage() {
       </div>
 
       <div
-        className="flex snap-x snap-proximity flex-nowrap gap-2 overflow-x-auto overflow-y-hidden px-[15px] py-2 [scrollbar-width:none] [touch-action:pan-x] focus:outline-none [&::-webkit-scrollbar]:hidden"
+        className="flex flex-nowrap gap-2 overflow-x-auto overflow-y-hidden overscroll-x-contain px-[15px] py-2 [scrollbar-width:none] [touch-action:pan-x] focus:outline-none [&::-webkit-scrollbar]:hidden"
         role="group"
         aria-label="지하철 노선 선택"
         onWheel={(event) => {
@@ -130,7 +130,7 @@ export default function LineCoursesPage() {
           <button
             type="button"
             aria-pressed={line === number}
-            className={`shrink-0 snap-start rounded-[20px] border px-4 py-[7px] text-sm leading-[1.4] tracking-[-0.35px] ${line === number ? "border-primary-50 bg-primary-50 font-semibold text-gray-10" : "border-gray-50 bg-transparent text-gray-90"}`}
+            className={`shrink-0 rounded-[20px] border px-4 py-[7px] text-sm leading-[1.4] tracking-[-0.35px] ${line === number ? "border-primary-50 bg-primary-50 font-semibold text-gray-10" : "border-gray-50 bg-transparent text-gray-90"}`}
             onClick={() => handleLineChange(number)}
             key={number}
           >
