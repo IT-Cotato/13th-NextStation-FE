@@ -29,7 +29,7 @@ function StampAcquiredPage() {
 
 
   return (
-     <main className="flex flex-col h-dvh overflow-hidden bg-gray-10 items-center justify-center pt-[var(--safe-top)] gap-20">
+     <main className="flex flex-col h-dvh overflow-hidden bg-linear-to-b from-primary-10 to-secondary-20 items-center justify-center pt-[var(--safe-top)] gap-20">
       <div className="flex flex-col items-center justify-center gap-2">
         <h1 className="text-headline font-semibold text-gray-90 leading-[1.4] tracking-[-0.025em] text-center">
           {stationName} 스탬프 획득!

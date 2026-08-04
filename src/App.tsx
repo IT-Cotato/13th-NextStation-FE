@@ -33,6 +33,9 @@ import { LogDraftProvider } from "@/pages/course/contexts/LogDraftContext";
 // place
 import DetailPage from "./pages/place/DetailPage";
 import ReviewListPage from "./pages/place/ReviewListPage";
+import StampAnimationPage from "./pages/course/StampAnimationPage";
+import StampSourcePage from "./pages/course/StampSourcePage";
+import StampLessPage from "./pages/course/StampLessPage";
 
 // toast
 import "react-toastify/dist/ReactToastify.css";
@@ -78,13 +81,19 @@ function App() {
             element={<StampAcquiredPage />}
           />
           <Route
-            path="/course/:courseId/log"
-            element={<LogIntroPage />}
+            path="/course/:courseId/stampAnimation"
+            element={<StampAnimationPage />}
+          />
+           <Route
+            path="/course/:courseId/stampSource"
+            element={<StampSourcePage />}
           />
           <Route
-            path="/course/:courseId/log/info"
-            element={<LogInfoPage />}
+            path="/course/:courseId/stampLess"
+            element={<StampLessPage />}
           />
+          <Route path="/course/:courseId/log" element={<LogIntroPage />} />
+          <Route path="/course/:courseId/log/info" element={<LogInfoPage />} />
           <Route
             path="/course/:courseId/log/place"
             element={<LogPlacePage />}
