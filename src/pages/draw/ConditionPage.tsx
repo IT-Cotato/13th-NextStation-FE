@@ -185,6 +185,7 @@ function ConditionPage() {
                 selectedStation,
                 selectedTime,
                 selectedCompanion,
+                selectedTags: conditionState?.selectedTags ?? [],
                 departureStationId: selectedStation!.id,
                 departureStationName: selectedStation!.name,
                 travelTime: mapTravelTime(selectedTime!),

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import type {
   RecommendationTravelStyle,
@@ -45,6 +45,25 @@ function PreferencePage() {
   const [selectedTags, setSelectedTags] = useState<string[]>(
     condition?.selectedTags ?? [],
   );
+
+  useEffect(() => {
+    if (!condition) return;
+
+    const currentTags = condition.selectedTags ?? [];
+    const isSameSelection =
+      currentTags.length === selectedTags.length &&
+      currentTags.every((tag, index) => tag === selectedTags[index]);
+
+    if (isSameSelection) return;
+
+    navigate(".", {
+      replace: true,
+      state: {
+        ...condition,
+        selectedTags,
+      },
+    });
+  }, [condition, navigate, selectedTags]);
 
   const toggleTag = (tag: string) => {
     setSelectedTags((prev) => {
