@@ -1,4 +1,3 @@
-import { getAccessToken } from "@/api/auth";
 import type { SubwayLine } from "@/types/subway";
 export interface RandomStationLineResponse {
   id: SubwayLine;
@@ -45,17 +44,8 @@ export class RandomDrawNotFoundError extends Error {
 }
 
 export async function drawRandomStation(): Promise<RandomDrawResponseData> {
-  const accessToken = getAccessToken();
-
-  if (!accessToken) {
-    throw new Error("로그인 토큰이 없습니다.");
-  }
-
   const response = await fetch(`${API_BASE_URL}/api/v1/random`, {
     method: "POST",
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
   });
 
   if (response.status === 404) {

@@ -1,13 +1,14 @@
-import Header from "@/components/Header"
-import CTAButton from "@/components/CTAButton"
-import HashtagChip from "@/pages/draw/components/HashtagChip";
+import { useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import type {
   RecommendationTravelStyle,
   RecommendationTravelTime,
 } from "@/api/recommendation";
 import type { Station } from "@/api/stations";
-import { useLocation, useNavigate } from "react-router-dom"
-import { useState } from "react";
+import Header from "@/components/Header";
+import CTAButton from "@/components/CTAButton";
+import HashtagChip from "@/pages/draw/components/HashtagChip";
+
 
 const hashtagRows = [
   ['자연과함께', '골목여행', '시장구경' ],

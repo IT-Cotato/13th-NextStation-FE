@@ -1,6 +1,9 @@
+import { useEffect, type ComponentType, useRef, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import LottieModule, { type LottieRefCurrentProps } from "lottie-react";
 import { getAccessToken } from "@/api/auth";
-import {
-  getCachedMyProfile,
+import { 
+  getCachedMyProfile, 
   getMyProfile,
 } from "@/api/member";
 import {
@@ -11,9 +14,6 @@ import {
 import { drawRandomStation, RandomDrawNotFoundError } from "@/api/random";
 import loadingComplete from "@/assets/lottie/loading-complete.json";
 import loadingSearch from "@/assets/lottie/loading-search.json";
-import LottieModule, { type LottieRefCurrentProps } from "lottie-react";
-import { useEffect, type ComponentType, useRef, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
 
 const SEARCH_MIN_LOADING_MS = 4000;
 const SEARCH_ANIMATION_SPEED = 1.5;
@@ -43,7 +43,7 @@ function LoadingPage() {
   const pendingResultRef = useRef<DrawResult | null>(null);
   const searchStartedAtRef = useRef<number>(0);
   const [phase, setPhase] = useState<LoadingPhase>("search");
-  const [loadingError, setLoadingError] = useState<string | null>(null);
+  const [loadingError, setLoadingError] = useState(false);
   const [displayName, setDisplayName] = useState<string | null>(() => {
     const cachedProfile = getCachedMyProfile();
     return cachedProfile?.nickname || null;
@@ -135,11 +135,7 @@ function LoadingPage() {
         }
 
         console.error(error);
-        setLoadingError(
-          error instanceof Error
-            ? error.message
-            : "추천 결과를 불러오지 못했어요.",
-        );
+        setLoadingError(true);
       }
     };
 
@@ -179,9 +175,9 @@ function LoadingPage() {
     return (
       <main className="flex h-dvh flex-col items-center justify-center gap-4 bg-gray-10 px-6 pt-[var(--safe-top)] text-center">
         <h1 className="text-title-02 font-semibold text-gray-90">
-          추천을 불러오지 못했어요
+          결과를 불러오지 못했어요<br/>
+          다시 시도해주세요
         </h1>
-        <p className="text-body-01 text-gray-70">{loadingError}</p>
         <button
           type="button"
           onClick={() => navigate(`/`)}

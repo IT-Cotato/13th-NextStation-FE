@@ -1,4 +1,3 @@
-import { getAccessToken } from "./auth";
 import type { SubwayLine } from "@/types/subway";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
@@ -46,19 +45,12 @@ export interface CustomRecommendationResponseData {
 export async function getCustomRecommendation(
   body: CustomRecommendationRequest,
 ): Promise<CustomRecommendationResponseData> {
-  const accessToken = getAccessToken();
-
-  if (!accessToken) {
-    throw new Error("로그인 토큰이 없습니다.");
-  }
-
   console.log("[recommendation] request body", body);
 
   const response = await fetch(`${API_BASE_URL}/api/v1/recommendations/custom`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${accessToken}`,
     },
     body: JSON.stringify(body),
   });

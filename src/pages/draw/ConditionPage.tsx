@@ -1,12 +1,12 @@
-import Header from "@/components/Header"
-import ChoiceChip from "@/pages/draw/components/ChoiceChip"
-import CTAButton from "@/components/CTAButton"
 import { useState } from "react";
-import type { RecommendationTravelTime } from "@/api/recommendation";
 import { useLocation, useNavigate } from "react-router-dom";
-import SearchBar from "./components/SearchBar";
-import RecentStationChip from "./components/RecentStationChip";
+import type { RecommendationTravelTime } from "@/api/recommendation";
 import type { Station } from "@/api/stations";
+import Header from "@/components/Header";
+import CTAButton from "@/components/CTAButton";
+import SearchBar from "./components/SearchBar";
+import ChoiceChip from "@/pages/draw/components/ChoiceChip";
+import RecentStationChip from "./components/RecentStationChip";
 
 const timeOptions = ["30분 이내", "1시간 이내", "상관 없음"] as const;
 

@@ -1,13 +1,13 @@
-import StationTitle from '@/components/StationTitle';
 import { useLocation, useNavigate } from 'react-router-dom';
-import SubwayLineChip from '@/components/SubwayLineChip';
-import Button from '@/components/Button';
-import Header from '@/components/Header';
 import type { RandomDrawResponseData } from '@/api/random';
 import type {
   CustomRecommendationRequest,
   CustomRecommendationResponseData,
 } from '@/api/recommendation';
+import Header from '@/components/Header';
+import Button from '@/components/Button';
+import StationTitle from '@/components/StationTitle';
+import SubwayLineChip from '@/components/SubwayLineChip';
 
 type ResultPageState = (RandomDrawResponseData | CustomRecommendationResponseData) & {
   source?: "random" | "recommend";
