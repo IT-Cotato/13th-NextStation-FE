@@ -5,6 +5,8 @@ import ExploreCourseItem from "./components/ExploreCourseItem";
 import useSafeBack from "./hooks/useSafeBack";
 import type { SubwayLine } from "@/types/subway";
 import Header from "@/components/Header";
+import CloseIcon from "@/assets/close.svg?react";
+import ArrowDown from "@/assets/arrow-down.svg?react";
 import {
   createLineCourses,
   sortExploreCourses,
@@ -113,7 +115,7 @@ export default function LineCoursesPage() {
     <main className="h-dvh min-h-0 overflow-y-auto bg-gray-10 text-gray-100 tracking-[-0.025em] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
       <div className="flex h-[135px] flex-col items-start gap-4 px-[15px] pb-2.5 pt-[57px]">
         <div className="h-6 w-full [&>header]:h-6 [&>header]:grid-cols-[24px_1fr_24px] [&>header]:p-0"><Header showBack onBackClick={goBack} /></div>
-        <h1 className="m-0 text-xl font-semibold leading-[1.4] tracking-[-0.5px]">노선따라 둘러보기</h1>
+        <h1 className="m-0 text-title-01 font-semibold leading-[1.4] tracking-[-0.5px]">노선따라 둘러보기</h1>
       </div>
 
       <div
@@ -130,7 +132,7 @@ export default function LineCoursesPage() {
           <button
             type="button"
             aria-pressed={line === number}
-            className={`shrink-0 rounded-[20px] border px-4 py-[7px] text-sm leading-[1.4] tracking-[-0.35px] ${line === number ? "border-primary-50 bg-primary-50 font-semibold text-gray-10" : "border-gray-50 bg-transparent text-gray-90"}`}
+            className={`shrink-0 rounded-lg border px-4 py-[7px] text-body-01 leading-[1.4] tracking-[-0.35px] ${line === number ? "border-primary-50 bg-primary-50 font-semibold text-gray-10" : "border-gray-50 bg-transparent text-gray-90"}`}
             onClick={() => handleLineChange(number)}
             key={number}
           >
@@ -143,7 +145,7 @@ export default function LineCoursesPage() {
         <button
           ref={stationButtonRef}
           type="button"
-          className="flex h-9 min-w-[111px] items-center justify-between gap-3 rounded-[20px] border border-white bg-white/50 px-5 py-2 text-sm font-semibold leading-[1.4] text-gray-70 backdrop-blur-[10px] [&>span]:h-2 [&>span]:w-2 [&>span]:-translate-y-0.5 [&>span]:rotate-45 [&>span]:border-b-[1.5px] [&>span]:border-r-[1.5px] [&>span]:border-gray-70"
+          className="flex h-9 min-w-[111px] items-center justify-between gap-3 rounded-lg border border-white bg-white/50 px-5 py-2 text-body-01 font-semibold leading-[1.4] text-gray-70 backdrop-blur-[10px]"
           aria-haspopup="dialog"
           aria-expanded={isStationMenuOpen}
           onClick={() => {
@@ -152,14 +154,14 @@ export default function LineCoursesPage() {
           }}
         >
           {station || "역 선택"}
-          <span aria-hidden="true" />
+          <ArrowDown className={`size-5 shrink-0 transition-transform ${isStationMenuOpen ? "rotate-180" : "rotate-0"}`} aria-hidden="true" />
         </button>
 
         <div className="relative z-[5]" ref={sortContainerRef}>
           <button
             ref={sortButtonRef}
             type="button"
-            className="flex h-9 min-w-[111px] items-center justify-between gap-3 rounded-[20px] border border-white bg-white/50 px-5 py-2 text-sm font-semibold leading-[1.4] text-gray-70 backdrop-blur-[10px] [&>span]:h-2 [&>span]:w-2 [&>span]:border-b-[1.5px] [&>span]:border-r-[1.5px] [&>span]:border-gray-70"
+            className="flex h-9 min-w-24 items-end justify-between gap-3 rounded-lg border border-white bg-transparent px-5 py-2 text-body-01 font-semibold leading-[1.4] text-gray-70 backdrop-blur-[10px]"
             aria-haspopup="menu"
             aria-expanded={isSortMenuOpen}
             onClick={() => {
@@ -168,16 +170,16 @@ export default function LineCoursesPage() {
             }}
           >
             {sortOption}
-            <span className={isSortMenuOpen ? "translate-y-0.5 rotate-[225deg]" : "-translate-y-0.5 rotate-45"} aria-hidden="true" />
+            <ArrowDown className={`size-5 shrink-0 transition-transform ${isSortMenuOpen ? "rotate-180" : "rotate-0"}`} aria-hidden="true" />
           </button>
           {isSortMenuOpen && (
-            <div className="absolute right-0 top-12 flex w-[111px] flex-col gap-3 rounded-[20px] border border-white bg-white/85 px-5 py-3 shadow-[0_0_28px_rgb(118_118_118/25%)] backdrop-blur-[10px]" role="menu">
+            <div className="absolute right-0 top-12 flex w-24 flex-col items-start justify-end gap-3 rounded-lg bg-transparent px-5 py-4 shadow-[0_0_28px_rgb(118_118_118/25%)] backdrop-blur-[10px] outline outline-1 outline-offset-[-1px] outline-white" role="menu">
               {sortOptions.map((option) => (
                 <button
                   type="button"
                   role="menuitemradio"
                   aria-checked={sortOption === option}
-                  className={`border-0 bg-transparent p-0 text-left text-sm font-semibold leading-[1.4] ${sortOption === option ? "text-gray-100" : "text-gray-70"}`}
+                  className={`w-full border-0 bg-transparent p-0 text-left text-body-01 font-semibold leading-5 text-gray-70`}
                   onClick={() => {
                     setSortOption(option);
                     setIsSortMenuOpen(false);
@@ -193,12 +195,12 @@ export default function LineCoursesPage() {
       </div>
 
       <section className="flex flex-col gap-3 px-[15px] py-7 [&>article]:min-h-[120px] [&_article>div:first-child>img]:block [&_article>div:first-child>img]:size-full [&_article>div:first-child>img]:object-cover" aria-label={`${line}호선 코스 목록`}>
-        {courses.map((course, index) => (
+        {courses.map((course) => (
             <ExploreCourseItem
               key={course.id}
               line={course.line}
               stationName={course.stationName}
-              imageSrc={index === 0 ? "/explore/line-course-sky.png" : undefined}
+              filledImage
             />
           ))}
       </section>
@@ -215,23 +217,23 @@ export default function LineCoursesPage() {
         >
           <section
             ref={stationDialogRef}
-            className="absolute bottom-[50px] left-[15px] right-[15px] max-h-[361px] rounded-[20px] border border-white bg-white/90 px-6 py-8 shadow-[0_0_20px_rgb(118_118_118/12%)] backdrop-blur-[10px] max-h-[calc(100dvh-48px)]"
+            className="absolute bottom-[50px] left-1/2 flex max-h-[calc(100dvh-48px)] w-[360px] max-w-[calc(100%-30px)] -translate-x-1/2 flex-col items-center justify-start gap-3 rounded-lg bg-white/50 px-6 pb-8 pt-6 shadow-[0_0_28px_rgb(118_118_118/25%)] backdrop-blur-[10px] outline outline-1 outline-offset-[-1px] outline-white"
             role="dialog"
             aria-modal="true"
             aria-labelledby="station-menu-title"
           >
-            <div className="mb-[22px] flex items-center justify-between">
-              <h2 className="m-0 text-base font-semibold leading-[1.4] text-gray-70" id="station-menu-title">역 선택</h2>
+            <div className="flex w-full items-center justify-between pb-3 pt-2">
+              <h2 className="m-0 text-subtitle font-semibold leading-[1.4] text-gray-70" id="station-menu-title">역 선택</h2>
               <button
-                className="relative size-6 border-0 bg-transparent p-0 before:absolute before:left-[11px] before:top-[3px] before:h-[19px] before:w-0.5 before:rotate-45 before:rounded-sm before:bg-gray-70 before:content-[''] after:absolute after:left-[11px] after:top-[3px] after:h-[19px] after:w-0.5 after:-rotate-45 after:rounded-sm after:bg-gray-70 after:content-['']"
+                className="size-[23px] border-0 bg-transparent p-0"
                 type="button"
                 onClick={() => setIsStationMenuOpen(false)}
                 aria-label="역 선택 닫기"
               >
-                <span aria-hidden="true" />
+                <CloseIcon className="size-[23px]" aria-hidden="true" />
               </button>
             </div>
-            <div className="flex max-h-[250px] flex-col items-start gap-[18px] overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden [&_button]:border-0 [&_button]:bg-transparent [&_button]:p-0 [&_button]:text-base [&_button]:font-semibold [&_button]:leading-[1.4]">
+            <div className="flex max-h-[250px] w-full flex-col items-start gap-4 overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden [&_button]:w-full [&_button]:border-0 [&_button]:bg-transparent [&_button]:p-0 [&_button]:text-left [&_button]:text-subtitle [&_button]:font-semibold [&_button]:leading-[1.4]">
               <button
                 type="button"
                 className={!station ? "text-gray-100" : "text-gray-60"}

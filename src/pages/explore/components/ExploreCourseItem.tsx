@@ -1,10 +1,13 @@
+import coursePhoto from "@/assets/explore/course-photo.svg";
 import { useState } from "react";
+import Heart from "@/assets/heart.svg?react";
+import HeartFilled from "@/assets/explore/heart-filled.svg?react";
+import RankStar from "@/assets/explore/rank-star.svg?react";
 import LineBadge from "@/components/LineBadge";
 import type { SubwayLine } from "@/types/subway";
 
 type ExploreCourseItemProps = {
   filledImage?: boolean;
-  imageSrc?: string;
   rank?: number;
   line?: SubwayLine;
   stationName?: string;
@@ -12,7 +15,6 @@ type ExploreCourseItemProps = {
 
 export default function ExploreCourseItem({
   filledImage = false,
-  imageSrc,
   rank,
   line = 2,
   stationName = "신림역",
@@ -20,13 +22,15 @@ export default function ExploreCourseItem({
   const [isScrapped, setIsScrapped] = useState(false);
 
   return (
-    <article className="flex min-h-[128px] w-full items-stretch gap-3 rounded-[20px] bg-white p-3">
-      <div className={`relative basis-[90px] shrink-0 overflow-hidden rounded-lg bg-[#ffdcc5] ${filledImage ? "bg-[url('/explore/course-photo.png')] bg-cover bg-center" : ""}`}>
-        {imageSrc && <img className="select-none" src={imageSrc} alt="" draggable={false} />}
+    <article className="flex min-h-[120px] w-full items-center gap-3 rounded-lg bg-white p-3">
+      <div className="relative h-24 w-[90px] shrink-0 overflow-hidden rounded-lg bg-primary-30">
+        {filledImage && (
+          <img className="size-full object-cover" src={coursePhoto} alt="" draggable={false} />
+        )}
         {rank && (
-          <span className="absolute left-0 top-0.5 grid size-[42px] place-items-center leading-none" aria-label={`${rank}위`}>
-            <img className="h-[39px] w-[35px] object-fill" src="/explore/rank-star-figma.png" alt="" />
-            <b className="absolute left-1/2 top-[7px] -translate-x-1/2 text-xl font-semibold leading-[1.4] text-white">{rank}</b>
+          <span className="absolute left-0 top-0 size-[42px]" aria-label={`${rank}위`}>
+            <RankStar className="absolute left-0 top-0.5 size-[42px]" aria-hidden="true" />
+            <span className="absolute left-4 top-[9px] text-title-01 font-semibold leading-7 text-white">{rank}</span>
           </span>
         )}
       </div>
@@ -38,21 +42,17 @@ export default function ExploreCourseItem({
           </div>
           <button
             type="button"
-            className="inline-flex items-center gap-0.5 border-0 bg-transparent p-0 text-[10px] text-gray-70 outline-none focus-visible:ring-2 focus-visible:ring-primary-50"
+            className="inline-flex items-center gap-0.5 border-0 bg-transparent p-0 text-caption text-gray-70 outline-none focus-visible:ring-2 focus-visible:ring-primary-50"
             aria-label={isScrapped ? "스크랩 취소" : "스크랩"}
             aria-pressed={isScrapped}
             onClick={() => setIsScrapped((current) => !current)}
           >
-            <img
-              src={isScrapped ? "/explore/heart-filled.svg" : "/explore/heart-outline.svg"}
-              className="size-3 object-contain"
-              alt=""
-            />
+            {isScrapped ? <HeartFilled className="size-3" aria-hidden="true" /> : <Heart className="size-3" aria-hidden="true" />}
             {isScrapped ? 1 : 0}
           </button>
         </div>
-        <strong className="text-sm leading-[1.4]">민성이랑 떠나는 느좋투어<br />어쩌구</strong>
-        <div className="flex gap-1"><span className="rounded-[20px] bg-gray-20 px-2 py-1 text-[10px] text-gray-80">#태그1</span><span className="rounded-[20px] bg-gray-20 px-2 py-1 text-[10px] text-gray-80">#태그2</span></div>
+        <p className="m-0 text-body-01 font-semibold leading-[1.4] text-gray-100">민성이랑 떠나는 느좋투어<br />어쩌구</p>
+        <div className="flex gap-1"><span className="rounded-lg bg-gray-20 px-2 py-1 text-caption text-gray-80">#태그1</span><span className="rounded-lg bg-gray-20 px-2 py-1 text-caption text-gray-80">#태그2</span></div>
       </div>
     </article>
   );

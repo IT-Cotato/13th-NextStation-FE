@@ -1,3 +1,5 @@
+import { exploreAsset } from "@/assets/explore";
+import BackIcon from "@/assets/back.svg?react";
 import { useMemo } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { stationsByLine } from "@/mocks/StationByLine";
@@ -52,12 +54,12 @@ export default function SearchResultsPage() {
   return (
     <main className="min-h-dvh bg-gray-10 text-gray-100">
       <header className="flex h-[115px] items-stretch gap-4 px-[15px] pb-2.5 pt-[57px]">
-        <button type="button" className="relative w-6 shrink-0 border-0 bg-transparent p-0 before:absolute before:left-2 before:top-1/2 before:size-2.5 before:-translate-y-1/2 before:rotate-45 before:border-b-2 before:border-l-2 before:border-gray-70 before:content-['']" aria-label="이전" onClick={goBack}>
-          <span aria-hidden="true" />
+        <button type="button" className="w-6 shrink-0 border-0 bg-transparent p-0" aria-label="이전" onClick={goBack}>
+          <BackIcon className="size-6" aria-hidden="true" />
         </button>
         <ExploreSearchForm
           key={urlQuery}
-          className="flex min-w-0 flex-1 [&_input]:h-11 [&_input]:w-full [&_input]:rounded-[20px] [&_input]:border [&_input]:border-gray-40 [&_input]:bg-gray-20 [&_input]:px-4 [&_input]:py-3 [&_input]:text-sm [&_input]:text-gray-90 [&_input]:outline-none focus-within:[&_input]:border-primary-50 focus-within:[&_input]:bg-white"
+          className="flex min-w-0 flex-1 [&_input]:h-11 [&_input]:w-full [&_input]:rounded-lg [&_input]:border [&_input]:border-gray-40 [&_input]:bg-gray-20 [&_input]:px-4 [&_input]:py-3 [&_input]:text-body-01 [&_input]:text-gray-90 [&_input]:outline-none focus-within:[&_input]:border-primary-50 focus-within:[&_input]:bg-white"
           onSubmit={(nextQuery) => {
             setSearchParams(
               nextQuery
@@ -79,30 +81,17 @@ export default function SearchResultsPage() {
             aria-label={`${urlQuery} 검색 결과`}
           >
             {conceptResults.map(
-              ({ slug, title, description, image, star, starStyle, iconStyle }) => (
+              ({ slug, title, description, artwork, combinedStyle }) => (
                 <button
                   type="button"
-                  className="relative h-52 overflow-hidden rounded-[20px] border-0 bg-white p-0 text-left shadow-[0_0_20px_rgb(118_118_118/10%)] outline-none focus-visible:ring-2 focus-visible:ring-primary-50"
+                  className="relative h-52 overflow-hidden rounded-lg border-0 bg-white p-0 text-left shadow-[0_0_20px_rgb(118_118_118/10%)] outline-none focus-visible:ring-2 focus-visible:ring-primary-50"
                   key={slug}
                   onClick={() => navigate(`/explore/concepts/${slug}`)}
                 >
-                  <span className="absolute inset-0">
-                    <img
-                      className="absolute object-contain"
-                      src={star}
-                      alt=""
-                      style={starStyle}
-                    />
-                    <img
-                      className="absolute z-[1] object-contain"
-                      src={image}
-                      alt=""
-                      style={iconStyle}
-                    />
-                  </span>
-                  <span className="absolute left-4 top-[90px] z-[2] flex flex-col items-start gap-2 [&>small]:flex [&>small]:items-center [&>small]:gap-2 [&>small]:text-[10px] [&>small]:text-gray-60 [&>small>i]:grid [&>small>i]:size-[18px] [&>small>i]:place-items-center [&>small>i]:rounded-full [&>small>i]:bg-gray-60 [&>small>i]:not-italic [&>small>i]:text-white">
-                    <strong className="max-w-full text-xl font-semibold leading-[1.4] [overflow-wrap:anywhere]">{title}</strong>
-                    <span className="flex flex-col text-sm leading-[1.4] text-gray-70">
+                  <img className="absolute object-contain" src={artwork} alt="" style={combinedStyle} />
+                  <span className="absolute left-4 top-[90px] z-[2] flex flex-col items-start gap-2 [&>small]:flex [&>small]:items-center [&>small]:gap-2 [&>small]:text-caption [&>small]:text-gray-60 [&>small>i]:grid [&>small>i]:size-[18px] [&>small>i]:place-items-center [&>small>i]:rounded-full [&>small>i]:bg-gray-60 [&>small>i]:not-italic [&>small>i]:text-white">
+                    <span className="max-w-full text-title-01 font-semibold leading-[1.4] [overflow-wrap:anywhere]">{title}</span>
+                    <span className="flex flex-col text-body-01 leading-[1.4] text-gray-70">
                       {description.split("\n").map((line) => (
                         <span key={line}>{line}</span>
                       ))}
@@ -117,19 +106,19 @@ export default function SearchResultsPage() {
           </section>
         ) : (
           <section className="flex flex-col gap-3 px-[15px] py-4 [&>article]:min-h-[120px]" aria-label={`${urlQuery} 검색 결과`}>
-            {results.map(({ line, stationName }, index) => (
+            {results.map(({ line, stationName }) => (
               <ExploreCourseItem
                 key={`${line}-${stationName}`}
                 line={line}
                 stationName={stationName}
-                filledImage={index === 0}
+                filledImage
               />
             ))}
           </section>
         )
       ) : (
-        <section className="flex flex-col items-center gap-5 pt-[163px] [&_img]:block [&_img]:h-[200px] [&_img]:w-[222px] [&_img]:object-contain [&_p]:m-0 [&_p]:w-[222px] [&_p]:text-center [&_p]:text-base [&_p]:leading-[1.4] [&_p]:tracking-[-0.4px] [&_p]:text-gray-80">
-          <img src="/explore/search-empty-figma.png" alt="" />
+        <section className="flex flex-col items-center gap-5 pt-[163px] [&_img]:block [&_img]:h-[200px] [&_img]:w-[222px] [&_img]:object-contain [&_p]:m-0 [&_p]:w-[222px] [&_p]:text-center [&_p]:text-subtitle [&_p]:leading-[1.4] [&_p]:tracking-[-0.4px] [&_p]:text-gray-80">
+          <img src={exploreAsset("search-empty.svg")} alt="" />
           <p>일치하는 검색 결과가 없어요!</p>
         </section>
       )}

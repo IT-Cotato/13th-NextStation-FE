@@ -4,6 +4,7 @@ import useSafeBack from "./hooks/useSafeBack";
 import ExploreCourseItem from "./components/ExploreCourseItem";
 import { conceptDetails, type ConceptId } from "./data/conceptDetails";
 import Header from "@/components/Header";
+import ArrowDown from "@/assets/arrow-down.svg?react";
 import {
   conceptCourses,
   sortExploreCourses,
@@ -33,8 +34,8 @@ export default function ConceptDetailPage() {
       <header className="relative px-[15px] pt-[57px]" style={{ height: detail.headerHeight }}>
         <div className="h-6 [&>header]:h-6 [&>header]:grid-cols-[24px_1fr_24px] [&>header]:p-0"><Header showBack onBackClick={goBack} /></div>
         <div className="absolute left-[15px] right-[15px] top-[121px]">
-          <h1 className="mb-1 text-xl font-semibold leading-[1.4] tracking-[-0.5px]">{detail.title}</h1>
-          <p className="m-0 text-sm leading-[1.4] tracking-[-0.35px] text-gray-70">
+          <h1 className="mb-1 text-title-01 font-semibold leading-[1.4] tracking-[-0.5px]">{detail.title}</h1>
+          <p className="m-0 text-body-01 leading-[1.4] tracking-[-0.35px] text-gray-70">
             {detail.description.map((line, index) => (
               <span key={line}>
                 {index > 0 && <br />}
@@ -44,23 +45,22 @@ export default function ConceptDetailPage() {
           </p>
         </div>
         <div className="pointer-events-none absolute inset-0">
-          <img className="absolute object-fill" src={detail.star} alt="" style={detail.starStyle} />
-          <img className="absolute object-fill" src={detail.icon} alt="" style={detail.iconStyle} />
+          <img className="absolute object-contain" src={detail.artwork} alt="" style={detail.artworkStyle} />
         </div>
       </header>
 
       <div className="relative z-[5] mx-[15px] h-9">
-        <button className="absolute right-0 top-0 flex h-9 min-w-24 items-center justify-between gap-3 rounded-[20px] border border-white bg-white/50 px-5 py-2 text-sm font-semibold text-gray-70 backdrop-blur-[10px]" type="button" aria-expanded={sortOpen} onClick={() => setSortOpen((open) => !open)}>
-          {sort} <span className={`text-lg transition-transform ${sortOpen ? "rotate-0" : "rotate-180"}`}>⌃</span>
+        <button className="absolute right-0 top-0 flex h-9 min-w-24 items-end justify-between gap-3 rounded-lg border border-white bg-transparent px-5 py-2 text-body-01 font-semibold text-gray-70 backdrop-blur-[10px]" type="button" aria-expanded={sortOpen} onClick={() => setSortOpen((open) => !open)}>
+          {sort}<ArrowDown className={`size-5 shrink-0 transition-transform ${sortOpen ? "rotate-180" : "rotate-0"}`} aria-hidden="true" />
         </button>
         {sortOpen && (
-          <div className="absolute right-0 top-12 flex w-24 flex-col gap-3 rounded-[20px] border border-white bg-white/85 px-5 py-3 shadow-[0_0_28px_rgb(118_118_118/25%)] backdrop-blur-[10px]" role="menu">
+          <div className="absolute right-0 top-12 flex w-24 flex-col items-start justify-end gap-3 rounded-lg bg-transparent px-5 py-4 shadow-[0_0_28px_rgb(118_118_118/25%)] backdrop-blur-[10px] outline outline-1 outline-offset-[-1px] outline-white" role="menu">
             {(["최신순", "인기순"] as const).map((option) => (
               <button
                 type="button"
                 role="menuitemradio"
                 aria-checked={sort === option}
-                className={`border-0 bg-transparent p-0 text-left text-sm font-semibold leading-[1.4] ${sort === option ? "text-gray-100" : "text-gray-70"}`}
+                className={`w-full border-0 bg-transparent p-0 text-left text-body-01 font-semibold leading-5 text-gray-70`}
                 key={option}
                 onClick={() => { setSort(option); setSortOpen(false); }}
               >
@@ -72,12 +72,12 @@ export default function ConceptDetailPage() {
       </div>
 
       <section className="flex flex-col gap-3 px-[15px] pb-4 pt-4 [&>article]:min-h-[120px]" aria-label={`${detail.title} ${sort}`}>
-        {courses.map((course, index) => (
+        {courses.map((course) => (
           <ExploreCourseItem
             key={course.id}
             line={course.line}
             stationName={course.stationName}
-            filledImage={index === 0}
+            filledImage
           />
         ))}
       </section>
