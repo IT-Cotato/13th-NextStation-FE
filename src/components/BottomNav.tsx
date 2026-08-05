@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom"
 import DrawIcon from '@/assets/bottomNav/draw.svg?react';
 import CourseIcon from '@/assets/bottomNav/course.svg?react';
@@ -8,7 +9,8 @@ import ExploreIcon from '@/assets/bottomNav/explore.svg?react';
 import SelectedExploreIcon from '@/assets/bottomNav/selectedExplore.svg?react';
 import MypageIcon from '@/assets/bottomNav/mypage.svg?react';
 import SelectedMypageIcon from '@/assets/bottomNav/selectedMypage.svg?react';
-
+import LeadToLoginModal from "@/components/LeadToLoginModal";
+import { getAccessToken } from "@/api/auth";
 
 type BottomNavProps = {
   mode: 'main' | 'course'
@@ -16,13 +18,16 @@ type BottomNavProps = {
 }
 export default function BottomNav({ mode, activeTab = 'save' }: BottomNavProps) {
   const navigate = useNavigate();
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const isLoggedIn = Boolean(getAccessToken());
   const glassPillClassName = "relative flex items-center rounded-[42px] border border-white/70 bg-linear-to-b from-white/30 to-white/10 shadow-[0_0_28px_rgba(118,118,118,0.14),inset_0_1px_0_rgba(255,255,255,0.9)] backdrop-blur-[22px]";
   const activeTabClassName = "border border-white/70 bg-linear-to-r from-gray-10/95 via-white/52 to-white/14 text-gray-90 shadow-[inset_0_1px_0_rgba(255,255,255,0.9),0_6px_18px_rgba(255,255,255,0.12)]";
   const inactiveTabClassName = "text-gray-60";
 
   return (
-    <nav className="absolute left-1/2 bottom-[calc(var(--safe-bottom)+10px)] z-50 -translate-x-1/2">
-      {mode === 'main' ? (
+    <>
+      <nav className="absolute left-1/2 bottom-[calc(var(--safe-bottom)+10px)] z-50 -translate-x-1/2">
+        {mode === 'main' ? (
         <div className={`${glassPillClassName} gap-1 p-1`}>
           <div className="pointer-events-none absolute inset-x-3 top-1 h-[16px] rounded-full bg-white/25 blur-md" />
           <button className={`relative flex flex-col items-center gap-1 rounded-[38px] px-10 py-2 text-body-02 font-semibold leading-none whitespace-nowrap tracking-[-0.025em] text-center outline-none ${activeTabClassName}`}>
@@ -30,14 +35,21 @@ export default function BottomNav({ mode, activeTab = 'save' }: BottomNavProps) 
             뽑기
           </button>
           <button
-            onClick={() => navigate(`/course`)}
+            onClick={() => {
+              if (!isLoggedIn) {
+                setIsLoginModalOpen(true);
+                return;
+              }
+
+              navigate("/course");
+            }}
             className={`relative flex flex-col items-center gap-1 rounded-[38px] px-10 py-2 text-body-02 font-semibold leading-none whitespace-nowrap tracking-[-0.025em] text-center outline-none ${inactiveTabClassName}`}
           >
             <CourseIcon className="size-[30px]"/>
             코스
           </button>
         </div>
-      ): (
+        ) : (
         // 코스 Nav
         <div className="flex items-center gap-4">
 
@@ -99,7 +111,15 @@ export default function BottomNav({ mode, activeTab = 'save' }: BottomNavProps) 
             </button>
           </div>
         </div>
+        )}
+      </nav>
+
+      {isLoginModalOpen && (
+        <LeadToLoginModal
+          message={"코스를 이용하려면\n로그인이 필요해요!"}
+          onClose={() => setIsLoginModalOpen(false)}
+        />
       )}
-    </nav>
+    </>
   )
 }
