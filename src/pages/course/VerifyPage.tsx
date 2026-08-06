@@ -16,17 +16,22 @@ import MapMarker from "./components/MapMarker";
 import { Reorder } from "motion/react";
 import NameEditInput from "./components/NameEditInput";
 import ConfirmModal from "@/components/ConfirmModal";
+import LeadToLoginModal from "@/components/LeadToLoginModal";
 import {
   getCourseDetail,
   patchCourseDetail,
   type Place,
 } from "@/api/courseDetail";
 import { createCourse } from "@/api/courseRecommendation";
-import type { RandomCourseResponse } from "@/api/random";
+import {
+  rerollRandomCourse,
+  type RandomCourseResponse,
+} from "@/api/random";
 import Button from "@/components/Button";
 import CTAButton from "@/components/CTAButton";
 import share from "@/utils/share";
 import { showToast } from "./components/ShowToast";
+import { getAccessToken } from "@/api/auth";
 
 interface DraftCourseState {
   course: RandomCourseResponse;
@@ -83,9 +88,13 @@ export default function VerifyPage() {
   const courseListRef = useRef<HTMLUListElement>(null);
   const [pressedId, setPressedId] = useState<number | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false); // 순서/이름을 바꾸고 아직 저장 안 한 상태인지
   const [searchParams] = useSearchParams(); // 어떤 페이지로부터 진입했는지를 알기 위함
   const from = searchParams.get("from"); // draw (랜덤 뽑기) | recommend (맞춤 추천)
+  const isLoggedIn = Boolean(getAccessToken());
+  const isRandomDraft = from === "draw" && course?.courseId === null;
+  const isRecommendDraft = from === "recommend" && course?.courseId === null;
 
   const [loading, error] = useKakaoLoader({
     appkey: import.meta.env.VITE_KAKAO_API,
@@ -147,9 +156,15 @@ export default function VerifyPage() {
   };
 
   const [isSaving, setIsSaving] = useState(false);
+  const [isRerolling, setIsRerolling] = useState(false);
 
   const handleSaveAndGo = async () => {
-    if (isSaving) return;
+    if (!isLoggedIn) {
+      setIsLoginModalOpen(true);
+      return;
+    }
+
+    if (isSaving || isRerolling) return;
 
     setIsSaving(true);
     const savedCourseId = await handleSave();
@@ -166,7 +181,12 @@ export default function VerifyPage() {
   };
 
   const handleSaveOnly = async () => {
-    if (isSaving) return;
+    if (!isLoggedIn) {
+      setIsLoginModalOpen(true);
+      return;
+    }
+
+    if (isSaving || isRerolling) return;
 
     setIsSaving(true);
     const savedCourseId = await handleSave();
@@ -174,6 +194,33 @@ export default function VerifyPage() {
 
     if (savedCourseId === null) {
       showToast({ message: "코스 저장에 실패했습니다." });
+    }
+  };
+
+  const handleRerollCourse = async () => {
+    if (!isRandomDraft || isSaving || isRerolling || !course) return;
+
+    try {
+      setIsRerolling(true);
+      const rerolledCourse = await rerollRandomCourse(course.stationId);
+      setCourseName(rerolledCourse.name);
+      setPlaces(
+        rerolledCourse.places.map((place, index) => ({
+          placeId: place.placeId,
+          placeName: place.placeName,
+          description: place.description,
+          imageUrl: place.imageUrl,
+          xCoordinate: place.xCoordinate,
+          yCoordinate: place.yCoordinate,
+          orderNum: index + 1,
+        })),
+      );
+      setHasUnsavedChanges(false);
+    } catch (e) {
+      console.error(e);
+      showToast({ message: "코스를 다시 불러오지 못했습니다." });
+    } finally {
+      setIsRerolling(false);
     }
   };
 
@@ -214,6 +261,8 @@ export default function VerifyPage() {
   };
 
   const handleReorder = (newPlaces: Place[]) => {
+    if (isRerolling) return;
+
     setPlaces(newPlaces);
     setHasUnsavedChanges(true);
   };
@@ -233,6 +282,13 @@ export default function VerifyPage() {
         />
       )}
 
+      {isLoginModalOpen && (
+        <LeadToLoginModal
+          message={"코스를 저장하고 싶다면\n로그인이 필요해요!"}
+          onClose={() => setIsLoginModalOpen(false)}
+        />
+      )}
+
       {/* 역명 */}
       <section className="flex justify-center">
         <StationTitle
@@ -244,7 +300,11 @@ export default function VerifyPage() {
       {/* 지도 */}
       <section className="flex justify-center">
         <div className="flex flex-col gap-2.5 w-[360px]">
-          <NameEditInput value={courseName} onChange={handleCourseNameChange} />
+          <NameEditInput
+            value={courseName}
+            onChange={handleCourseNameChange}
+            disabled={isRerolling}
+          />
 
           <div className="flex flex-col border h-[357px] border-gray-40 bg-white rounded-lg overflow-hidden">
             <div className="flex items-center justify-between px-4 py-4">
@@ -300,10 +360,13 @@ export default function VerifyPage() {
             <Reorder.Item
               key={place.placeId}
               value={place}
+              drag={!isRerolling}
               dragConstraints={courseListRef}
               dragElastic={0.05}
               className="flex items-center gap-[13px]"
-              onPointerDown={() => setPressedId(place.placeId)}
+              onPointerDown={() =>
+                !isRerolling && setPressedId(place.placeId)
+              }
               onPointerUp={() => setPressedId(null)}
               onPointerLeave={() => setPressedId(null)}
             >
@@ -321,22 +384,26 @@ export default function VerifyPage() {
 
       {/* 하단 버튼 */}
       <section className="flex justify-center">
-        {from === "draw" ? ( // 랜덤 뽑기로부터 진입
+        {isRandomDraft ? ( // 랜덤 뽑기로부터 진입한 미저장 draft
           <div className="flex w-[360px] justify-between">
-            <Button direction="left" onClick={() => navigate("/draw/loading")}>
+            <Button
+              direction="left"
+              disabled={isSaving || isRerolling}
+              onClick={handleRerollCourse}
+            >
               다시 뽑기
             </Button>
             <Button
               direction="right"
-              disabled={isSaving}
+              disabled={isSaving || isRerolling}
               onClick={handleSaveAndGo}
             >
               저장하기
             </Button>
           </div>
-        ) : from === "recommend" ? ( // 맞춤 추천으로부터 진입
+        ) : isRecommendDraft ? ( // 맞춤 추천으로부터 진입한 미저장 draft
           <div className="flex w-[360px]">
-            <CTAButton disabled={isSaving} onClick={handleSaveAndGo}>
+            <CTAButton disabled={isSaving || isRerolling} onClick={handleSaveAndGo}>
               코스 저장하기
             </CTAButton>
           </div>

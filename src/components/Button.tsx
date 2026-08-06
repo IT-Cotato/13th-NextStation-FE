@@ -28,7 +28,7 @@ export default function Button({
   const baseClassName = `
     flex items-center justify-center gap-2 rounded-full
     border-[2px] border-secondary-30 shadow-[0_0_8px_var(--color-secondary-50)]
-    active:scale-[0.96] active:from-[#EF9E8C] active:to-[#E5989F] active:border-secondary-50
+    active:scale-[0.96] active:from-[#EF9E8C] active:to-[#E5989F] active:border-secondary-50 outline-none
     `;
   const sizeClassName = {
     s: "px-6 py-4",

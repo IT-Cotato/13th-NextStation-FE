@@ -34,6 +34,11 @@ export interface RandomDrawResponseData {
   course: RandomCourseResponse;
 }
 
+export interface RandomCourseRerollResponseData {
+  name: string;
+  places: RandomCoursePlaceResponse[];
+}
+
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export class RandomDrawNotFoundError extends Error {
@@ -88,5 +93,34 @@ export async function drawRandomStation(): Promise<RandomDrawResponseData> {
         }),
       ),
     },
+  };
+}
+
+export async function rerollRandomCourse(
+  stationId: number,
+): Promise<RandomCourseResponse> {
+  const response = await fetch(`${API_BASE_URL}/api/v1/random/${stationId}/course`, {
+    method: "POST",
+  });
+
+  if (!response.ok) {
+    throw new Error("코스 다시 뽑기 실패");
+  }
+
+  const json = await response.json();
+  const data = json.data as RandomCourseRerollResponseData;
+
+  return {
+    name: data.name,
+    places: (data.places ?? []).map((place) => ({
+      placeId: place.placeId,
+      placeName: place.placeName,
+      description: place.description,
+      categoryCode: place.categoryCode,
+      categoryName: place.categoryName,
+      imageUrl: place.imageUrl,
+      xCoordinate: place.xCoordinate,
+      yCoordinate: place.yCoordinate,
+    })),
   };
 }

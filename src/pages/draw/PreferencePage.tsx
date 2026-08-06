@@ -100,7 +100,15 @@ function PreferencePage() {
     });
   };
 
-  const mappedTravelStyles = selectedTags.map((tag) => travelStyleMap[tag]);
+  const mappedTravelStyles = selectedTags.map((tag) => {
+    const mapped = travelStyleMap[tag];
+
+    if (!mapped) {
+      throw new Error(`매핑되지 않은 여행 스타일 태그입니다: ${tag}`);
+    }
+
+    return mapped;
+  });
 
   return (
     <main className="flex flex-col h-dvh overflow-hidden bg-white items-center pt-[var(--safe-top)]">
@@ -137,23 +145,25 @@ function PreferencePage() {
         <section className='flex w-full items-center justify-center'>
           <CTAButton 
             disabled={!isFormValid}
-            onClick={() =>
+            onClick={() => {
+              const recommendationRequest = {
+                departureStationId: condition.departureStationId,
+                travelTime: condition.travelTime,
+                travelStyles: mappedTravelStyles,
+              };
+
               navigate('/draw/loading', {
                 state: {
                   source: 'recommend',
-                  recommendationRequest: {
-                    departureStationId: condition.departureStationId,
-                    travelTime: condition.travelTime,
-                    travelStyles: mappedTravelStyles,
-                  },
+                  recommendationRequest,
                   selectedStation: condition.selectedStation ?? null,
                   selectedTime: condition.selectedTime ?? null,
                   selectedCompanion: condition.selectedCompanion ?? null,
                   selectedTags,
                   companion: condition.companion,
                 },
-              })
-            }
+              });
+            }}
           >
             나만의 환승역 찾기
           </CTAButton>
