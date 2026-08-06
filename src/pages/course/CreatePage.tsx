@@ -4,18 +4,28 @@ import type { SubwayLine } from "@/types/subway";
 import SubwayLineChip from "@/components/SubwayLineChip";
 import CTAButton from "@/components/CTAButton";
 import CourseCard from "./components/CourseCard";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import CategoryTabs from "./components/CategoryTabs";
 import {
-  createCourse,
   getStationCourseRecommendation,
+  type StationCategoryPlace,
   type StationCourseRecommendation,
 } from "@/api/courseRecommendation";
+import type { CustomRecommendationRequest } from "@/api/recommendation";
+
+type CreatePageState = {
+  stationId: number;
+  stationName: string;
+  lineId: number;
+  recommendationRequest?: CustomRecommendationRequest;
+};
 
 export default function CreatePage() {
   const { stationId } = useParams();
+  const location = useLocation();
   const navigate = useNavigate();
+  const createPageState = location.state as CreatePageState | null;
   const [station, setStation] = useState<StationCourseRecommendation | null>(
     null,
   );
@@ -35,7 +45,10 @@ export default function CreatePage() {
 
       try {
         setIsStationLoading(true);
-        const data = await getStationCourseRecommendation(Number(stationId));
+        const data = await getStationCourseRecommendation(
+          Number(stationId),
+          createPageState?.recommendationRequest?.travelStyles,
+        );
         setStation(data);
       } catch (e) {
         console.error(e);
@@ -45,7 +58,7 @@ export default function CreatePage() {
       }
     };
     fetchStationCourseRecommendation();
-  }, [stationId]);
+  }, [createPageState?.recommendationRequest?.travelStyles, stationId]);
 
   if (isStationLoading) return <p>로딩 중...</p>;
   if (stationError) return <p>{stationError}</p>;
@@ -64,19 +77,16 @@ export default function CreatePage() {
   );
   const places = activeCategory?.places ?? [];
 
-  const handleCreateCourse = async (
-    stationId: number,
-    name: string,
-    placeIds: number[],
-  ) => {
-    try {
-      const course = await createCourse(stationId, name, placeIds);
-      navigate(`/course/${course.courseId}/verify?from=recommend`);
-    } catch (e) {
-      console.error(e);
-      setStationError("코스 생성에 실패했습니다.");
-    }
-  };
+  const placeById = new Map<number, StationCategoryPlace>(
+    station.categories.flatMap((category) => category.places).map((place) => [
+      place.placeId,
+      place,
+    ]),
+  );
+
+  const selectedPlaces = selectedIds
+    .map((id) => placeById.get(id))
+    .filter((place): place is StationCategoryPlace => Boolean(place));
 
   return (
     <main className="flex flex-col h-dvh  bg-gray-10 pt-[calc(var(--safe-top)+12px)] overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
@@ -163,11 +173,26 @@ export default function CreatePage() {
           disabled={isDisabled ? true : false}
           variant="primary"
           onClick={() =>
-            handleCreateCourse(
-              Number(stationId),
-              station.defaultCourseName,
-              selectedIds,
-            )
+            navigate("/course/verify?from=recommend", {
+              state: {
+                course: {
+                  name: station.defaultCourseName,
+                  places: selectedPlaces.map((place) => ({
+                    placeId: place.placeId,
+                    placeName: place.placeName,
+                    description: place.description,
+                    categoryCode: activeCategory?.categoryCode ?? "CULTURE",
+                    categoryName: activeCategory?.categoryName ?? "문화공간",
+                    imageUrl: place.imageUrl,
+                    xCoordinate: place.xCoordinate,
+                    yCoordinate: place.yCoordinate,
+                  })),
+                },
+                stationId: station.stationId,
+                stationName: station.stationName,
+                lineId: station.line.id,
+              },
+            })
           }
         >
           나만의 여행 코스 만들기

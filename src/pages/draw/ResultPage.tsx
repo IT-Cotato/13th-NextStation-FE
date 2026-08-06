@@ -98,6 +98,7 @@ function ResultPage() {
                     stationId: station.stationId,
                     stationName: station.stationName,
                     lineId: primaryLine.id,
+                    recommendationRequest,
                   },
                 })
               : navigate('/course/verify?from=draw', {

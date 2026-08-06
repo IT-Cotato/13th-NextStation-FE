@@ -16,6 +16,7 @@ import MapMarker from "./components/MapMarker";
 import { Reorder } from "motion/react";
 import NameEditInput from "./components/NameEditInput";
 import ConfirmModal from "@/components/ConfirmModal";
+import LeadToLoginModal from "@/components/LeadToLoginModal";
 import {
   getCourseDetail,
   patchCourseDetail,
@@ -27,6 +28,7 @@ import Button from "@/components/Button";
 import CTAButton from "@/components/CTAButton";
 import share from "@/utils/share";
 import { showToast } from "./components/ShowToast";
+import { getAccessToken } from "@/api/auth";
 
 interface DraftCourseState {
   course: RandomCourseResponse;
@@ -83,9 +85,11 @@ export default function VerifyPage() {
   const courseListRef = useRef<HTMLUListElement>(null);
   const [pressedId, setPressedId] = useState<number | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false); // 순서/이름을 바꾸고 아직 저장 안 한 상태인지
   const [searchParams] = useSearchParams(); // 어떤 페이지로부터 진입했는지를 알기 위함
   const from = searchParams.get("from"); // draw (랜덤 뽑기) | recommend (맞춤 추천)
+  const isLoggedIn = Boolean(getAccessToken());
 
   const [loading, error] = useKakaoLoader({
     appkey: import.meta.env.VITE_KAKAO_API,
@@ -149,6 +153,11 @@ export default function VerifyPage() {
   const [isSaving, setIsSaving] = useState(false);
 
   const handleSaveAndGo = async () => {
+    if (!isLoggedIn) {
+      setIsLoginModalOpen(true);
+      return;
+    }
+
     if (isSaving) return;
 
     setIsSaving(true);
@@ -166,6 +175,11 @@ export default function VerifyPage() {
   };
 
   const handleSaveOnly = async () => {
+    if (!isLoggedIn) {
+      setIsLoginModalOpen(true);
+      return;
+    }
+
     if (isSaving) return;
 
     setIsSaving(true);
@@ -230,6 +244,13 @@ export default function VerifyPage() {
           }
           onClose={toggleModal}
           onConfirm={handleConfirm}
+        />
+      )}
+
+      {isLoginModalOpen && (
+        <LeadToLoginModal
+          message={"코스를 저장하고 싶다면\n로그인이 필요해요!"}
+          onClose={() => setIsLoginModalOpen(false)}
         />
       )}
 
