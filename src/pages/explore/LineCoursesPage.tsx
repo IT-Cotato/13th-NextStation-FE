@@ -145,7 +145,7 @@ export default function LineCoursesPage() {
         <button
           ref={stationButtonRef}
           type="button"
-          className="flex h-9 min-w-[111px] items-center justify-between gap-3 rounded-lg border border-white bg-white/50 px-5 py-2 text-body-01 font-semibold leading-[1.4] text-gray-70 backdrop-blur-[10px]"
+              className="flex h-9 min-w-[111px] items-end justify-between gap-3 rounded-lg border border-white bg-white/50 px-5 py-2 text-body-01 font-semibold leading-[1.4] text-gray-70 backdrop-blur-[10px]"
           aria-haspopup="dialog"
           aria-expanded={isStationMenuOpen}
           onClick={() => {
@@ -161,7 +161,7 @@ export default function LineCoursesPage() {
           <button
             ref={sortButtonRef}
             type="button"
-            className="flex h-9 min-w-24 items-end justify-between gap-3 rounded-lg border border-white bg-transparent px-5 py-2 text-body-01 font-semibold leading-[1.4] text-gray-70 backdrop-blur-[10px]"
+              className="flex h-9 min-w-24 items-end justify-between gap-3 rounded-lg border border-white bg-white/50 px-5 py-2 text-body-01 font-semibold leading-[1.4] text-gray-70 backdrop-blur-[10px]"
             aria-haspopup="menu"
             aria-expanded={isSortMenuOpen}
             onClick={() => {

@@ -14,7 +14,6 @@ type ExploreCourseItemProps = {
 };
 
 export default function ExploreCourseItem({
-  filledImage = false,
   rank,
   line = 2,
   stationName = "신림역",
@@ -24,9 +23,7 @@ export default function ExploreCourseItem({
   return (
     <article className="flex min-h-[120px] w-full items-center gap-3 rounded-lg bg-white p-3">
       <div className="relative h-24 w-[90px] shrink-0 overflow-hidden rounded-lg bg-primary-30">
-        {filledImage && (
-          <img className="size-full object-cover" src={coursePhoto} alt="" draggable={false} />
-        )}
+        <img className="size-full object-cover" src={coursePhoto} alt="" draggable={false} />
         {rank && (
           <span className="absolute left-0 top-0 size-[42px]" aria-label={`${rank}위`}>
             <RankStar className="absolute left-0 top-0.5 size-[42px]" aria-hidden="true" />
