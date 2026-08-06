@@ -12,9 +12,10 @@ const LINE_STYLES: Record<SubwayLine, string> = {
   "9": "bg-subway-9-dark text-subway-9-light",
 };
 
-export default function LineBadge({ line }: { line: SubwayLine }) {
+export default function LineBadge({ line }: { line: number }) {
+  const style = LINE_STYLES[line as SubwayLine] ?? "bg-gray-70 text-white";
   return (
-    <div className={`flex px-[6px] rounded-full w-fit ${LINE_STYLES[line]}`}>
+    <div className={`flex w-fit rounded-full px-[6px] ${style}`}>
       <span className="flex items-center justify-center text-body-01 font-semibold leading-[1.4]">
         {line}
       </span>

@@ -1,26 +1,54 @@
+import { useEffect, useState } from "react";
+import {
+  getPopularExploreCourses,
+  type ExploreCourse,
+} from "@/api/explore";
+import Header from "@/components/Header";
+import type { SubwayLine } from "@/types/subway";
 import ExploreCourseItem from "./components/ExploreCourseItem";
 import useSafeBack from "./hooks/useSafeBack";
-import Header from "@/components/Header";
 
 export default function PopularCoursesPage() {
   const goBack = useSafeBack();
+  const [courses, setCourses] = useState<ExploreCourse[]>([]);
+
+  useEffect(() => {
+    void getPopularExploreCourses()
+      .then((data) => setCourses(data.courses))
+      .catch(() => setCourses([]));
+  }, []);
 
   return (
-    <main className="relative min-h-dvh overflow-x-hidden bg-gray-10 pb-4 text-gray-100">
-      <div className="px-[15px] pb-2.5 pt-[57px] [&_h1]:m-0 [&_h1]:text-title-01 [&_h1]:font-semibold [&_h1]:leading-[1.4] [&_h1]:tracking-[-0.5px] [&_p]:mt-1 [&_p]:text-body-02 [&_p]:leading-[1.4] [&_p]:tracking-[-0.3px] [&_p]:text-gray-70">
-        <div className="mb-4 h-6 [&>header]:h-6 [&>header]:grid-cols-[24px_1fr_24px] [&>header]:p-0"><Header showBack onBackClick={goBack} /></div>
-        <div>
-          <h1>사람들이 많이 찾는 코스</h1>
-          <p>사람들이 나중에 가려고 가장 많이 담아둔 코스예요</p>
+    <main className="min-h-dvh overflow-x-hidden bg-gray-10 pb-4 text-gray-100">
+      <div className="px-[15px] pb-2.5 pt-[57px]">
+        <div className="mb-4 h-6">
+          <Header
+            className="h-6 grid-cols-[24px_1fr_24px] p-0"
+            showBack
+            onBackClick={goBack}
+          />
         </div>
+        <h1 className="m-0 text-title-01 font-semibold">
+          사람들이 많이 찾는 코스
+        </h1>
+        <p className="mt-1 text-body-02 text-gray-70">
+          사람들이 나중에 가려고 가장 많이 담아둔 코스예요
+        </p>
       </div>
 
-      <section className="flex flex-col gap-3 px-[15px] py-4 [&>article]:min-h-[120px]" aria-label="인기 코스 순위">
-        {Array.from({ length: 6 }, (_, index) => (
+      <section className="flex flex-col gap-3 px-[15px] py-4">
+        {courses.map((course, index) => (
           <ExploreCourseItem
-            key={index}
+            key={course.courseId}
+            courseId={course.courseId}
             rank={index + 1}
-            filledImage
+            line={course.line?.id as SubwayLine | undefined}
+            stationName={course.stationName}
+            name={course.name}
+            tags={course.tags}
+            likeCount={course.likeCount}
+            isLiked={course.isLiked}
+            imageUrl={course.imageUrl}
           />
         ))}
       </section>

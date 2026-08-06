@@ -5,6 +5,7 @@ interface ExploreSearchFormProps {
   className?: string;
   defaultValue?: string;
   icon?: ReactNode;
+  inputClassName?: string;
   onChange?: ChangeEventHandler<HTMLInputElement>;
   onSubmit: (query: string) => void;
   placeholder?: string;
@@ -16,6 +17,7 @@ export default function ExploreSearchForm({
   className,
   defaultValue,
   icon,
+  inputClassName,
   onChange,
   onSubmit,
   placeholder,
@@ -32,6 +34,7 @@ export default function ExploreSearchForm({
     >
       {icon}
       <input
+        className={inputClassName}
         aria-label={ariaLabel}
         defaultValue={defaultValue}
         name="query"
