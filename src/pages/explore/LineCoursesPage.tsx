@@ -1,12 +1,19 @@
 import { useEffect, useRef, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import ExploreCourseItem from "./components/ExploreCourseItem";
 import useSafeBack from "./hooks/useSafeBack";
 import type { SubwayLine } from "@/types/subway";
 import Header from "@/components/Header";
 import CloseIcon from "@/assets/close.svg?react";
 import ArrowDown from "@/assets/arrow-down.svg?react";
-import { getExploreCourses, getExploreMain, type ExploreCourse, type ExploreLine, type ExploreSort, type ExploreStation } from "@/api/explore";
+import {
+  getExploreCourses,
+  getExploreMain,
+  type ExploreCourse,
+  type ExploreLine,
+  type ExploreSort,
+  type ExploreStation,
+} from "@/api/explore";
 
 type SortOption = "전체" | "최신순" | "인기순";
 
@@ -19,6 +26,7 @@ const defaultLines: ExploreLine[] = Array.from({ length: 9 }, (_, index) => ({
 }));
 
 export default function LineCoursesPage() {
+  const navigate = useNavigate();
   const goBack = useSafeBack();
   const [searchParams, setSearchParams] = useSearchParams();
   const requestedLine = Number(searchParams.get("line"));
@@ -38,16 +46,28 @@ export default function LineCoursesPage() {
   useEffect(() => {
     void getExploreMain().then((data) => {
       if (data.lines.length) setLines(data.lines);
-      if (!requestedLine && data.selectedLineId) setSearchParams({ line: String(data.selectedLineId) }, { replace: true });
+      if (!requestedLine && data.selectedLineId)
+        setSearchParams(
+          { line: String(data.selectedLineId) },
+          { replace: true },
+        );
     });
   }, [requestedLine, setSearchParams]);
 
   useEffect(() => {
     const sort: ExploreSort = sortOption === "인기순" ? "POPULAR" : "LATEST";
-    void getExploreCourses({ lineId: line, stationId: station?.stationId, sort, size: 50 }).then((data) => {
-      setCourses(data.courses);
-      if (data.availableStations.length) setStationNames(data.availableStations);
-    }).catch(() => setCourses([]));
+    void getExploreCourses({
+      lineId: line,
+      stationId: station?.stationId,
+      sort,
+      size: 50,
+    })
+      .then((data) => {
+        setCourses(data.courses);
+        if (data.availableStations.length)
+          setStationNames(data.availableStations);
+      })
+      .catch(() => setCourses([]));
   }, [line, sortOption, station]);
 
   const handleLineChange = (nextLine: number) => {
@@ -119,8 +139,16 @@ export default function LineCoursesPage() {
   return (
     <main className="h-dvh min-h-0 overflow-y-auto bg-gray-10 text-gray-100 tracking-[-0.025em] [scrollbar-width:none]">
       <div className="flex h-[135px] flex-col items-start gap-4 px-[15px] pb-2.5 pt-[57px]">
-        <div className="h-6 w-full"><Header className="grid h-6 w-full grid-cols-[24px_1fr_24px] items-center p-0" showBack onBackClick={goBack} /></div>
-        <h1 className="m-0 text-title-01 font-semibold leading-[1.4] tracking-[-0.5px]">노선따라 둘러보기</h1>
+        <div className="h-6 w-full">
+          <Header
+            className="grid h-6 w-full grid-cols-[24px_1fr_24px] items-center p-0"
+            showBack
+            onBackClick={goBack}
+          />
+        </div>
+        <h1 className="m-0 text-title-01 font-semibold leading-[1.4] tracking-[-0.5px]">
+          노선따라 둘러보기
+        </h1>
       </div>
 
       <div
@@ -151,7 +179,7 @@ export default function LineCoursesPage() {
         <button
           ref={stationButtonRef}
           type="button"
-              className="flex h-9 min-w-[111px] items-end justify-between gap-3 rounded-lg border border-white bg-white/50 px-5 py-2 text-body-01 font-semibold leading-[1.4] text-gray-70 backdrop-blur-[10px]"
+          className="flex h-9 min-w-[111px] items-end justify-between gap-3 rounded-lg border border-white bg-white/50 px-5 py-2 text-body-01 font-semibold leading-[1.4] text-gray-70 backdrop-blur-[10px]"
           aria-haspopup="dialog"
           aria-expanded={isStationMenuOpen}
           onClick={() => {
@@ -160,14 +188,17 @@ export default function LineCoursesPage() {
           }}
         >
           {station?.stationName || "역 선택"}
-          <ArrowDown className={`size-5 shrink-0 transition-transform ${isStationMenuOpen ? "rotate-180" : "rotate-0"}`} aria-hidden="true" />
+          <ArrowDown
+            className={`size-5 shrink-0 transition-transform ${isStationMenuOpen ? "rotate-180" : "rotate-0"}`}
+            aria-hidden="true"
+          />
         </button>
 
         <div className="flex flex-col items-end gap-3" ref={sortContainerRef}>
           <button
             ref={sortButtonRef}
             type="button"
-              className="flex h-9 min-w-24 items-end justify-between gap-3 rounded-lg border border-white bg-white/50 px-5 py-2 text-body-01 font-semibold leading-[1.4] text-gray-70 backdrop-blur-[10px]"
+            className="flex h-9 min-w-24 items-end justify-between gap-3 rounded-lg border border-white bg-white/50 px-5 py-2 text-body-01 font-semibold leading-[1.4] text-gray-70 backdrop-blur-[10px]"
             aria-haspopup="menu"
             aria-expanded={isSortMenuOpen}
             onClick={() => {
@@ -176,10 +207,16 @@ export default function LineCoursesPage() {
             }}
           >
             {sortOption}
-            <ArrowDown className={`size-5 shrink-0 transition-transform ${isSortMenuOpen ? "rotate-180" : "rotate-0"}`} aria-hidden="true" />
+            <ArrowDown
+              className={`size-5 shrink-0 transition-transform ${isSortMenuOpen ? "rotate-180" : "rotate-0"}`}
+              aria-hidden="true"
+            />
           </button>
           {isSortMenuOpen && (
-            <div className="z-10 -mb-[104px] flex w-24 flex-col items-start justify-end gap-3 rounded-lg bg-white/50 px-5 py-4 shadow-[0_0_28px_rgb(118_118_118/25%)] backdrop-blur-[10px] outline outline-1 outline-offset-[-1px] outline-white" role="menu">
+            <div
+              className="z-10 -mb-[104px] flex w-24 flex-col items-start justify-end gap-3 rounded-lg bg-white/50 px-5 py-4 shadow-[0_0_28px_rgb(118_118_118/25%)] backdrop-blur-[10px] outline outline-1 outline-offset-[-1px] outline-white"
+              role="menu"
+            >
               {sortOptions.map((option) => (
                 <button
                   type="button"
@@ -200,20 +237,24 @@ export default function LineCoursesPage() {
         </div>
       </div>
 
-      <section className="flex flex-col gap-3 px-[15px] py-7" aria-label={`${line}호선 코스 목록`}>
+      <section
+        className="flex flex-col gap-3 px-[15px] py-7"
+        aria-label={`${line}호선 코스 목록`}
+      >
         {courses.map((course) => (
-            <ExploreCourseItem
-              key={course.courseId}
-              courseId={course.courseId}
-              line={course.line?.id as SubwayLine | undefined}
-              stationName={course.stationName}
-              name={course.name}
-              tags={course.tags}
-              likeCount={course.likeCount}
-              isLiked={course.isLiked}
-              imageUrl={course.imageUrl}
-            />
-          ))}
+          <ExploreCourseItem
+            key={course.courseId}
+            courseId={course.courseId}
+            line={course.line?.id as SubwayLine | undefined}
+            stationName={course.stationName}
+            name={course.name}
+            tags={course.tags}
+            likeCount={course.likeCount}
+            isLiked={course.isLiked}
+            imageUrl={course.imageUrl}
+            onClick={() => navigate(`/journals/${course.journalId}`)}
+          />
+        ))}
       </section>
 
       {isStationMenuOpen && (
@@ -234,7 +275,12 @@ export default function LineCoursesPage() {
             aria-labelledby="station-menu-title"
           >
             <div className="flex w-full items-center justify-between pb-3 pt-2">
-              <h2 className="m-0 text-subtitle font-semibold leading-[1.4] text-gray-70" id="station-menu-title">역 선택</h2>
+              <h2
+                className="m-0 text-subtitle font-semibold leading-[1.4] text-gray-70"
+                id="station-menu-title"
+              >
+                역 선택
+              </h2>
               <button
                 className="size-[23px] border-0 bg-transparent p-0"
                 type="button"
@@ -273,7 +319,6 @@ export default function LineCoursesPage() {
           </section>
         </div>
       )}
-
     </main>
   );
 }

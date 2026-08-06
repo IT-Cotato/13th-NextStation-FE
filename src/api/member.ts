@@ -153,9 +153,7 @@ export async function deleteLikedCourses(courseIds: number[]): Promise<void> {
   }
 }
 
-export async function deleteAllLikedCourses(
-  exceptCourseIds: number[],
-): Promise<void> {
+export async function deleteAllLikedCourses(): Promise<void> {
   const accessToken = getAccessToken();
 
   if (!accessToken) {
@@ -168,9 +166,7 @@ export async function deleteAllLikedCourses(
       method: "DELETE",
       headers: {
         Authorization: `Bearer ${accessToken}`,
-        "Content-Type": "application/json",
       },
-      body: JSON.stringify({ exceptCourseIds }),
     },
   );
 

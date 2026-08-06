@@ -11,7 +11,7 @@ import {
 import type { SubwayLine } from "@/types/subway";
 import ConceptTourCard from "./components/ConceptTourCard";
 import ExploreCourseItem from "./components/ExploreCourseItem";
-import ExploreSearchForm from "./components/ExploreSearchForm";
+import ExploreSearchBar from "./components/ExploreSearchBar";
 import useSafeBack from "./hooks/useSafeBack";
 import { conceptTours as conceptTourDesigns } from "./data/conceptTours";
 
@@ -29,7 +29,9 @@ export default function SearchResultsPage() {
     if (!keyword) return;
 
     if (isConceptSearch) {
-      void getConceptTours().then(setTours).catch(() => setTours([]));
+      void getConceptTours()
+        .then(setTours)
+        .catch(() => setTours([]));
       return;
     }
 
@@ -60,14 +62,17 @@ export default function SearchResultsPage() {
         >
           <BackIcon className="size-6" aria-hidden="true" />
         </button>
-        <ExploreSearchForm
+        <ExploreSearchBar
           key={query}
-          className="flex min-w-0 flex-1"
-          inputClassName="h-11 w-full rounded-lg border border-gray-40 bg-gray-20 px-4 py-3"
+          className="flex h-11 min-w-0 flex-1 items-center gap-2 rounded-lg border border-gray-40 bg-gray-20 px-3 focus-within:border-primary-50 focus-within:bg-white"
+          inputClassName="min-w-0 flex-1 border-0 bg-transparent text-body-01 text-gray-90 outline-none"
           onSubmit={(value) =>
             setSearchParams(
               value
-                ? { q: value, ...(isConceptSearch ? { source: "concept" } : {}) }
+                ? {
+                    q: value,
+                    ...(isConceptSearch ? { source: "concept" } : {}),
+                  }
                 : {},
             )
           }
@@ -79,7 +84,8 @@ export default function SearchResultsPage() {
         isConceptSearch ? (
           <section className="grid grid-cols-2 gap-3 px-[15px]">
             {conceptResults.map((tour, index) => {
-              const design = conceptTourDesigns[index % conceptTourDesigns.length];
+              const design =
+                conceptTourDesigns[index % conceptTourDesigns.length];
 
               return (
                 <ConceptTourCard
@@ -110,6 +116,7 @@ export default function SearchResultsPage() {
                 likeCount={course.likeCount}
                 isLiked={course.isLiked}
                 imageUrl={course.imageUrl}
+                onClick={() => navigate(`/journals/${course.journalId}`)}
               />
             ))}
           </section>

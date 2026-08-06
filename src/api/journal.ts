@@ -38,6 +38,34 @@ export interface JournalWriteInfo {
   places: JournalWriteInfoPlace[];
 }
 
+export interface JournalDetailPlace {
+  orderNum: number;
+  placeId: number;
+  placeName: string;
+  review: string | null;
+  imageUrl: string | null;
+}
+
+export interface JournalDetail {
+  writerName: string;
+  writerProfileImageUrl: string | null;
+  traveledAt: string;
+  line: {
+    id: number;
+    name: string;
+    code: string;
+  };
+  stationName: string;
+  courseName: string;
+  tags: string[];
+  travelDuration: TravelDuration;
+  viewCount: number;
+  likeCount: number;
+  imageUrls: string[] | null;
+  overallReview: string;
+  visitedPlaces: JournalDetailPlace[];
+}
+
 export async function createJournal(
   body: CreateJournalRequest,
 ): Promise<CreateJournalResponse> {
@@ -94,4 +122,28 @@ export async function getJournalWriteInfo(
   const json = await response.json();
 
   return json.data;
+}
+
+export async function getJournalDetail(
+  journalId: number,
+): Promise<JournalDetail> {
+  const accessToken = getAccessToken();
+
+  if (!accessToken) {
+    throw new Error("로그인이 필요합니다.");
+  }
+
+  const response = await fetch(`${API_BASE_URL}/api/v1/journals/${journalId}`, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+
+  if (!response.ok) {
+    const errorJson = await response.json().catch(() => null);
+    throw new Error(errorJson?.message ?? "여행일지를 불러오지 못했습니다.");
+  }
+
+  const json = await response.json();
+  return json.data as JournalDetail;
 }

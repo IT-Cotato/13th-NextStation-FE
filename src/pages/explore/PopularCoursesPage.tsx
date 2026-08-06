@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
-import {
-  getPopularExploreCourses,
-  type ExploreCourse,
-} from "@/api/explore";
+import { useNavigate } from "react-router-dom";
+import { getPopularExploreCourses, type ExploreCourse } from "@/api/explore";
 import Header from "@/components/Header";
 import type { SubwayLine } from "@/types/subway";
 import ExploreCourseItem from "./components/ExploreCourseItem";
@@ -10,6 +8,7 @@ import useSafeBack from "./hooks/useSafeBack";
 
 export default function PopularCoursesPage() {
   const goBack = useSafeBack();
+  const navigate = useNavigate();
   const [courses, setCourses] = useState<ExploreCourse[]>([]);
 
   useEffect(() => {
@@ -49,6 +48,7 @@ export default function PopularCoursesPage() {
             likeCount={course.likeCount}
             isLiked={course.isLiked}
             imageUrl={course.imageUrl}
+            onClick={() => navigate(`/journals/${course.journalId}`)}
           />
         ))}
       </section>

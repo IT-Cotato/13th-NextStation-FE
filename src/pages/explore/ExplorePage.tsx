@@ -1,13 +1,16 @@
 import { useEffect, useState } from "react";
 import Heart from "@/assets/heart.svg?react";
-import SearchIcon from "@/assets/search.svg?react";
 import { useNavigate } from "react-router-dom";
 import BottomNav from "@/components/BottomNav";
 import ExploreCourseCard from "./components/ExploreCourseCard";
 import ExploreCourseItem from "./components/ExploreCourseItem";
 import { featuredConceptTours } from "./data/conceptTours";
-import ExploreSearchForm from "./components/ExploreSearchForm";
-import { getExploreCourses, getExploreMain, type ExploreMainResponse } from "@/api/explore";
+import ExploreSearchBar from "./components/ExploreSearchBar";
+import {
+  getExploreCourses,
+  getExploreMain,
+  type ExploreMainResponse,
+} from "@/api/explore";
 import type { SubwayLine } from "@/types/subway";
 
 const defaultLines = Array.from({ length: 9 }, (_, index) => ({
@@ -34,16 +37,22 @@ export default function ExplorePage() {
   const displayedLines = data?.lines.length ? data.lines : defaultLines;
 
   useEffect(() => {
-    void getExploreMain().then((response) => {
-      setData(response);
-      if (response.selectedLineId) setLine(response.selectedLineId);
-    }).catch(() => setData(null));
+    void getExploreMain()
+      .then((response) => {
+        setData(response);
+        if (response.selectedLineId) setLine(response.selectedLineId);
+      })
+      .catch(() => setData(null));
   }, []);
 
   return (
     <main className="min-h-dvh overflow-x-hidden bg-gray-10 pb-[130px] pt-[calc(var(--safe-top)+12px)] text-gray-100">
       <header className="flex h-[123px] items-start justify-between px-[15px] pb-2.5 pt-[45px]">
-        <h1 className="m-0 text-title-01 font-semibold leading-[1.4] tracking-[-0.5px]">오늘은 어떤 환승여행을<br />둘러볼까요?</h1>
+        <h1 className="m-0 text-title-01 font-semibold leading-[1.4] tracking-[-0.5px]">
+          오늘은 어떤 환승여행을
+          <br />
+          둘러볼까요?
+        </h1>
         <button
           type="button"
           className="size-6 border-0 bg-transparent p-0"
@@ -54,10 +63,9 @@ export default function ExplorePage() {
         </button>
       </header>
 
-      <ExploreSearchForm
+      <ExploreSearchBar
         className="mx-[15px] mb-4 mt-[9px] flex h-12 items-center gap-2 rounded-lg border border-gray-40 bg-gray-20 p-3 text-gray-70 focus-within:border-primary-50 focus-within:bg-white"
         inputClassName="w-full border-0 bg-transparent text-body-01 text-gray-90 outline-none"
-        icon={<SearchIcon className="size-5 shrink-0" aria-hidden="true" />}
         onSubmit={(keyword) => {
           if (keyword) {
             navigate(`/explore/search?q=${encodeURIComponent(keyword)}`);
@@ -93,7 +101,12 @@ export default function ExplorePage() {
           }}
         >
           {(data?.popularCourses ?? []).map((course, index) => (
-            <ExploreCourseCard key={course.courseId} rank={index + 1} course={course} />
+            <ExploreCourseCard
+              key={course.courseId}
+              rank={index + 1}
+              course={course}
+              onClick={() => navigate(`/journals/${course.journalId}`)}
+            />
           ))}
         </div>
       </section>
@@ -113,21 +126,42 @@ export default function ExplorePage() {
         </div>
         <div className="flex flex-col gap-2 px-[15px] pb-6 pt-2">
           {displayedConceptTours.map(({ tour, design }) => {
-            return <button
-              className="flex h-20 w-full items-center justify-between overflow-hidden rounded-lg border-0 bg-gray-20 p-5 text-left outline-none focus-visible:ring-2 focus-visible:ring-primary-50"
-              key={tour.conceptTourId}
-              onClick={() => navigate(`/explore/concepts/${tour.conceptTourId}`)}
-            >
-              <span className="flex min-w-0 flex-col gap-1"><span className="text-subtitle font-semibold leading-[1.4]">{tour.name}</span><small className="text-body-02 text-gray-70">{tour.description}</small></span>
-              <img className="max-h-20 shrink-0 object-contain" src={design.featuredArtwork} style={{ width: design.featuredStyle.width, height: design.featuredStyle.height }} alt="" />
-            </button>
+            return (
+              <button
+                className="flex h-20 w-full items-center justify-between overflow-hidden rounded-lg border-0 bg-gray-20 p-5 text-left outline-none focus-visible:ring-2 focus-visible:ring-primary-50"
+                key={tour.conceptTourId}
+                onClick={() =>
+                  navigate(`/explore/concepts/${tour.conceptTourId}`)
+                }
+              >
+                <span className="flex min-w-0 flex-col gap-1">
+                  <span className="text-subtitle font-semibold leading-[1.4]">
+                    {tour.name}
+                  </span>
+                  <small className="text-body-02 text-gray-70">
+                    {tour.description}
+                  </small>
+                </span>
+                <img
+                  className="max-h-20 shrink-0 object-contain"
+                  src={design.featuredArtwork}
+                  style={{
+                    width: design.featuredStyle.width,
+                    height: design.featuredStyle.height,
+                  }}
+                  alt=""
+                />
+              </button>
+            );
           })}
         </div>
       </section>
 
       <section>
         <div className="flex h-[49px] items-center justify-between px-[15px] py-3">
-          <h2 className="m-0 text-title-02 font-semibold leading-[1.4] tracking-[-0.45px]">노선 따라 둘러보기</h2>
+          <h2 className="m-0 text-title-02 font-semibold leading-[1.4] tracking-[-0.45px]">
+            노선 따라 둘러보기
+          </h2>
           <button
             className="border-0 bg-transparent p-0 text-body-02 font-semibold text-gray-60"
             type="button"
@@ -157,8 +191,13 @@ export default function ExplorePage() {
               className={`shrink-0 rounded-lg border px-4 py-[7px] text-body-01 disabled:opacity-40 ${line === item.id ? "border-primary-50 bg-primary-50 font-semibold text-gray-10" : "border-gray-50 bg-transparent text-gray-90"}`}
               onClick={() => {
                 setLine(item.id);
-                void getExploreCourses({ lineId: item.id, size: 3 }).then((response) =>
-                  setData((current) => current ? { ...current, lineCourses: response.courses } : current),
+                void getExploreCourses({ lineId: item.id, size: 3 }).then(
+                  (response) =>
+                    setData((current) =>
+                      current
+                        ? { ...current, lineCourses: response.courses }
+                        : current,
+                    ),
                 );
               }}
             >
@@ -178,6 +217,7 @@ export default function ExplorePage() {
               likeCount={course.likeCount}
               isLiked={course.isLiked}
               imageUrl={course.imageUrl}
+              onClick={() => navigate(`/journals/${course.journalId}`)}
             />
           ))}
         </div>

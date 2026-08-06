@@ -43,11 +43,22 @@ const VerifyPage = lazy(() => import("@/pages/course/VerifyPage"));
 
 // explore pages
 const ExplorePage = lazy(() => import("@/pages/explore/ExplorePage"));
-const PopularCoursesPage = lazy(() => import("@/pages/explore/PopularCoursesPage"));
+const PopularCoursesPage = lazy(
+  () => import("@/pages/explore/PopularCoursesPage"),
+);
 const ConceptToursPage = lazy(() => import("@/pages/explore/ConceptToursPage"));
-const ConceptDetailPage = lazy(() => import("@/pages/explore/ConceptDetailPage"));
-const SearchResultsPage = lazy(() => import("@/pages/explore/SearchResultsPage"));
+const ConceptDetailPage = lazy(
+  () => import("@/pages/explore/ConceptDetailPage"),
+);
+const SearchResultsPage = lazy(
+  () => import("@/pages/explore/SearchResultsPage"),
+);
 const LineCoursesPage = lazy(() => import("@/pages/explore/LineCoursesPage"));
+
+// journal pages
+const JournalDetailPage = lazy(
+  () => import("@/pages/journal/JournalDetailPage"),
+);
 
 // place pages
 const DetailPage = lazy(() => import("./pages/place/DetailPage"));
@@ -180,6 +191,12 @@ function App() {
               />
               <Route path="/explore/search" element={<SearchResultsPage />} />
               <Route path="/explore/lines" element={<LineCoursesPage />} />
+
+              {/* journal */}
+              <Route
+                path="/journals/:journalId"
+                element={<JournalDetailPage />}
+              />
 
               {/* place */}
               <Route path="/place/:placeId" element={<DetailPage />} />
