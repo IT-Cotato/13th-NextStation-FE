@@ -93,6 +93,8 @@ export default function VerifyPage() {
   const [searchParams] = useSearchParams(); // 어떤 페이지로부터 진입했는지를 알기 위함
   const from = searchParams.get("from"); // draw (랜덤 뽑기) | recommend (맞춤 추천)
   const isLoggedIn = Boolean(getAccessToken());
+  const isRandomDraft = from === "draw" && course?.courseId === null;
+  const isRecommendDraft = from === "recommend" && course?.courseId === null;
 
   const [loading, error] = useKakaoLoader({
     appkey: import.meta.env.VITE_KAKAO_API,
@@ -162,7 +164,7 @@ export default function VerifyPage() {
       return;
     }
 
-    if (isSaving) return;
+    if (isSaving || isRerolling) return;
 
     setIsSaving(true);
     const savedCourseId = await handleSave();
@@ -184,7 +186,7 @@ export default function VerifyPage() {
       return;
     }
 
-    if (isSaving) return;
+    if (isSaving || isRerolling) return;
 
     setIsSaving(true);
     const savedCourseId = await handleSave();
@@ -196,7 +198,7 @@ export default function VerifyPage() {
   };
 
   const handleRerollCourse = async () => {
-    if (from !== "draw" || isRerolling || !course) return;
+    if (!isRandomDraft || isSaving || isRerolling || !course) return;
 
     try {
       setIsRerolling(true);
@@ -259,6 +261,8 @@ export default function VerifyPage() {
   };
 
   const handleReorder = (newPlaces: Place[]) => {
+    if (isRerolling) return;
+
     setPlaces(newPlaces);
     setHasUnsavedChanges(true);
   };
@@ -296,7 +300,11 @@ export default function VerifyPage() {
       {/* 지도 */}
       <section className="flex justify-center">
         <div className="flex flex-col gap-2.5 w-[360px]">
-          <NameEditInput value={courseName} onChange={handleCourseNameChange} />
+          <NameEditInput
+            value={courseName}
+            onChange={handleCourseNameChange}
+            disabled={isRerolling}
+          />
 
           <div className="flex flex-col border h-[357px] border-gray-40 bg-white rounded-lg overflow-hidden">
             <div className="flex items-center justify-between px-4 py-4">
@@ -352,10 +360,13 @@ export default function VerifyPage() {
             <Reorder.Item
               key={place.placeId}
               value={place}
+              drag={!isRerolling}
               dragConstraints={courseListRef}
               dragElastic={0.05}
               className="flex items-center gap-[13px]"
-              onPointerDown={() => setPressedId(place.placeId)}
+              onPointerDown={() =>
+                !isRerolling && setPressedId(place.placeId)
+              }
               onPointerUp={() => setPressedId(null)}
               onPointerLeave={() => setPressedId(null)}
             >
@@ -373,11 +384,11 @@ export default function VerifyPage() {
 
       {/* 하단 버튼 */}
       <section className="flex justify-center">
-        {from === "draw" ? ( // 랜덤 뽑기로부터 진입
+        {isRandomDraft ? ( // 랜덤 뽑기로부터 진입한 미저장 draft
           <div className="flex w-[360px] justify-between">
             <Button
               direction="left"
-              disabled={isRerolling}
+              disabled={isSaving || isRerolling}
               onClick={handleRerollCourse}
             >
               다시 뽑기
@@ -390,9 +401,9 @@ export default function VerifyPage() {
               저장하기
             </Button>
           </div>
-        ) : from === "recommend" ? ( // 맞춤 추천으로부터 진입
+        ) : isRecommendDraft ? ( // 맞춤 추천으로부터 진입한 미저장 draft
           <div className="flex w-[360px]">
-            <CTAButton disabled={isSaving} onClick={handleSaveAndGo}>
+            <CTAButton disabled={isSaving || isRerolling} onClick={handleSaveAndGo}>
               코스 저장하기
             </CTAButton>
           </div>
