@@ -1,4 +1,4 @@
-﻿import { Component, lazy, Suspense, type ReactNode } from "react";
+import { Component, lazy, Suspense, type ReactNode } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { LogDraftProvider } from "@/pages/course/contexts/LogDraftContext";
 import "react-toastify/dist/ReactToastify.css";
@@ -54,8 +54,6 @@ const SearchResultsPage = lazy(
   () => import("@/pages/explore/SearchResultsPage"),
 );
 const LineCoursesPage = lazy(() => import("@/pages/explore/LineCoursesPage"));
-
-const LogDetailPage = lazy(() => import("@/pages/course/LogDetailPage"));
 
 // place pages
 const DetailPage = lazy(() => import("./pages/place/DetailPage"));
@@ -188,11 +186,6 @@ function App() {
               />
               <Route path="/explore/search" element={<SearchResultsPage />} />
               <Route path="/explore/lines" element={<LineCoursesPage />} />
-
-              <Route
-                path="/course/logs/:journalId"
-                element={<LogDetailPage />}
-              />
 
               {/* place */}
               <Route path="/place/:placeId" element={<DetailPage />} />

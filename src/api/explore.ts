@@ -2,10 +2,12 @@ import { getAccessToken } from "./auth";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-export interface ExploreLine {
+export interface ExploreCourseLine {
   id: number;
   name: string;
   code: string;
+}
+export interface ExploreLine extends ExploreCourseLine {
   hasCourses: boolean;
 }
 export interface ExploreStation {
@@ -19,7 +21,7 @@ export interface ExploreCourse {
   name: string;
   stationId: number;
   stationName: string;
-  line: ExploreLine | null;
+  line: ExploreCourseLine | null;
   tags: string[];
   likeCount: number;
   isLiked: boolean;
@@ -46,11 +48,16 @@ export interface ExploreCourseListResponse {
 }
 export type ExploreSort = "LATEST" | "POPULAR";
 
+export function getExploreCourseDetailPath(course: ExploreCourse): string {
+  return `/course/${course.journalId}`;
+}
+
 async function request<T>(path: string): Promise<T> {
   const accessToken = getAccessToken();
-  if (!accessToken) throw new Error("로그인이 필요합니다.");
   const response = await fetch(`${API_BASE_URL}${path}`, {
-    headers: { Authorization: `Bearer ${accessToken}` },
+    headers: accessToken
+      ? { Authorization: `Bearer ${accessToken}` }
+      : undefined,
   });
   if (!response.ok) throw new Error("둘러보기 정보를 불러오지 못했습니다.");
   const json = await response.json();

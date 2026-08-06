@@ -3,8 +3,7 @@ import CourseCountIcon from "@/assets/explore/course-count.svg?react";
 
 interface ConceptTourCardProps {
   Artwork: ComponentType<SVGProps<SVGSVGElement>>;
-  artworkHeight: number;
-  artworkWidth: number;
+  artworkClassName: string;
   courseCount: number;
   description: string;
   name: string;
@@ -13,8 +12,7 @@ interface ConceptTourCardProps {
 
 export default function ConceptTourCard({
   Artwork,
-  artworkHeight,
-  artworkWidth,
+  artworkClassName,
   courseCount,
   description,
   name,
@@ -28,10 +26,8 @@ export default function ConceptTourCard({
     >
       <span className="flex h-[74px] w-full shrink-0 justify-end">
         <Artwork
-          className="-mr-3 -mt-2 shrink-0 object-contain"
+          className={`-mr-3 -mt-2 shrink-0 object-contain ${artworkClassName}`}
           aria-hidden="true"
-          width={artworkWidth}
-          height={artworkHeight}
         />
       </span>
       <span className="flex min-h-0 flex-1 flex-col items-start gap-2">
@@ -41,7 +37,7 @@ export default function ConceptTourCard({
         <p className="whitespace-pre-line text-body-01 leading-[1.4] tracking-[-0.025em] text-gray-70 max-[360px]:text-body-02">
           {description}
         </p>
-        <span className="flex items-center gap-2 text-caption leading-none text-gray-60">
+        <span className="mt-auto flex items-center gap-2 text-caption leading-none text-gray-60">
           <CourseCountIcon
             className="size-[18px] shrink-0"
             aria-hidden="true"

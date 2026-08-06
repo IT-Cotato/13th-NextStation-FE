@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { getAccessToken } from "@/api/auth";
 import {
   likeExploreCourse,
   unlikeExploreCourse,
@@ -8,6 +9,8 @@ import Heart from "@/assets/heart.svg?react";
 import coursePhoto from "@/assets/explore/course-photo.svg";
 import HeartFilled from "@/assets/explore/heart-filled.svg?react";
 import CourseRankBadge from "./CourseRankBadge";
+import ExploreLineBadge from "./ExploreLineBadge";
+import LeadToLoginModal from "@/components/LeadToLoginModal";
 
 interface ExploreCourseCardProps {
   course: ExploreCourse;
@@ -22,6 +25,7 @@ export default function ExploreCourseCard({
 }: ExploreCourseCardProps) {
   const [liked, setLiked] = useState(course.isLiked);
   const [isLikePending, setIsLikePending] = useState(false);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const originalLiked = course.isLiked;
   const likeCount =
     course.likeCount + (liked === originalLiked ? 0 : liked ? 1 : -1);
@@ -29,6 +33,10 @@ export default function ExploreCourseCard({
 
   const handleLike = async () => {
     if (isLikePending) return;
+    if (!getAccessToken()) {
+      setIsLoginModalOpen(true);
+      return;
+    }
 
     const nextLiked = !liked;
     setLiked(nextLiked);
@@ -47,25 +55,25 @@ export default function ExploreCourseCard({
   };
 
   return (
-    <article
-      className="flex h-[200px] w-36 shrink-0 flex-col justify-between overflow-hidden rounded-lg bg-cover bg-center px-4 pb-3 pt-[13px] shadow-[0_0_20px_rgb(118_118_118/20%)]"
-      style={{ backgroundImage }}
-      onClick={onClick}
-      onKeyDown={(event) => {
-        if (onClick && (event.key === "Enter" || event.key === " ")) {
-          event.preventDefault();
-          onClick();
-        }
-      }}
-      role={onClick ? "link" : undefined}
-      tabIndex={onClick ? 0 : undefined}
-    >
+    <>
+      <article
+        className="flex h-[200px] w-36 shrink-0 flex-col justify-between overflow-hidden rounded-lg bg-cover bg-center px-4 pb-3 pt-[13px] shadow-[0_0_20px_rgb(118_118_118/20%)]"
+        style={{ backgroundImage }}
+        onClick={onClick}
+        onKeyDown={(event) => {
+          if (event.target !== event.currentTarget) return;
+          if (onClick && (event.key === "Enter" || event.key === " ")) {
+            event.preventDefault();
+            onClick();
+          }
+        }}
+        role={onClick ? "link" : undefined}
+        tabIndex={onClick ? 0 : undefined}
+      >
       <CourseRankBadge className="self-end" rank={rank} />
       <div className="flex flex-col gap-2">
         <div className="inline-flex items-center gap-1 whitespace-nowrap text-body-02 text-gray-100">
-          <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-subway-2-dark px-1.5 text-body-01 font-semibold text-subway-2-light">
-            {course.line?.id}
-          </span>
+          {course.line && <ExploreLineBadge line={course.line} />}
           {course.stationName}
         </div>
         <p className="text-subtitle font-semibold leading-[1.4] tracking-[-0.025em] text-gray-100">
@@ -90,6 +98,13 @@ export default function ExploreCourseCard({
           {likeCount}
         </button>
       </div>
-    </article>
+      </article>
+      {isLoginModalOpen && (
+        <LeadToLoginModal
+          message={"좋아요를 이용하려면\n로그인이 필요해요!"}
+          onClose={() => setIsLoginModalOpen(false)}
+        />
+      )}
+    </>
   );
 }

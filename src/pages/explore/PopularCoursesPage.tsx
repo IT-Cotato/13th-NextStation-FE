@@ -1,8 +1,11 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getPopularExploreCourses, type ExploreCourse } from "@/api/explore";
+import {
+  getExploreCourseDetailPath,
+  getPopularExploreCourses,
+  type ExploreCourse,
+} from "@/api/explore";
 import Header from "@/components/Header";
-import type { SubwayLine } from "@/types/subway";
 import ExploreCourseItem from "./components/ExploreCourseItem";
 
 export default function PopularCoursesPage() {
@@ -25,7 +28,7 @@ export default function PopularCoursesPage() {
           사람들이 많이 찾는 코스
         </h1>
         <p className="mt-1 text-body-02 tracking-[-0.025em] text-gray-70">
-          사람들이 저장도 많이 하고 가장 많이 돌아본 코스예요
+          사람들이 나중에 가려고 가장 많이 담아둔 코스예요
         </p>
       </div>
 
@@ -35,14 +38,14 @@ export default function PopularCoursesPage() {
             key={course.courseId}
             courseId={course.courseId}
             rank={index + 1}
-            line={course.line?.id as SubwayLine | undefined}
+            line={course.line}
             stationName={course.stationName}
             name={course.name}
             tags={course.tags}
             likeCount={course.likeCount}
             isLiked={course.isLiked}
             imageUrl={course.imageUrl}
-            onClick={() => navigate(`/course/logs/${course.journalId}`)}
+            onClick={() => navigate(getExploreCourseDetailPath(course))}
           />
         ))}
       </section>

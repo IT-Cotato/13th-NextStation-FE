@@ -17,9 +17,9 @@ export default function ExploreDropdown<T extends string>({
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <div className="z-10 flex flex-col items-end gap-3">
+    <div className="z-10 flex flex-col items-end">
       <button
-        className="flex h-9 min-w-24 items-end justify-between gap-3 rounded-lg border border-white bg-white/50 px-5 py-2 text-body-01 font-semibold text-gray-70 backdrop-blur-[10px]"
+        className="flex h-9 w-24 items-end justify-between gap-3 rounded-lg border border-white bg-white/50 px-5 py-2 text-body-01 font-semibold text-gray-70 backdrop-blur-[10px]"
         type="button"
         aria-label={ariaLabel}
         aria-haspopup="menu"
@@ -33,25 +33,27 @@ export default function ExploreDropdown<T extends string>({
         />
       </button>
       {isOpen && (
-        <div
-          className="-mb-[104px] flex w-24 flex-col items-start gap-3 rounded-lg bg-white/50 px-5 py-4 shadow-[0_0_28px_rgb(118_118_118/25%)] backdrop-blur-[10px] outline outline-1 outline-offset-[-1px] outline-white"
-          role="menu"
-        >
-          {options.map((option) => (
-            <button
-              type="button"
-              role="menuitemradio"
-              aria-checked={value === option}
-              className="w-full border-0 bg-transparent p-0 text-left text-body-01 font-semibold leading-[1.4] text-gray-70"
-              key={option}
-              onClick={() => {
-                onChange(option);
-                setIsOpen(false);
-              }}
-            >
-              {option}
-            </button>
-          ))}
+        <div className="z-10 h-0 w-24 overflow-visible">
+          <div
+            className="mt-3 flex w-24 flex-col items-start gap-3 rounded-lg bg-white/50 px-5 py-4 shadow-[0_0_28px_rgb(118_118_118/25%)] backdrop-blur-[10px] outline outline-1 outline-offset-[-1px] outline-white"
+            role="menu"
+          >
+            {options.map((option) => (
+              <button
+                type="button"
+                role="menuitemradio"
+                aria-checked={value === option}
+                className="w-full border-0 bg-transparent p-0 text-left text-body-01 font-semibold leading-[1.4] text-gray-70"
+                key={option}
+                onClick={() => {
+                  onChange(option);
+                  setIsOpen(false);
+                }}
+              >
+                {option}
+              </button>
+            ))}
+          </div>
         </div>
       )}
     </div>

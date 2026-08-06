@@ -4,11 +4,11 @@ import ArrowNext from "@/assets/arrow-next(gray).svg?react";
 import Heart from "@/assets/heart.svg?react";
 import {
   getExploreCourses,
+  getExploreCourseDetailPath,
   getExploreMain,
   type ExploreMainResponse,
 } from "@/api/explore";
 import BottomNav from "@/components/BottomNav";
-import type { SubwayLine } from "@/types/subway";
 import ExploreCourseCard from "./components/ExploreCourseCard";
 import ExploreCourseItem from "./components/ExploreCourseItem";
 import ExploreLineTabs from "./components/ExploreLineTabs";
@@ -21,10 +21,12 @@ export default function ExplorePage() {
   const [line, setLine] = useState(1);
   const [query, setQuery] = useState("");
   const [data, setData] = useState<ExploreMainResponse | null>(null);
-  const displayedConceptTours = featuredConceptTours.map((design, index) => ({
+  const displayedConceptTours = featuredConceptTours.map((design) => ({
     design,
-    tour: data?.conceptTours[index] ?? {
-      conceptTourId: index + 1,
+    tour: data?.conceptTours.find(
+      (tour) => tour.conceptTourId === design.conceptTourId,
+    ) ?? {
+      conceptTourId: design.conceptTourId,
       name: design.title,
       description: design.description,
       courseCount: 0,
@@ -103,7 +105,7 @@ export default function ExplorePage() {
               key={course.courseId}
               rank={index + 1}
               course={course}
-              onClick={() => navigate(`/course/logs/${course.journalId}`)}
+              onClick={() => navigate(getExploreCourseDetailPath(course))}
             />
           ))}
         </div>
@@ -140,11 +142,7 @@ export default function ExplorePage() {
                 </p>
               </span>
               <design.Artwork
-                className="max-h-20 shrink-0 object-contain"
-                style={{
-                  width: design.artworkStyle.width,
-                  height: design.artworkStyle.height,
-                }}
+                className={`max-h-20 shrink-0 object-contain ${design.artworkClassName}`}
                 aria-hidden="true"
               />
             </button>
@@ -155,7 +153,7 @@ export default function ExplorePage() {
       <section>
         <div className="flex items-center justify-between px-[15px] py-3">
           <h2 className="text-title-02 font-semibold leading-[1.4] tracking-[-0.025em]">
-            호선 따라 둘러보기
+            노선 따라 둘러보기
           </h2>
           <button
             className="border-0 bg-transparent p-0 text-body-02 font-semibold text-gray-60"
@@ -170,13 +168,19 @@ export default function ExplorePage() {
           selectedLine={line}
           onSelect={(lineId) => {
             setLine(lineId);
-            void getExploreCourses({ lineId, size: 3 }).then((response) =>
-              setData((current) =>
-                current
-                  ? { ...current, lineCourses: response.courses }
-                  : current,
-              ),
-            );
+            void getExploreCourses({ lineId, size: 3 })
+              .then((response) =>
+                setData((current) =>
+                  current
+                    ? { ...current, lineCourses: response.courses }
+                    : current,
+                ),
+              )
+              .catch(() =>
+                setData((current) =>
+                  current ? { ...current, lineCourses: [] } : current,
+                ),
+              );
           }}
         />
         <div className="flex flex-col gap-3 px-[15px] py-2">
@@ -184,14 +188,14 @@ export default function ExplorePage() {
             <ExploreCourseItem
               key={course.courseId}
               courseId={course.courseId}
-              line={course.line?.id as SubwayLine | undefined}
+              line={course.line}
               stationName={course.stationName}
               name={course.name}
               tags={course.tags}
               likeCount={course.likeCount}
               isLiked={course.isLiked}
               imageUrl={course.imageUrl}
-              onClick={() => navigate(`/course/logs/${course.journalId}`)}
+              onClick={() => navigate(getExploreCourseDetailPath(course))}
             />
           ))}
         </div>

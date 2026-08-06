@@ -1,20 +1,45 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useInView } from "react-intersection-observer";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   getConceptTourCourses,
   getConceptTours,
+  getExploreCourseDetailPath,
   type ConceptTour,
   type ExploreCourse,
   type ExploreSort,
 } from "@/api/explore";
 import Header from "@/components/Header";
-import type { SubwayLine } from "@/types/subway";
 import ExploreCourseItem from "./components/ExploreCourseItem";
 import ExploreDropdown from "./components/ExploreDropdown";
-import { conceptTours as conceptTourDesigns } from "./data/conceptTours";
+import {
+  conceptTours as conceptTourDesigns,
+  getConceptTourDesign,
+} from "./data/conceptTours";
 
 type ExploreSortOption = "최신순" | "인기순";
 type DetailStatus = "loading" | "ready" | "not-found" | "error";
+
+function getFallbackConcept(conceptId: number): {
+  designIndex: number;
+  tour: ConceptTour;
+} | null {
+  const designIndex = conceptTourDesigns.findIndex(
+    (design) => design.conceptTourId === conceptId,
+  );
+  const design = conceptTourDesigns[designIndex];
+  if (!design) return null;
+
+  return {
+    designIndex,
+    tour: {
+      conceptTourId: conceptId,
+      name: design.title,
+      description: design.description,
+      courseCount: 0,
+    },
+  };
+}
 
 export default function ConceptDetailPage() {
   const navigate = useNavigate();
@@ -22,12 +47,25 @@ export default function ConceptDetailPage() {
   const numericConceptId = Number(conceptId);
   const isValidConceptId =
     Number.isInteger(numericConceptId) && numericConceptId > 0;
+  const fallbackConcept = getFallbackConcept(numericConceptId);
   const [sort, setSort] = useState<ExploreSortOption>("최신순");
-  const [tour, setTour] = useState<ConceptTour | null>(null);
-  const [designIndex, setDesignIndex] = useState<number | null>(null);
+  const [tour, setTour] = useState<ConceptTour | null>(
+    fallbackConcept?.tour ?? null,
+  );
+  const [designIndex, setDesignIndex] = useState<number | null>(
+    fallbackConcept?.designIndex ?? null,
+  );
   const [courses, setCourses] = useState<ExploreCourse[]>([]);
-  const [status, setStatus] = useState<DetailStatus>("loading");
-  const [loadedConceptId, setLoadedConceptId] = useState<number | null>(null);
+  const [status, setStatus] = useState<DetailStatus>(
+    fallbackConcept ? "ready" : "loading",
+  );
+  const [loadedConceptId, setLoadedConceptId] = useState<number | null>(
+    fallbackConcept ? numericConceptId : null,
+  );
+  const [nextCursor, setNextCursor] = useState<string | null>(null);
+  const [hasNext, setHasNext] = useState(false);
+  const isLoadingMoreRef = useRef(false);
+  const { ref: loadMoreRef, inView } = useInView({ rootMargin: "120px" });
 
   useEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: "auto" });
@@ -40,17 +78,46 @@ export default function ConceptDetailPage() {
           (item) => item.conceptTourId === numericConceptId,
         );
         if (index < 0) {
+          const fallback = getFallbackConcept(numericConceptId);
+          if (fallback) {
+            setTour(fallback.tour);
+            setDesignIndex(fallback.designIndex);
+            setLoadedConceptId(numericConceptId);
+            setStatus("ready");
+            return;
+          }
+          setLoadedConceptId(numericConceptId);
+          setStatus("not-found");
+          return;
+        }
+
+        const matchingDesign = getConceptTourDesign(
+          items[index].conceptTourId,
+        );
+        if (!matchingDesign) {
           setLoadedConceptId(numericConceptId);
           setStatus("not-found");
           return;
         }
 
         setTour(items[index]);
-        setDesignIndex(index % conceptTourDesigns.length);
+        setDesignIndex(
+          conceptTourDesigns.findIndex(
+            (design) => design.conceptTourId === items[index].conceptTourId,
+          ),
+        );
         setLoadedConceptId(numericConceptId);
         setStatus("ready");
       })
       .catch(() => {
+        const fallback = getFallbackConcept(numericConceptId);
+        if (fallback) {
+          setTour(fallback.tour);
+          setDesignIndex(fallback.designIndex);
+          setLoadedConceptId(numericConceptId);
+          setStatus("ready");
+          return;
+        }
         setLoadedConceptId(numericConceptId);
         setStatus("error");
       });
@@ -61,9 +128,46 @@ export default function ConceptDetailPage() {
 
     const apiSort: ExploreSort = sort === "인기순" ? "POPULAR" : "LATEST";
     void getConceptTourCourses(numericConceptId, apiSort)
-      .then((response) => setCourses(response.courses))
-      .catch(() => setCourses([]));
+      .then((response) => {
+        setCourses(response.courses);
+        setNextCursor(response.nextCursor);
+        setHasNext(response.hasNext);
+      })
+      .catch(() => {
+        setCourses([]);
+        setNextCursor(null);
+        setHasNext(false);
+      });
   }, [loadedConceptId, numericConceptId, sort, status]);
+
+  useEffect(() => {
+    if (
+      status !== "ready" ||
+      !inView ||
+      !hasNext ||
+      !nextCursor ||
+      isLoadingMoreRef.current
+    )
+      return;
+
+    const apiSort: ExploreSort = sort === "인기순" ? "POPULAR" : "LATEST";
+    isLoadingMoreRef.current = true;
+    void getConceptTourCourses(
+      numericConceptId,
+      apiSort,
+      nextCursor,
+      50,
+    )
+      .then((response) => {
+        setCourses((current) => [...current, ...response.courses]);
+        setNextCursor(response.nextCursor);
+        setHasNext(response.hasNext);
+      })
+      .catch(() => setHasNext(false))
+      .finally(() => {
+        isLoadingMoreRef.current = false;
+      });
+  }, [hasNext, inView, nextCursor, numericConceptId, sort, status]);
 
   const design =
     designIndex === null ? null : (conceptTourDesigns[designIndex] ?? null);
@@ -98,31 +202,33 @@ export default function ConceptDetailPage() {
 
       {displayedStatus === "ready" && tour && design && (
         <>
-          <header className="flex min-h-[76px] items-center justify-between gap-3 px-[15px]">
-            <div className="min-w-0">
+          <header className="flex h-[122px] items-start justify-between pl-[15px] pr-6">
+            <div className="min-w-0 pt-[26px]">
               <h1 className="mb-1 text-title-01 font-semibold leading-[1.4] tracking-[-0.025em]">
                 {tour.name}
               </h1>
               <p className="whitespace-pre-line text-body-01 leading-[1.4] tracking-[-0.025em] text-gray-70">
-                {tour.description}
+                {design.detailDescription}
               </p>
             </div>
-            <design.Artwork
-              className="max-h-[134px] shrink-0 object-contain"
-              style={{
-                width: design.artworkStyle.width,
-                height: design.artworkStyle.height,
-              }}
-              aria-hidden="true"
-            />
+            <div className="-mt-9 flex size-[134px] w-[140px] shrink-0 items-center justify-center">
+              <design.Artwork
+                className={`shrink-0 object-contain ${design.detailArtworkClassName}`}
+                aria-hidden="true"
+              />
+            </div>
           </header>
 
-          <div className="mx-[15px] mt-3 flex justify-end">
+          <div className="mx-[15px] flex h-9 justify-end">
             <ExploreDropdown
               ariaLabel="코스 정렬"
               options={["최신순", "인기순"] as const}
               value={sort}
-              onChange={setSort}
+              onChange={(nextSort) => {
+                setNextCursor(null);
+                setHasNext(false);
+                setSort(nextSort);
+              }}
             />
           </div>
 
@@ -130,21 +236,29 @@ export default function ConceptDetailPage() {
             className="flex flex-col gap-3 px-[15px] pb-4 pt-4"
             aria-label={`${tour.name} ${sort}`}
           >
+            {courses.length === 0 && (
+              <p className="py-16 text-center text-body-01 text-gray-60">
+                이 컨셉의 코스가 아직 없어요.
+              </p>
+            )}
             {courses.map((course) => (
               <ExploreCourseItem
                 key={course.courseId}
                 courseId={course.courseId}
-                line={course.line?.id as SubwayLine | undefined}
+                line={course.line}
                 stationName={course.stationName}
                 name={course.name}
                 tags={course.tags}
                 likeCount={course.likeCount}
                 isLiked={course.isLiked}
                 imageUrl={course.imageUrl}
-                onClick={() => navigate(`/course/logs/${course.journalId}`)}
+                onClick={() => navigate(getExploreCourseDetailPath(course))}
               />
             ))}
           </section>
+          {hasNext && (
+            <div ref={loadMoreRef} className="h-px" aria-hidden="true" />
+          )}
         </>
       )}
     </main>

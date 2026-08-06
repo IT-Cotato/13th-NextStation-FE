@@ -10,10 +10,12 @@ export default function ConceptToursPage() {
   const navigate = useNavigate();
   const [query, setQuery] = useState("");
   const [conceptTours, setConceptTours] = useState<ConceptTour[]>([]);
-  const displayedTours = conceptTourDesigns.map((design, index) => ({
+  const displayedTours = conceptTourDesigns.map((design) => ({
     design,
-    tour: conceptTours[index] ?? {
-      conceptTourId: index + 1,
+    tour: conceptTours.find(
+      (tour) => tour.conceptTourId === design.conceptTourId,
+    ) ?? {
+      conceptTourId: design.conceptTourId,
       name: design.title,
       description: design.description.replace("\n", " "),
       courseCount: 0,
@@ -63,10 +65,9 @@ export default function ConceptToursPage() {
           <ConceptTourCard
             key={tour.conceptTourId}
             Artwork={design.Artwork}
-            artworkWidth={design.artworkStyle.width}
-            artworkHeight={design.artworkStyle.height}
+            artworkClassName={design.artworkClassName}
             name={tour.name}
-            description={tour.description}
+            description={design.description}
             courseCount={tour.courseCount}
             onClick={() => navigate(`/explore/concepts/${tour.conceptTourId}`)}
           />
