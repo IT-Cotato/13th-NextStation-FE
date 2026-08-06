@@ -6,6 +6,7 @@ export type RecommendationTravelTime =
   | "THIRTY_MINUTES"
   | "ONE_HOUR"
   | "ANY";
+  
 export type RecommendationTravelStyle =
   | "NATURE"
   | "ALLEY_TRIP"
