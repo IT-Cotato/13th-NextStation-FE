@@ -1,4 +1,5 @@
 import { getAccessToken } from "@/api/auth";
+import type { RecommendationTravelStyle } from "@/api/recommendation";
 export interface StationLine {
   id: number;
   name: string;
@@ -46,23 +47,30 @@ export interface StationCourseRecommendation {
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
+export function buildStationCourseRecommendationUrl(
+  baseUrl: string,
+  stationId: number,
+  travelStyles?: RecommendationTravelStyle[],
+) {
+  const params = new URLSearchParams();
+
+  travelStyles?.forEach((travelStyle) => {
+    params.append("travelStyles", travelStyle);
+  });
+
+  const query = params.toString();
+  const path = `${baseUrl}/api/v1/stations/${stationId}/places`;
+
+  return query ? `${path}?${query}` : path;
+}
+
 // 역별 장소 목록 조회 (맞춤 추천용)
 export async function getStationCourseRecommendation(
   stationId: number,
+  travelStyles?: RecommendationTravelStyle[],
 ): Promise<StationCourseRecommendation> {
-  const accessToken = getAccessToken();
-
-  if (!accessToken) {
-    throw new Error("로그인 토큰이 없습니다.");
-  }
-
   const response = await fetch(
-    `${API_BASE_URL}/api/v1/stations/${stationId}/places`,
-    {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    },
+    buildStationCourseRecommendationUrl(API_BASE_URL, stationId, travelStyles),
   );
   if (!response.ok) {
     throw new Error("역별 장소 목록 조회 실패");

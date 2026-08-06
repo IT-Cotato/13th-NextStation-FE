@@ -1,12 +1,17 @@
-import StationTitle from '@/components/StationTitle';
 import { useLocation, useNavigate } from 'react-router-dom';
-import SubwayLineChip from '@/components/SubwayLineChip';
-import Button from '@/components/Button';
-import Header from '@/components/Header';
 import type { RandomDrawResponseData } from '@/api/random';
+import type {
+  CustomRecommendationRequest,
+  CustomRecommendationResponseData,
+} from '@/api/recommendation';
+import Header from '@/components/Header';
+import Button from '@/components/Button';
+import StationTitle from '@/components/StationTitle';
+import SubwayLineChip from '@/components/SubwayLineChip';
 
-type ResultPageState = RandomDrawResponseData & {
+type ResultPageState = (RandomDrawResponseData | CustomRecommendationResponseData) & {
   source?: "random" | "recommend";
+  recommendationRequest?: CustomRecommendationRequest;
 };
 
 function ResultPage() {
@@ -19,10 +24,11 @@ function ResultPage() {
     return null;
   }
 
-  const { station, source = "random" } = result;
+  const { station, source = "random", recommendationRequest } = result;
   const primaryLine = station.lines[0];
   const formattedDescription = station.description.replace(/,\s*/g, ",\n");
   const isRecommendResult = source === "recommend";
+  const randomCourse = "course" in result ? result.course : undefined;
 
   return (
     <main className="relative flex flex-col h-dvh overflow-hidden bg-gray-10 gap-8 pt-[calc(var(--safe-top)+12px)]">
@@ -76,6 +82,7 @@ function ResultPage() {
             navigate('/draw/loading', {
               state: {
                 source,
+                recommendationRequest,
               },
             })
           }
@@ -88,15 +95,15 @@ function ResultPage() {
             isRecommendResult
               ? navigate(`/course/${station.stationId}/create`, {
                   state: {
-                    course: result.course,
                     stationId: station.stationId,
                     stationName: station.stationName,
                     lineId: primaryLine.id,
+                    recommendationRequest,
                   },
                 })
               : navigate('/course/verify?from=draw', {
                   state: {
-                    course: result.course,
+                    course: randomCourse,
                     stationId: station.stationId,
                     stationName: station.stationName,
                     lineId: primaryLine.id,
