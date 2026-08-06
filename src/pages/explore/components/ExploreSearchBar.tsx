@@ -3,9 +3,7 @@ import SearchIcon from "@/assets/search.svg?react";
 
 interface ExploreSearchBarProps {
   ariaLabel?: string;
-  className?: string;
   defaultValue?: string;
-  inputClassName?: string;
   onChange?: ChangeEventHandler<HTMLInputElement>;
   onSubmit: (query: string) => void;
   placeholder?: string;
@@ -14,9 +12,7 @@ interface ExploreSearchBarProps {
 
 export default function ExploreSearchBar({
   ariaLabel = "코스 검색",
-  className,
   defaultValue,
-  inputClassName,
   onChange,
   onSubmit,
   placeholder,
@@ -24,7 +20,7 @@ export default function ExploreSearchBar({
 }: ExploreSearchBarProps) {
   return (
     <form
-      className={className}
+      className="flex h-12 w-full items-center gap-2 rounded-lg border border-gray-40 bg-gray-20 p-3 text-gray-70 focus-within:border-primary-50 focus-within:bg-white"
       role="search"
       onSubmit={(event) => {
         event.preventDefault();
@@ -34,7 +30,7 @@ export default function ExploreSearchBar({
     >
       <SearchIcon className="size-5 shrink-0" aria-hidden="true" />
       <input
-        className={inputClassName}
+        className="min-w-0 flex-1 border-0 bg-transparent text-body-01 text-gray-90 outline-none"
         aria-label={ariaLabel}
         defaultValue={defaultValue}
         name="query"

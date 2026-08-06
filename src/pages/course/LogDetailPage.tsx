@@ -5,14 +5,15 @@ import coursePhoto from "@/assets/explore/course-photo.svg";
 import Header from "@/components/Header";
 import LineBadge from "@/components/LineBadge";
 import { getJournalDetail, type JournalDetail } from "@/api/journal";
+import type { SubwayLine } from "@/types/subway";
 
 const durationLabels = {
-  SHORT: "1~2시간",
+  SHORT: "3~4시간",
   HALF_DAY: "반나절",
   FULL_DAY: "하루",
 } as const;
 
-export default function JournalDetailPage() {
+export default function LogDetailPage() {
   const navigate = useNavigate();
   const { journalId = "" } = useParams();
   const numericJournalId = Number(journalId);
@@ -42,11 +43,7 @@ export default function JournalDetailPage() {
   if (displayedError) {
     return (
       <main className="min-h-dvh bg-gray-10 px-[15px] pt-[57px] text-gray-100">
-        <Header
-          className="h-6 grid-cols-[24px_1fr_24px] p-0"
-          showBack
-          onBackClick={() => navigate(-1)}
-        />
+        <Header showBack />
         <p className="pt-20 text-center text-body-01 text-gray-70">
           {displayedError}
         </p>
@@ -67,11 +64,7 @@ export default function JournalDetailPage() {
   return (
     <main className="min-h-dvh overflow-x-hidden bg-gray-10 pb-10 text-gray-100">
       <header className="flex flex-col gap-6 px-[15px] pt-[57px]">
-        <Header
-          className="h-6 grid-cols-[24px_1fr_24px] p-0"
-          showBack
-          onBackClick={() => navigate(-1)}
-        />
+        <Header showBack />
         <div className="flex items-center gap-3">
           {journal.writerProfileImageUrl ? (
             <img
@@ -86,9 +79,9 @@ export default function JournalDetailPage() {
             />
           )}
           <div className="flex flex-col gap-1">
-            <strong className="text-body-01 font-semibold">
+            <p className="text-body-01 font-semibold tracking-[-0.025em]">
               {journal.writerName}
-            </strong>
+            </p>
             <span className="text-caption text-gray-60">
               {journal.traveledAt} · {durationLabels[journal.travelDuration]}
             </span>
@@ -96,7 +89,7 @@ export default function JournalDetailPage() {
         </div>
         <div className="flex flex-col gap-2">
           <div className="flex items-center gap-1">
-            <LineBadge line={journal.line.id} />
+            <LineBadge line={journal.line.id as SubwayLine} />
             <span className="text-body-02">{journal.stationName}</span>
           </div>
           <h1 className="text-title-01 font-semibold leading-[1.4]">
@@ -161,9 +154,9 @@ export default function JournalDetailPage() {
                 <span className="size-20 shrink-0 rounded-lg bg-primary-20" />
               )}
               <span className="flex min-w-0 flex-1 flex-col gap-2">
-                <strong className="text-body-01 font-semibold">
+                <span className="text-body-01 font-semibold tracking-[-0.025em]">
                   {place.orderNum}. {place.placeName}
-                </strong>
+                </span>
                 {place.review && (
                   <span className="line-clamp-2 text-body-02 text-gray-70">
                     {place.review}

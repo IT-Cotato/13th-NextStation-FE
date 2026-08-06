@@ -1,24 +1,20 @@
 import { useEffect, useState } from "react";
-import Heart from "@/assets/heart.svg?react";
 import { useNavigate } from "react-router-dom";
-import BottomNav from "@/components/BottomNav";
-import ExploreCourseCard from "./components/ExploreCourseCard";
-import ExploreCourseItem from "./components/ExploreCourseItem";
-import { featuredConceptTours } from "./data/conceptTours";
-import ExploreSearchBar from "./components/ExploreSearchBar";
+import ArrowNext from "@/assets/arrow-next(gray).svg?react";
+import Heart from "@/assets/heart.svg?react";
 import {
   getExploreCourses,
   getExploreMain,
   type ExploreMainResponse,
 } from "@/api/explore";
+import BottomNav from "@/components/BottomNav";
 import type { SubwayLine } from "@/types/subway";
-
-const defaultLines = Array.from({ length: 9 }, (_, index) => ({
-  id: index + 1,
-  name: `${index + 1}호선`,
-  code: `LINE_${index + 1}`,
-  hasCourses: false,
-}));
+import ExploreCourseCard from "./components/ExploreCourseCard";
+import ExploreCourseItem from "./components/ExploreCourseItem";
+import ExploreLineTabs from "./components/ExploreLineTabs";
+import ExploreSearchBar from "./components/ExploreSearchBar";
+import { featuredConceptTours } from "./data/conceptTours";
+import { defaultExploreLines } from "./data/exploreLines";
 
 export default function ExplorePage() {
   const navigate = useNavigate();
@@ -34,7 +30,7 @@ export default function ExplorePage() {
       courseCount: 0,
     },
   }));
-  const displayedLines = data?.lines.length ? data.lines : defaultLines;
+  const displayedLines = data?.lines.length ? data.lines : defaultExploreLines;
 
   useEffect(() => {
     void getExploreMain()
@@ -45,13 +41,20 @@ export default function ExplorePage() {
       .catch(() => setData(null));
   }, []);
 
+  const renderMore = (label: string) => (
+    <span className="flex items-center gap-1">
+      {label}
+      <ArrowNext className="size-4" aria-hidden="true" />
+    </span>
+  );
+
   return (
     <main className="min-h-dvh overflow-x-hidden bg-gray-10 pb-[130px] pt-[calc(var(--safe-top)+12px)] text-gray-100">
       <header className="flex h-[123px] items-start justify-between px-[15px] pb-2.5 pt-[45px]">
-        <h1 className="m-0 text-title-01 font-semibold leading-[1.4] tracking-[-0.5px]">
+        <h1 className="text-title-01 font-semibold leading-[1.4] tracking-[-0.025em]">
           오늘은 어떤 환승여행을
           <br />
-          둘러볼까요?
+          떠나볼까요?
         </h1>
         <button
           type="button"
@@ -63,22 +66,22 @@ export default function ExplorePage() {
         </button>
       </header>
 
-      <ExploreSearchBar
-        className="mx-[15px] mb-4 mt-[9px] flex h-12 items-center gap-2 rounded-lg border border-gray-40 bg-gray-20 p-3 text-gray-70 focus-within:border-primary-50 focus-within:bg-white"
-        inputClassName="w-full border-0 bg-transparent text-body-01 text-gray-90 outline-none"
-        onSubmit={(keyword) => {
-          if (keyword) {
-            navigate(`/explore/search?q=${encodeURIComponent(keyword)}`);
-          }
-        }}
-        value={query}
-        onChange={(event) => setQuery(event.target.value)}
-        placeholder="역 이름, 동네, 코스명 검색"
-      />
+      <div className="mx-[15px] mb-4 mt-[9px]">
+        <ExploreSearchBar
+          onSubmit={(keyword) => {
+            if (keyword) {
+              navigate(`/explore/search?q=${encodeURIComponent(keyword)}`);
+            }
+          }}
+          value={query}
+          onChange={(event) => setQuery(event.target.value)}
+          placeholder="역 이름, 동네, 코스명 검색"
+        />
+      </div>
 
       <section>
-        <div className="flex h-[49px] items-center justify-between px-[15px] py-3">
-          <h2 className="m-0 text-title-02 font-semibold leading-[1.4] tracking-[-0.45px]">
+        <div className="flex items-center justify-between px-[15px] py-3">
+          <h2 className="text-title-02 font-semibold leading-[1.4] tracking-[-0.025em]">
             사람들이 많이 찾는 코스
           </h2>
           <button
@@ -86,7 +89,7 @@ export default function ExplorePage() {
             type="button"
             onClick={() => navigate("/explore/popular")}
           >
-            더보기 〉
+            {renderMore("더보기")}
           </button>
         </div>
         <div
@@ -94,26 +97,21 @@ export default function ExplorePage() {
           role="region"
           aria-label="사람들이 많이 찾는 코스 가로 목록"
           tabIndex={0}
-          onWheel={(event) => {
-            if (Math.abs(event.deltaY) > Math.abs(event.deltaX)) {
-              event.currentTarget.scrollLeft += event.deltaY;
-            }
-          }}
         >
           {(data?.popularCourses ?? []).map((course, index) => (
             <ExploreCourseCard
               key={course.courseId}
               rank={index + 1}
               course={course}
-              onClick={() => navigate(`/journals/${course.journalId}`)}
+              onClick={() => navigate(`/course/logs/${course.journalId}`)}
             />
           ))}
         </div>
       </section>
 
       <section>
-        <div className="flex h-[49px] items-center justify-between px-[15px] py-3">
-          <h2 className="m-0 text-title-02 font-semibold leading-[1.4] tracking-[-0.45px]">
+        <div className="flex items-center justify-between px-[15px] py-3">
+          <h2 className="text-title-02 font-semibold leading-[1.4] tracking-[-0.025em]">
             컨셉별 투어
           </h2>
           <button
@@ -121,90 +119,66 @@ export default function ExplorePage() {
             type="button"
             onClick={() => navigate("/explore/concepts")}
           >
-            더보기 〉
+            {renderMore("더보기")}
           </button>
         </div>
         <div className="flex flex-col gap-2 px-[15px] pb-6 pt-2">
-          {displayedConceptTours.map(({ tour, design }) => {
-            return (
-              <button
-                className="flex h-20 w-full items-center justify-between overflow-hidden rounded-lg border-0 bg-gray-20 p-5 text-left outline-none focus-visible:ring-2 focus-visible:ring-primary-50"
-                key={tour.conceptTourId}
-                onClick={() =>
-                  navigate(`/explore/concepts/${tour.conceptTourId}`)
-                }
-              >
-                <span className="flex min-w-0 flex-col gap-1">
-                  <span className="text-subtitle font-semibold leading-[1.4]">
-                    {tour.name}
-                  </span>
-                  <small className="text-body-02 text-gray-70">
-                    {tour.description}
-                  </small>
+          {displayedConceptTours.map(({ tour, design }) => (
+            <button
+              className="flex h-20 w-full items-center justify-between overflow-hidden rounded-lg border-0 bg-gray-20 p-5 text-left outline-none focus-visible:ring-2 focus-visible:ring-primary-50"
+              key={tour.conceptTourId}
+              onClick={() =>
+                navigate(`/explore/concepts/${tour.conceptTourId}`)
+              }
+            >
+              <span className="flex min-w-0 flex-col gap-1">
+                <span className="text-subtitle font-semibold leading-[1.4] tracking-[-0.025em]">
+                  {tour.name}
                 </span>
-                <img
-                  className="max-h-20 shrink-0 object-contain"
-                  src={design.featuredArtwork}
-                  style={{
-                    width: design.featuredStyle.width,
-                    height: design.featuredStyle.height,
-                  }}
-                  alt=""
-                />
-              </button>
-            );
-          })}
+                <p className="text-body-02 tracking-[-0.025em] text-gray-70">
+                  {tour.description}
+                </p>
+              </span>
+              <design.Artwork
+                className="max-h-20 shrink-0 object-contain"
+                style={{
+                  width: design.artworkStyle.width,
+                  height: design.artworkStyle.height,
+                }}
+                aria-hidden="true"
+              />
+            </button>
+          ))}
         </div>
       </section>
 
       <section>
-        <div className="flex h-[49px] items-center justify-between px-[15px] py-3">
-          <h2 className="m-0 text-title-02 font-semibold leading-[1.4] tracking-[-0.45px]">
-            노선 따라 둘러보기
+        <div className="flex items-center justify-between px-[15px] py-3">
+          <h2 className="text-title-02 font-semibold leading-[1.4] tracking-[-0.025em]">
+            호선 따라 둘러보기
           </h2>
           <button
             className="border-0 bg-transparent p-0 text-body-02 font-semibold text-gray-60"
             type="button"
             onClick={() => navigate(`/explore/lines?line=${line}`)}
           >
-            전체보기 〉
+            {renderMore("전체보기")}
           </button>
         </div>
-        <div
-          className="flex flex-nowrap gap-2 overflow-x-auto overflow-y-hidden overscroll-x-contain px-[15px] py-2 [scrollbar-width:none] [touch-action:pan-x] focus:outline-none"
-          role="tablist"
-          aria-label="지하철 노선 선택"
-          tabIndex={0}
-          onWheel={(event) => {
-            if (Math.abs(event.deltaY) > Math.abs(event.deltaX)) {
-              event.currentTarget.scrollLeft += event.deltaY;
-            }
+        <ExploreLineTabs
+          lines={displayedLines}
+          selectedLine={line}
+          onSelect={(lineId) => {
+            setLine(lineId);
+            void getExploreCourses({ lineId, size: 3 }).then((response) =>
+              setData((current) =>
+                current
+                  ? { ...current, lineCourses: response.courses }
+                  : current,
+              ),
+            );
           }}
-        >
-          {displayedLines.map((item) => (
-            <button
-              type="button"
-              role="tab"
-              aria-selected={line === item.id}
-              disabled={!item.hasCourses}
-              key={item.id}
-              className={`shrink-0 rounded-lg border px-4 py-[7px] text-body-01 disabled:opacity-40 ${line === item.id ? "border-primary-50 bg-primary-50 font-semibold text-gray-10" : "border-gray-50 bg-transparent text-gray-90"}`}
-              onClick={() => {
-                setLine(item.id);
-                void getExploreCourses({ lineId: item.id, size: 3 }).then(
-                  (response) =>
-                    setData((current) =>
-                      current
-                        ? { ...current, lineCourses: response.courses }
-                        : current,
-                    ),
-                );
-              }}
-            >
-              {item.name}
-            </button>
-          ))}
-        </div>
+        />
         <div className="flex flex-col gap-3 px-[15px] py-2">
           {(data?.lineCourses ?? []).map((course) => (
             <ExploreCourseItem
@@ -217,7 +191,7 @@ export default function ExplorePage() {
               likeCount={course.likeCount}
               isLiked={course.isLiked}
               imageUrl={course.imageUrl}
-              onClick={() => navigate(`/journals/${course.journalId}`)}
+              onClick={() => navigate(`/course/logs/${course.journalId}`)}
             />
           ))}
         </div>

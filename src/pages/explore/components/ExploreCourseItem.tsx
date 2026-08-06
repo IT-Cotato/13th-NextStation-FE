@@ -83,7 +83,7 @@ export default function ExploreCourseItem({
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-1">
             {line && <LineBadge line={line} />}
-            <span className="whitespace-nowrap text-body-02 leading-[1.4] text-gray-100">
+            <span className="whitespace-nowrap text-body-02 leading-[1.4] tracking-[-0.025em] text-gray-100">
               {stationName}
             </span>
           </div>
@@ -106,7 +106,7 @@ export default function ExploreCourseItem({
             {displayedLikeCount}
           </button>
         </div>
-        <p className="m-0 text-body-01 font-semibold leading-[1.4] text-gray-100">
+        <p className="text-body-01 font-semibold leading-[1.4] tracking-[-0.025em] text-gray-100">
           {name}
         </p>
         <div className="flex gap-1">

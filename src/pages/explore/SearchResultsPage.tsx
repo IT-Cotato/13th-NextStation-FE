@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { exploreAsset } from "@/assets/explore";
 import BackIcon from "@/assets/back.svg?react";
+import SearchEmpty from "@/assets/explore/search-empty.svg?react";
 import {
   getConceptTours,
   getExploreCourses,
@@ -12,11 +12,9 @@ import type { SubwayLine } from "@/types/subway";
 import ConceptTourCard from "./components/ConceptTourCard";
 import ExploreCourseItem from "./components/ExploreCourseItem";
 import ExploreSearchBar from "./components/ExploreSearchBar";
-import useSafeBack from "./hooks/useSafeBack";
 import { conceptTours as conceptTourDesigns } from "./data/conceptTours";
 
 export default function SearchResultsPage() {
-  const goBack = useSafeBack();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const query = searchParams.get("q") ?? "";
@@ -53,36 +51,36 @@ export default function SearchResultsPage() {
 
   return (
     <main className="min-h-dvh bg-gray-10 text-gray-100">
-      <header className="flex h-[115px] items-stretch gap-4 px-[15px] pb-2.5 pt-[57px]">
+      <header className="flex items-center gap-4 px-[15px] pb-2.5 pt-[57px]">
         <button
           type="button"
-          className="w-6 shrink-0 border-0 bg-transparent p-0"
+          className="size-6 shrink-0 border-0 bg-transparent p-0"
           aria-label="이전"
-          onClick={goBack}
+          onClick={() => navigate(-1)}
         >
           <BackIcon className="size-6" aria-hidden="true" />
         </button>
-        <ExploreSearchBar
-          key={query}
-          className="flex h-11 min-w-0 flex-1 items-center gap-2 rounded-lg border border-gray-40 bg-gray-20 px-3 focus-within:border-primary-50 focus-within:bg-white"
-          inputClassName="min-w-0 flex-1 border-0 bg-transparent text-body-01 text-gray-90 outline-none"
-          onSubmit={(value) =>
-            setSearchParams(
-              value
-                ? {
-                    q: value,
-                    ...(isConceptSearch ? { source: "concept" } : {}),
-                  }
-                : {},
-            )
-          }
-          defaultValue={query}
-        />
+        <div className="min-w-0 flex-1">
+          <ExploreSearchBar
+            key={query}
+            onSubmit={(value) =>
+              setSearchParams(
+                value
+                  ? {
+                      q: value,
+                      ...(isConceptSearch ? { source: "concept" } : {}),
+                    }
+                  : {},
+              )
+            }
+            defaultValue={query}
+          />
+        </div>
       </header>
 
       {hasResults ? (
         isConceptSearch ? (
-          <section className="grid grid-cols-2 gap-3 px-[15px]">
+          <section className="grid grid-cols-2 gap-3 px-[15px] pt-4">
             {conceptResults.map((tour, index) => {
               const design =
                 conceptTourDesigns[index % conceptTourDesigns.length];
@@ -90,9 +88,9 @@ export default function SearchResultsPage() {
               return (
                 <ConceptTourCard
                   key={tour.conceptTourId}
-                  artwork={design.artwork}
-                  artworkWidth={design.combinedStyle.width}
-                  artworkHeight={design.combinedStyle.height}
+                  Artwork={design.Artwork}
+                  artworkWidth={design.artworkStyle.width}
+                  artworkHeight={design.artworkStyle.height}
                   name={tour.name}
                   description={tour.description}
                   courseCount={tour.courseCount}
@@ -116,19 +114,15 @@ export default function SearchResultsPage() {
                 likeCount={course.likeCount}
                 isLiked={course.isLiked}
                 imageUrl={course.imageUrl}
-                onClick={() => navigate(`/journals/${course.journalId}`)}
+                onClick={() => navigate(`/course/logs/${course.journalId}`)}
               />
             ))}
           </section>
         )
       ) : (
         <section className="flex flex-col items-center gap-5 pt-[163px]">
-          <img
-            className="h-[200px] w-[222px] object-contain"
-            src={exploreAsset("search-empty.svg")}
-            alt=""
-          />
-          <p className="m-0 w-[222px] text-center text-subtitle leading-[1.4] tracking-[-0.4px] text-gray-80">
+          <SearchEmpty className="h-[200px] w-[222px]" aria-hidden="true" />
+          <p className="text-center text-subtitle leading-[1.4] tracking-[-0.025em] text-gray-80">
             일치하는 검색 결과가 없어요
           </p>
         </section>

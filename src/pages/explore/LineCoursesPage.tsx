@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import ExploreCourseItem from "./components/ExploreCourseItem";
-import useSafeBack from "./hooks/useSafeBack";
 import type { SubwayLine } from "@/types/subway";
 import Header from "@/components/Header";
 import CloseIcon from "@/assets/close.svg?react";
@@ -14,20 +13,14 @@ import {
   type ExploreSort,
   type ExploreStation,
 } from "@/api/explore";
+import ExploreLineTabs from "./components/ExploreLineTabs";
+import { defaultExploreLines } from "./data/exploreLines";
 
 type SortOption = "전체" | "최신순" | "인기순";
 
 const sortOptions: Exclude<SortOption, "전체">[] = ["최신순", "인기순"];
-const defaultLines: ExploreLine[] = Array.from({ length: 9 }, (_, index) => ({
-  id: index + 1,
-  name: `${index + 1}호선`,
-  code: `LINE_${index + 1}`,
-  hasCourses: false,
-}));
-
 export default function LineCoursesPage() {
   const navigate = useNavigate();
-  const goBack = useSafeBack();
   const [searchParams, setSearchParams] = useSearchParams();
   const requestedLine = Number(searchParams.get("line"));
   const line = requestedLine || 1;
@@ -39,7 +32,7 @@ export default function LineCoursesPage() {
   const sortButtonRef = useRef<HTMLButtonElement>(null);
   const sortContainerRef = useRef<HTMLDivElement>(null);
   const stationDialogRef = useRef<HTMLElement>(null);
-  const [lines, setLines] = useState<ExploreLine[]>(defaultLines);
+  const [lines, setLines] = useState<ExploreLine[]>(defaultExploreLines);
   const [stationNames, setStationNames] = useState<ExploreStation[]>([]);
   const [courses, setCourses] = useState<ExploreCourse[]>([]);
 
@@ -139,41 +132,17 @@ export default function LineCoursesPage() {
   return (
     <main className="h-dvh min-h-0 overflow-y-auto bg-gray-10 text-gray-100 tracking-[-0.025em] [scrollbar-width:none]">
       <div className="flex h-[135px] flex-col items-start gap-4 px-[15px] pb-2.5 pt-[57px]">
-        <div className="h-6 w-full">
-          <Header
-            className="grid h-6 w-full grid-cols-[24px_1fr_24px] items-center p-0"
-            showBack
-            onBackClick={goBack}
-          />
-        </div>
-        <h1 className="m-0 text-title-01 font-semibold leading-[1.4] tracking-[-0.5px]">
+        <Header showBack />
+        <h1 className="text-title-01 font-semibold leading-[1.4] tracking-[-0.025em]">
           노선따라 둘러보기
         </h1>
       </div>
 
-      <div
-        className="flex flex-nowrap gap-2 overflow-x-auto overflow-y-hidden overscroll-x-contain px-[15px] py-2 [scrollbar-width:none] [touch-action:pan-x] focus:outline-none"
-        role="group"
-        aria-label="지하철 노선 선택"
-        onWheel={(event) => {
-          if (Math.abs(event.deltaY) > Math.abs(event.deltaX)) {
-            event.currentTarget.scrollLeft += event.deltaY;
-          }
-        }}
-      >
-        {lines.map((item) => (
-          <button
-            type="button"
-            aria-pressed={line === item.id}
-            disabled={!item.hasCourses}
-            className={`shrink-0 rounded-lg border px-4 py-[7px] text-body-01 leading-[1.4] tracking-[-0.35px] disabled:opacity-40 ${line === item.id ? "border-primary-50 bg-primary-50 font-semibold text-gray-10" : "border-gray-50 bg-transparent text-gray-90"}`}
-            onClick={() => handleLineChange(item.id)}
-            key={item.id}
-          >
-            {item.name}
-          </button>
-        ))}
-      </div>
+      <ExploreLineTabs
+        lines={lines}
+        selectedLine={line}
+        onSelect={handleLineChange}
+      />
 
       <div className="flex items-start justify-between px-[15px] py-2">
         <button
@@ -252,7 +221,7 @@ export default function LineCoursesPage() {
             likeCount={course.likeCount}
             isLiked={course.isLiked}
             imageUrl={course.imageUrl}
-            onClick={() => navigate(`/journals/${course.journalId}`)}
+            onClick={() => navigate(`/course/logs/${course.journalId}`)}
           />
         ))}
       </section>
@@ -276,7 +245,7 @@ export default function LineCoursesPage() {
           >
             <div className="flex w-full items-center justify-between pb-3 pt-2">
               <h2
-                className="m-0 text-subtitle font-semibold leading-[1.4] text-gray-70"
+                className="text-subtitle font-semibold leading-[1.4] text-gray-70"
                 id="station-menu-title"
               >
                 역 선택

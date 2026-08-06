@@ -48,7 +48,7 @@ export default function ExploreCourseCard({
 
   return (
     <article
-      className="flex h-[200px] basis-36 shrink-0 flex-col justify-between overflow-hidden rounded-lg bg-cover bg-center px-4 pb-3 pt-[13px] shadow-[0_0_20px_rgb(118_118_118/20%)]"
+      className="flex h-[200px] w-36 shrink-0 flex-col justify-between overflow-hidden rounded-lg bg-cover bg-center px-4 pb-3 pt-[13px] shadow-[0_0_20px_rgb(118_118_118/20%)]"
       style={{ backgroundImage }}
       onClick={onClick}
       onKeyDown={(event) => {
@@ -68,7 +68,7 @@ export default function ExploreCourseCard({
           </span>
           {course.stationName}
         </div>
-        <p className="m-0 text-subtitle font-semibold leading-[1.4] tracking-[-0.025em] text-gray-100">
+        <p className="text-subtitle font-semibold leading-[1.4] tracking-[-0.025em] text-gray-100">
           {course.name}
         </p>
         <button

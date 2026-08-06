@@ -55,10 +55,7 @@ const SearchResultsPage = lazy(
 );
 const LineCoursesPage = lazy(() => import("@/pages/explore/LineCoursesPage"));
 
-// journal pages
-const JournalDetailPage = lazy(
-  () => import("@/pages/journal/JournalDetailPage"),
-);
+const LogDetailPage = lazy(() => import("@/pages/course/LogDetailPage"));
 
 // place pages
 const DetailPage = lazy(() => import("./pages/place/DetailPage"));
@@ -192,10 +189,9 @@ function App() {
               <Route path="/explore/search" element={<SearchResultsPage />} />
               <Route path="/explore/lines" element={<LineCoursesPage />} />
 
-              {/* journal */}
               <Route
-                path="/journals/:journalId"
-                element={<JournalDetailPage />}
+                path="/course/logs/:journalId"
+                element={<LogDetailPage />}
               />
 
               {/* place */}
