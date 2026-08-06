@@ -23,7 +23,10 @@ import {
   type Place,
 } from "@/api/courseDetail";
 import { createCourse } from "@/api/courseRecommendation";
-import type { RandomCourseResponse } from "@/api/random";
+import {
+  rerollRandomCourse,
+  type RandomCourseResponse,
+} from "@/api/random";
 import Button from "@/components/Button";
 import CTAButton from "@/components/CTAButton";
 import share from "@/utils/share";
@@ -151,6 +154,7 @@ export default function VerifyPage() {
   };
 
   const [isSaving, setIsSaving] = useState(false);
+  const [isRerolling, setIsRerolling] = useState(false);
 
   const handleSaveAndGo = async () => {
     if (!isLoggedIn) {
@@ -188,6 +192,33 @@ export default function VerifyPage() {
 
     if (savedCourseId === null) {
       showToast({ message: "코스 저장에 실패했습니다." });
+    }
+  };
+
+  const handleRerollCourse = async () => {
+    if (from !== "draw" || isRerolling || !course) return;
+
+    try {
+      setIsRerolling(true);
+      const rerolledCourse = await rerollRandomCourse(course.stationId);
+      setCourseName(rerolledCourse.name);
+      setPlaces(
+        rerolledCourse.places.map((place, index) => ({
+          placeId: place.placeId,
+          placeName: place.placeName,
+          description: place.description,
+          imageUrl: place.imageUrl,
+          xCoordinate: place.xCoordinate,
+          yCoordinate: place.yCoordinate,
+          orderNum: index + 1,
+        })),
+      );
+      setHasUnsavedChanges(false);
+    } catch (e) {
+      console.error(e);
+      showToast({ message: "코스를 다시 불러오지 못했습니다." });
+    } finally {
+      setIsRerolling(false);
     }
   };
 
@@ -344,12 +375,16 @@ export default function VerifyPage() {
       <section className="flex justify-center">
         {from === "draw" ? ( // 랜덤 뽑기로부터 진입
           <div className="flex w-[360px] justify-between">
-            <Button direction="left" onClick={() => navigate("/draw/loading")}>
+            <Button
+              direction="left"
+              disabled={isRerolling}
+              onClick={handleRerollCourse}
+            >
               다시 뽑기
             </Button>
             <Button
               direction="right"
-              disabled={isSaving}
+              disabled={isSaving || isRerolling}
               onClick={handleSaveAndGo}
             >
               저장하기
