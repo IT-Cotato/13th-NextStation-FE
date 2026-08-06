@@ -1,16 +1,16 @@
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { getAccessToken } from "@/api/auth";
 import {
   getCachedMyProfile,
   getMyProfile,
 } from "@/api/member";
-import Header from "@/components/Header"
+import Header from "@/components/Header";
+import CTAButton from "../../components/CTAButton";
 import BackVector from '@/assets/BackVector.svg?react';
 import StampGongneung from '@/assets/stamp/stamp-gongneung.svg?react';
 import StampMajang from '@/assets/stamp/stamp-majang.svg?react';
 import StampBomun from '@/assets/stamp/stamp-bomun.svg?react';
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import CTAButton from "../../components/CTAButton";
 
 function RecommendPage() {
   const navigate = useNavigate();
