@@ -29,10 +29,8 @@ export default function ConceptToursPage() {
   }, []);
 
   return (
-    <main className="h-dvh min-h-0 overflow-x-hidden overflow-y-auto bg-gray-10 pb-7 text-gray-100 [scrollbar-width:none]">
-      <div className="px-[3px] pt-[45px]">
-        <Header showBack />
-      </div>
+    <main className="h-dvh min-h-0 overflow-x-hidden overflow-y-auto bg-gray-10 pb-7 pt-[45px] text-gray-100 [scrollbar-width:none]">
+      <Header showBack />
       <div className="flex flex-col gap-1 px-[15px] pb-2.5">
         <h1 className="text-title-01 font-semibold leading-[1.4] tracking-[-0.025em]">
           컨셉별 투어
@@ -69,7 +67,11 @@ export default function ConceptToursPage() {
             name={tour.name}
             description={design.description}
             courseCount={tour.courseCount}
-            onClick={() => navigate(`/explore/concepts/${tour.conceptTourId}`)}
+            onClick={() =>
+              navigate(`/explore/concepts/${tour.conceptTourId}`, {
+                state: { conceptTour: tour },
+              })
+            }
           />
         ))}
       </section>

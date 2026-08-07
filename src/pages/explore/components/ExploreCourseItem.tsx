@@ -1,14 +1,12 @@
 import { useState } from "react";
-import { getAccessToken } from "@/api/auth";
 import Heart from "@/assets/heart.svg?react";
 import CoursePhoto from "@/assets/explore/course-photo.svg?react";
 import HeartFilled from "@/assets/explore/heart-filled.svg?react";
+import LineBadge, { type SubwayLine } from "@/components/LineBadge";
 import CourseRankBadge from "./CourseRankBadge";
-import ExploreLineBadge from "./ExploreLineBadge";
 import { likeExploreCourse, unlikeExploreCourse } from "@/api/explore";
 import type { ExploreCourseLine } from "@/api/explore";
 import { formatExploreTag } from "../data/tagLabels";
-import LeadToLoginModal from "@/components/LeadToLoginModal";
 
 interface ExploreCourseItemProps {
   imageUrl?: string | null;
@@ -21,6 +19,10 @@ interface ExploreCourseItemProps {
   rank?: number;
   stationName: string;
   tags?: string[];
+}
+
+function isSubwayLine(lineId: number): lineId is SubwayLine {
+  return Number.isInteger(lineId) && lineId >= 1 && lineId <= 9;
 }
 
 export default function ExploreCourseItem({
@@ -37,16 +39,11 @@ export default function ExploreCourseItem({
 }: ExploreCourseItemProps) {
   const [liked, setLiked] = useState(isLiked);
   const [isLikePending, setIsLikePending] = useState(false);
-  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const displayedLikeCount =
     likeCount + (liked === isLiked ? 0 : liked ? 1 : -1);
 
   const handleLike = async () => {
     if (isLikePending) return;
-    if (!getAccessToken()) {
-      setIsLoginModalOpen(true);
-      return;
-    }
 
     const nextLiked = !liked;
     setLiked(nextLiked);
@@ -65,8 +62,7 @@ export default function ExploreCourseItem({
   };
 
   return (
-    <>
-      <article
+    <article
         className="flex min-h-[120px] w-full items-center gap-3 rounded-lg bg-white p-3"
         onClick={onClick}
         onKeyDown={(event) => {
@@ -100,7 +96,7 @@ export default function ExploreCourseItem({
       <div className="flex min-w-0 flex-1 flex-col justify-center gap-2.5">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-1">
-            {line && <ExploreLineBadge line={line} />}
+            {line && isSubwayLine(line.id) && <LineBadge line={line.id} />}
             <span className="whitespace-nowrap text-body-02 leading-[1.4] tracking-[-0.025em] text-gray-100">
               {stationName}
             </span>
@@ -138,13 +134,6 @@ export default function ExploreCourseItem({
           ))}
         </div>
       </div>
-      </article>
-      {isLoginModalOpen && (
-        <LeadToLoginModal
-          message={"좋아요를 이용하려면\n로그인이 필요해요!"}
-          onClose={() => setIsLoginModalOpen(false)}
-        />
-      )}
-    </>
+    </article>
   );
 }

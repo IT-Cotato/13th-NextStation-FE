@@ -139,7 +139,9 @@ export default function SearchResultsPage() {
                   description={tour.description}
                   courseCount={tour.courseCount}
                   onClick={() =>
-                    navigate(`/explore/concepts/${tour.conceptTourId}`)
+                    navigate(`/explore/concepts/${tour.conceptTourId}`, {
+                      state: { conceptTour: tour },
+                    })
                   }
                 />
               );

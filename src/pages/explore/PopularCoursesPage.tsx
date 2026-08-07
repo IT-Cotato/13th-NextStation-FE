@@ -19,10 +19,8 @@ export default function PopularCoursesPage() {
   }, []);
 
   return (
-    <main className="min-h-dvh overflow-x-hidden bg-gray-10 pb-4 text-gray-100">
-      <div className="px-[3px] pt-[45px]">
-        <Header showBack />
-      </div>
+    <main className="min-h-dvh overflow-x-hidden bg-gray-10 pb-4 pt-[45px] text-gray-100">
+      <Header showBack />
       <div className="px-[15px] pb-2.5">
         <h1 className="text-title-01 font-semibold tracking-[-0.025em]">
           사람들이 많이 찾는 코스

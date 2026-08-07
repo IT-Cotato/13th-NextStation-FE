@@ -31,10 +31,10 @@ export default function ConceptTourCard({
         />
       </span>
       <span className="flex min-h-0 flex-1 flex-col items-start gap-2">
-        <p className="max-w-full break-words text-title-01 font-semibold leading-[1.4] tracking-[-0.025em] max-[360px]:text-title-02">
+        <p className="whitespace-nowrap text-title-01 font-semibold leading-[1.4] tracking-[-0.025em]">
           {name}
         </p>
-        <p className="whitespace-pre-line text-body-01 leading-[1.4] tracking-[-0.025em] text-gray-70 max-[360px]:text-body-02">
+        <p className="whitespace-pre-line text-body-01 leading-[1.4] tracking-[-0.025em] text-gray-70">
           {description}
         </p>
         <span className="mt-auto flex items-center gap-2 text-caption leading-none text-gray-60">

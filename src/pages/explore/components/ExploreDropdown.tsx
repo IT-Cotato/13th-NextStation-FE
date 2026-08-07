@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import ArrowDown from "@/assets/arrow-down.svg?react";
 
 interface ExploreDropdownProps<T extends string> {
@@ -15,18 +15,44 @@ export default function ExploreDropdown<T extends string>({
   ariaLabel,
 }: ExploreDropdownProps<T>) {
   const [isOpen, setIsOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    if (!isOpen) return undefined;
+
+    const handlePointerDown = (event: PointerEvent) => {
+      if (!containerRef.current?.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setIsOpen(false);
+        buttonRef.current?.focus();
+      }
+    };
+
+    document.addEventListener("pointerdown", handlePointerDown);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("pointerdown", handlePointerDown);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isOpen]);
 
   return (
-    <div className="z-10 flex flex-col items-end">
+    <div className="z-10 flex flex-col items-end" ref={containerRef}>
       <button
-        className="flex h-9 w-24 items-end justify-between gap-3 rounded-lg border border-white bg-white/50 px-5 py-2 text-body-01 font-semibold text-gray-70 backdrop-blur-[10px]"
+        ref={buttonRef}
+        className="flex h-9 w-24 items-end justify-between gap-3 rounded-lg border border-white bg-white/50 px-[19px] py-2 text-body-01 font-semibold text-gray-70 backdrop-blur-[10px]"
         type="button"
         aria-label={ariaLabel}
         aria-haspopup="menu"
         aria-expanded={isOpen}
         onClick={() => setIsOpen((open) => !open)}
       >
-        {value}
+        <span className="shrink-0 whitespace-nowrap">{value}</span>
         <ArrowDown
           className={`size-5 shrink-0 transition-transform ${isOpen ? "rotate-180" : "rotate-0"}`}
           aria-hidden="true"
@@ -42,11 +68,11 @@ export default function ExploreDropdown<T extends string>({
               <button
                 type="button"
                 role="menuitemradio"
-                aria-checked={value === option}
+                aria-checked={option === value}
                 className="w-full border-0 bg-transparent p-0 text-left text-body-01 font-semibold leading-[1.4] text-gray-70"
                 key={option}
                 onClick={() => {
-                  onChange(option);
+                  if (option !== value) onChange(option);
                   setIsOpen(false);
                 }}
               >

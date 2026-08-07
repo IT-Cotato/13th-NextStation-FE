@@ -14,7 +14,6 @@ import ExploreCourseItem from "./components/ExploreCourseItem";
 import ExploreLineTabs from "./components/ExploreLineTabs";
 import ExploreSearchBar from "./components/ExploreSearchBar";
 import { featuredConceptTours } from "./data/conceptTours";
-import { defaultExploreLines } from "./data/exploreLines";
 
 export default function ExplorePage() {
   const navigate = useNavigate();
@@ -32,7 +31,7 @@ export default function ExplorePage() {
       courseCount: 0,
     },
   }));
-  const displayedLines = data?.lines.length ? data.lines : defaultExploreLines;
+  const displayedLines = data?.lines ?? [];
 
   useEffect(() => {
     void getExploreMain()
@@ -130,7 +129,9 @@ export default function ExplorePage() {
               className="flex h-20 w-full items-center justify-between overflow-hidden rounded-lg border-0 bg-gray-20 p-5 text-left outline-none focus-visible:ring-2 focus-visible:ring-primary-50"
               key={tour.conceptTourId}
               onClick={() =>
-                navigate(`/explore/concepts/${tour.conceptTourId}`)
+                navigate(`/explore/concepts/${tour.conceptTourId}`, {
+                  state: { conceptTour: tour },
+                })
               }
             >
               <span className="flex min-w-0 flex-col gap-1">

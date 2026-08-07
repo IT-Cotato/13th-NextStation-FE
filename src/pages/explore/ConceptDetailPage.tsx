@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useInView } from "react-intersection-observer";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import {
   getConceptTourCourses,
   getConceptTours,
@@ -12,56 +12,26 @@ import {
 import Header from "@/components/Header";
 import ExploreCourseItem from "./components/ExploreCourseItem";
 import ExploreDropdown from "./components/ExploreDropdown";
-import {
-  conceptTours as conceptTourDesigns,
-  getConceptTourDesign,
-} from "./data/conceptTours";
+import { getConceptTourDesign } from "./data/conceptTours";
 
-type ExploreSortOption = "최신순" | "인기순";
-type DetailStatus = "loading" | "ready" | "not-found" | "error";
-
-function getFallbackConcept(conceptId: number): {
-  designIndex: number;
-  tour: ConceptTour;
-} | null {
-  const designIndex = conceptTourDesigns.findIndex(
-    (design) => design.conceptTourId === conceptId,
-  );
-  const design = conceptTourDesigns[designIndex];
-  if (!design) return null;
-
-  return {
-    designIndex,
-    tour: {
-      conceptTourId: conceptId,
-      name: design.title,
-      description: design.description,
-      courseCount: 0,
-    },
-  };
-}
+type ExploreSortOption = "인기순" | "최신순";
 
 export default function ConceptDetailPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { conceptId = "" } = useParams();
   const numericConceptId = Number(conceptId);
-  const isValidConceptId =
-    Number.isInteger(numericConceptId) && numericConceptId > 0;
-  const fallbackConcept = getFallbackConcept(numericConceptId);
-  const [sort, setSort] = useState<ExploreSortOption>("최신순");
-  const [tour, setTour] = useState<ConceptTour | null>(
-    fallbackConcept?.tour ?? null,
-  );
-  const [designIndex, setDesignIndex] = useState<number | null>(
-    fallbackConcept?.designIndex ?? null,
-  );
+  const navigationState = location.state as {
+    conceptTour?: ConceptTour;
+  } | null;
+  const navigatedTour = navigationState?.conceptTour;
+  const initialTour =
+    navigatedTour?.conceptTourId === numericConceptId ? navigatedTour : null;
+  const [sort, setSort] = useState<ExploreSortOption>("인기순");
+  const [tour, setTour] = useState<ConceptTour | null>(initialTour);
   const [courses, setCourses] = useState<ExploreCourse[]>([]);
-  const [status, setStatus] = useState<DetailStatus>(
-    fallbackConcept ? "ready" : "loading",
-  );
-  const [loadedConceptId, setLoadedConceptId] = useState<number | null>(
-    fallbackConcept ? numericConceptId : null,
-  );
+  const [isLoading, setIsLoading] = useState(!initialTour);
+  const [hasError, setHasError] = useState(false);
   const [nextCursor, setNextCursor] = useState<string | null>(null);
   const [hasNext, setHasNext] = useState(false);
   const isLoadingMoreRef = useRef(false);
@@ -69,65 +39,41 @@ export default function ConceptDetailPage() {
 
   useEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: "auto" });
-
-    if (!isValidConceptId) return;
+    let isActive = true;
 
     void getConceptTours()
       .then((items) => {
-        const index = items.findIndex(
+        const matchingTour = items.find(
           (item) => item.conceptTourId === numericConceptId,
         );
-        if (index < 0) {
-          const fallback = getFallbackConcept(numericConceptId);
-          if (fallback) {
-            setTour(fallback.tour);
-            setDesignIndex(fallback.designIndex);
-            setLoadedConceptId(numericConceptId);
-            setStatus("ready");
-            return;
-          }
-          setLoadedConceptId(numericConceptId);
-          setStatus("not-found");
-          return;
-        }
+        if (!matchingTour || !getConceptTourDesign(matchingTour.conceptTourId))
+          throw new Error("Concept tour data is unavailable");
+        if (!isActive) return;
 
-        const matchingDesign = getConceptTourDesign(
-          items[index].conceptTourId,
-        );
-        if (!matchingDesign) {
-          setLoadedConceptId(numericConceptId);
-          setStatus("not-found");
-          return;
-        }
-
-        setTour(items[index]);
-        setDesignIndex(
-          conceptTourDesigns.findIndex(
-            (design) => design.conceptTourId === items[index].conceptTourId,
-          ),
-        );
-        setLoadedConceptId(numericConceptId);
-        setStatus("ready");
+        setTour(matchingTour);
+        setHasError(false);
       })
       .catch(() => {
-        const fallback = getFallbackConcept(numericConceptId);
-        if (fallback) {
-          setTour(fallback.tour);
-          setDesignIndex(fallback.designIndex);
-          setLoadedConceptId(numericConceptId);
-          setStatus("ready");
-          return;
+        if (!isActive) return;
+        if (!initialTour) {
+          setTour(null);
+          setHasError(true);
         }
-        setLoadedConceptId(numericConceptId);
-        setStatus("error");
+      })
+      .finally(() => {
+        if (isActive) setIsLoading(false);
       });
-  }, [isValidConceptId, numericConceptId]);
+
+    return () => {
+      isActive = false;
+    };
+  }, [initialTour, numericConceptId]);
 
   useEffect(() => {
-    if (status !== "ready" || loadedConceptId !== numericConceptId) return;
+    if (!tour) return;
 
     const apiSort: ExploreSort = sort === "인기순" ? "POPULAR" : "LATEST";
-    void getConceptTourCourses(numericConceptId, apiSort)
+    void getConceptTourCourses(tour.conceptTourId, apiSort)
       .then((response) => {
         setCourses(response.courses);
         setNextCursor(response.nextCursor);
@@ -138,22 +84,16 @@ export default function ConceptDetailPage() {
         setNextCursor(null);
         setHasNext(false);
       });
-  }, [loadedConceptId, numericConceptId, sort, status]);
+  }, [sort, tour]);
 
   useEffect(() => {
-    if (
-      status !== "ready" ||
-      !inView ||
-      !hasNext ||
-      !nextCursor ||
-      isLoadingMoreRef.current
-    )
+    if (!tour || !inView || !hasNext || !nextCursor || isLoadingMoreRef.current)
       return;
 
     const apiSort: ExploreSort = sort === "인기순" ? "POPULAR" : "LATEST";
     isLoadingMoreRef.current = true;
     void getConceptTourCourses(
-      numericConceptId,
+      tour.conceptTourId,
       apiSort,
       nextCursor,
       50,
@@ -167,40 +107,26 @@ export default function ConceptDetailPage() {
       .finally(() => {
         isLoadingMoreRef.current = false;
       });
-  }, [hasNext, inView, nextCursor, numericConceptId, sort, status]);
+  }, [hasNext, inView, nextCursor, sort, tour]);
 
-  const design =
-    designIndex === null ? null : (conceptTourDesigns[designIndex] ?? null);
-
-  const displayedStatus: DetailStatus = !isValidConceptId
-    ? "not-found"
-    : loadedConceptId === numericConceptId
-      ? status
-      : "loading";
+  const design = tour ? getConceptTourDesign(tour.conceptTourId) : null;
 
   return (
-    <main className="min-h-dvh overflow-x-hidden bg-gray-10 pb-6 text-gray-100">
-      <div className="px-[3px] pt-[45px]">
-        <Header showBack />
-      </div>
+    <main className="min-h-dvh overflow-x-hidden bg-gray-10 pb-6 pt-[45px] text-gray-100">
+      <Header showBack />
 
-      {displayedStatus === "loading" && (
+      {isLoading && !tour && (
         <p className="px-[15px] pt-20 text-center text-body-01 text-gray-70">
           컨셉을 불러오는 중...
         </p>
       )}
-      {displayedStatus === "not-found" && (
-        <p className="px-[15px] pt-20 text-center text-body-01 text-gray-70">
-          존재하지 않는 컨셉입니다.
-        </p>
-      )}
-      {displayedStatus === "error" && (
+      {hasError && (
         <p className="px-[15px] pt-20 text-center text-body-01 text-gray-70">
           컨셉 정보를 불러오지 못했습니다.
         </p>
       )}
 
-      {displayedStatus === "ready" && tour && design && (
+      {!hasError && tour && design && (
         <>
           <header className="flex h-[122px] items-start justify-between pl-[15px] pr-6">
             <div className="min-w-0 pt-[26px]">
@@ -222,7 +148,7 @@ export default function ConceptDetailPage() {
           <div className="mx-[15px] flex h-9 justify-end">
             <ExploreDropdown
               ariaLabel="코스 정렬"
-              options={["최신순", "인기순"] as const}
+              options={["인기순", "최신순"] as const}
               value={sort}
               onChange={(nextSort) => {
                 setNextCursor(null);
