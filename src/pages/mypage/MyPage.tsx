@@ -20,6 +20,7 @@ import { useInView } from "react-intersection-observer";
 import MyPageModal from "./components/MyPageModal";
 import BottomNav from "@/components/BottomNav";
 import { clearAccessToken, logout } from "@/api/auth";
+import { showToast } from "@/pages/course/components/ShowToast";
 
 export default function MyPage() {
   const navigate = useNavigate();
@@ -55,11 +56,16 @@ export default function MyPage() {
       await deleteMyProfile();
     } catch (e) {
       console.error(e);
-    } finally {
-      clearCachedMyProfile();
-      clearAccessToken();
-      navigate("/");
+      showToast({
+        message:
+          e instanceof Error ? e.message : "회원 탈퇴에 실패했습니다.",
+      });
+      return;
     }
+
+    clearCachedMyProfile();
+    clearAccessToken();
+    navigate("/");
   };
 
   const handleCreateJournal = () => {
@@ -160,9 +166,6 @@ export default function MyPage() {
   if (isMyProfileLoading) return <p>로딩 중...</p>;
   if (myProfileError) return <p>{myProfileError}</p>;
   if (!myProfile) return null;
-
-  if (isJournalsLoading) return <p>로딩 중...</p>;
-  if (journalsError) return <p>{journalsError}</p>;
 
   const closeCreateJournalModal = () => {
     setIsCreateJournalModalOpen(false);
@@ -295,6 +298,10 @@ export default function MyPage() {
       <section className="flex justify-center">
         {isStampMode ? (
           <StampListView />
+        ) : isJournalsLoading ? (
+          <p>로딩 중...</p>
+        ) : journalsError ? (
+          <p>{journalsError}</p>
         ) : (
           <div className="grid grid-cols-3 gap-[5px]">
             <button
