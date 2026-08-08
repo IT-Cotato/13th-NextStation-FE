@@ -35,6 +35,7 @@ export default function MyPage() {
   const [isJournalsLoading, setIsJournalsLoading] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [journalsError, setJournalsError] = useState<string | null>(null);
+  const [loadMoreError, setLoadMoreError] = useState<string | null>(null);
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
   const [isWithdrawalModalOpen, setIsWithdrawalModalOpen] = useState(false);
   const [isCreateJournalModalOpen, setIsCreateJournalModalOpen] =
@@ -57,8 +58,7 @@ export default function MyPage() {
     } catch (e) {
       console.error(e);
       showToast({
-        message:
-          e instanceof Error ? e.message : "회원 탈퇴에 실패했습니다.",
+        message: e instanceof Error ? e.message : "회원 탈퇴에 실패했습니다.",
       });
       return;
     }
@@ -141,13 +141,14 @@ export default function MyPage() {
 
     try {
       setIsLoadingMore(true);
+      setLoadMoreError(null);
       const data = await getJournals(nextCursor);
       setJournals((prev) => [...prev, ...data.journals]);
       setNextCursor(data.nextCursor);
       setHasNext(data.hasNext);
     } catch (e) {
       console.error(e);
-      setJournalsError("여행 일지 목록을 불러오지 못했습니다.");
+      setLoadMoreError("추가 여행 일지를 불러오지 못했습니다.");
     } finally {
       setIsLoadingMore(false);
     }
@@ -303,24 +304,38 @@ export default function MyPage() {
         ) : journalsError ? (
           <p>{journalsError}</p>
         ) : (
-          <div className="grid grid-cols-3 gap-[5px]">
-            <button
-              className="col-start-1 row-start-1"
-              onClick={handleCreateJournal}
-            >
-              <JournalAdd />
-            </button>
-            {journals.map((journal) => (
-              // TODO : 클릭 시 여행일지 상세 보기 페이지로 이동 경로 연결
-              <JournalPreviewCard
-                key={journal.journalId}
-                lineId={journal.line.id}
-                stationName={journal.stationName}
-                journalTitle={journal.title}
-                thumbnailUrl={journal.thumbnailUrl}
-                likeCount={journal.likeCount}
-              />
-            ))}
+          <div className="flex flex-col items-center gap-3">
+            <div className="grid grid-cols-3 gap-[5px]">
+              <button
+                className="col-start-1 row-start-1"
+                onClick={handleCreateJournal}
+              >
+                <JournalAdd />
+              </button>
+              {journals.map((journal) => (
+                // TODO : 클릭 시 여행일지 상세 보기 페이지로 이동 경로 연결
+                <JournalPreviewCard
+                  key={journal.journalId}
+                  lineId={journal.line.id}
+                  stationName={journal.stationName}
+                  journalTitle={journal.title}
+                  thumbnailUrl={journal.thumbnailUrl}
+                  likeCount={journal.likeCount}
+                />
+              ))}
+            </div>
+            {loadMoreError && (
+              <div className="flex flex-col items-center gap-2">
+                <p className="text-body-02 text-gray-70">{loadMoreError}</p>
+                <button
+                  type="button"
+                  onClick={() => void loadMoreJournals()}
+                  className="text-body-02 text-primary-60 underline"
+                >
+                  다시 시도
+                </button>
+              </div>
+            )}
           </div>
         )}
       </section>
