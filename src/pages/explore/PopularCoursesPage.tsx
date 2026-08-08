@@ -19,7 +19,7 @@ export default function PopularCoursesPage() {
   }, []);
 
   return (
-    <main className="min-h-dvh overflow-x-hidden bg-gray-10 pb-4 pt-[45px] text-gray-100">
+    <main className="flex h-dvh flex-col bg-gray-10 text-gray-100 pt-[calc(var(--safe-top)+12px)] text-gray-100 overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
       <Header showBack />
       <div className="px-[15px] pb-2.5">
         <h1 className="text-title-01 font-semibold tracking-[-0.025em]">
