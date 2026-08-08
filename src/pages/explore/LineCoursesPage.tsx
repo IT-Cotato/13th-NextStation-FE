@@ -16,6 +16,8 @@ import {
   type ExploreStation,
 } from "@/api/explore";
 import ExploreLineTabs from "./components/ExploreLineTabs";
+import { stationsByLine } from "@/mocks/StationByLine";
+import { searchStations } from "@/api/stations";
 import {
   getDisplayedExploreLines,
   isSupportedExploreLineId,
@@ -35,6 +37,9 @@ export default function LineCoursesPage() {
   const stationDialogRef = useRef<HTMLElement>(null);
   const [lines, setLines] = useState<ExploreLine[]>(supportedExploreLines);
   const [stationNames, setStationNames] = useState<ExploreStation[]>([]);
+  const [resolvingStationName, setResolvingStationName] = useState<
+    string | null
+  >(null);
   const [courses, setCourses] = useState<ExploreCourse[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [nextCursor, setNextCursor] = useState<string | null>(null);
@@ -62,6 +67,7 @@ export default function LineCoursesPage() {
   }, [requestedLine, setSearchParams]);
 
   useEffect(() => {
+    let isActive = true;
     const sort: ExploreSort = sortOption === "인기순" ? "POPULAR" : "LATEST";
     void getExploreCourses({
       lineId: line,
@@ -70,18 +76,26 @@ export default function LineCoursesPage() {
       size: 50,
     })
       .then((data) => {
+        if (!isActive) return;
         setCourses(data.courses);
         setStationNames(data.availableStations);
         setNextCursor(data.nextCursor);
         setHasNext(data.hasNext);
       })
       .catch(() => {
+        if (!isActive) return;
         setCourses([]);
         setStationNames([]);
         setNextCursor(null);
         setHasNext(false);
       })
-      .finally(() => setIsLoading(false));
+      .finally(() => {
+        if (isActive) setIsLoading(false);
+      });
+
+    return () => {
+      isActive = false;
+    };
   }, [line, sortOption, station]);
 
   useEffect(() => {
@@ -113,6 +127,45 @@ export default function LineCoursesPage() {
     setHasNext(false);
     setIsLoading(true);
     setSearchParams({ line: String(nextLine) }, { replace: true });
+  };
+
+  const handleStationChange = async (stationName: string) => {
+    const availableStation = stationNames.find(
+      (stationItem) => stationItem.stationName === stationName,
+    );
+
+    setResolvingStationName(stationName);
+    try {
+      const selectedStation =
+        availableStation ??
+        (await searchStations(stationName).then((stations) => {
+          const matchedStation = stations.find(
+            (stationItem) =>
+              stationItem.name === stationName &&
+              stationItem.lines.some((stationLine) => stationLine.id === line),
+          );
+
+          return matchedStation
+            ? {
+                stationId: matchedStation.id,
+                stationName: matchedStation.name,
+                hasCourses: false,
+              }
+            : null;
+        }));
+
+      if (!selectedStation) return;
+
+      setStation(selectedStation);
+      setNextCursor(null);
+      setHasNext(false);
+      setIsLoading(true);
+      setIsStationMenuOpen(false);
+    } catch {
+      return;
+    } finally {
+      setResolvingStationName(null);
+    }
   };
 
   useEffect(() => {
@@ -275,21 +328,16 @@ export default function LineCoursesPage() {
               >
                 전체
               </button>
-              {stationNames.map((stationItem) => (
+              {(stationsByLine[`${line}호선`] ?? []).map((stationName) => (
                 <button
                   type="button"
-                  aria-pressed={station?.stationId === stationItem.stationId}
-                  className={`w-full border-0 bg-transparent p-0 text-left text-subtitle font-semibold leading-[1.4] ${station?.stationId === stationItem.stationId ? "text-gray-100" : "text-gray-60"}`}
-                  onClick={() => {
-                    setStation(stationItem);
-                    setNextCursor(null);
-                    setHasNext(false);
-                    setIsLoading(true);
-                    setIsStationMenuOpen(false);
-                  }}
-                  key={stationItem.stationId}
+                  aria-pressed={station?.stationName === stationName}
+                  disabled={resolvingStationName !== null}
+                  className={`w-full border-0 bg-transparent p-0 text-left text-subtitle font-semibold leading-[1.4] ${station?.stationName === stationName ? "text-gray-100" : "text-gray-60"}`}
+                  onClick={() => void handleStationChange(stationName)}
+                  key={stationName}
                 >
-                  {stationItem.stationName.replace(/역$/, "")}
+                  {stationName.replace(/역$/, "")}
                 </button>
               ))}
             </div>
