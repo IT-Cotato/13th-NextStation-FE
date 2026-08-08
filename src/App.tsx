@@ -27,6 +27,7 @@ const ResultPage = lazy(() => import("@/pages/draw/ResultPage"));
 
 // course pages
 const CourseMainPage = lazy(() => import("@/pages/course/MainPage"));
+const CourseDetailPage = lazy(() => import("@/pages/course/DetailPage"));
 const CreatePage = lazy(() => import("@/pages/course/CreatePage"));
 const LogIntroPage = lazy(() => import("@/pages/course/LogIntroPage"));
 const LogInfoPage = lazy(() => import("@/pages/course/LogInfoPage"));
@@ -158,6 +159,7 @@ function App() {
                 element={<VerifyPage />}
               />
               <Route path="/course/saved" element={<SavedPage />} />
+              <Route path="/course/:courseId" element={<CourseDetailPage />} />
               <Route
                 path="/course/:courseId/stamp"
                 element={<StampAcquiredPage />}

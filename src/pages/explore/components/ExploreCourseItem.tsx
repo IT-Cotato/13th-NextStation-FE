@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Heart from "@/assets/heart.svg?react";
-import CoursePhoto from "@/assets/explore/course-photo.svg?react";
+import CoursePhoto from "@/assets/card-default.svg?react";
 import HeartFilled from "@/assets/explore/heart-filled.svg?react";
 import LineBadge, { type SubwayLine } from "@/components/LineBadge";
 import CourseRankBadge from "./CourseRankBadge";

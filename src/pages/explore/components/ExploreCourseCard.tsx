@@ -5,7 +5,7 @@ import {
   type ExploreCourse,
 } from "@/api/explore";
 import Heart from "@/assets/heart.svg?react";
-import coursePhoto from "@/assets/explore/course-photo.svg";
+import coursePhoto from "@/assets/card-default.svg";
 import HeartFilled from "@/assets/explore/heart-filled.svg?react";
 import LineBadge, { type SubwayLine } from "@/components/LineBadge";
 import CourseRankBadge from "./CourseRankBadge";
