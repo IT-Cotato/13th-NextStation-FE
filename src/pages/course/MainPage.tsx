@@ -141,16 +141,14 @@ export default function MainPage() {
 
   return (
     <main className="flex h-dvh flex-col overflow-y-auto bg-gray-10 pt-[calc(var(--safe-top)+12px)] [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
-      <section className="flex justify-center">
-        <div className="flex w-[390px] items-center justify-between px-[15px]">
-          <span className="text-title-02 font-semibold leading-[1.4] tracking-[-0.45px]">
-            내가 만든 코스
-          </span>
-          <button type="button" onClick={() => navigate("/course/like")}>
-            <Heart />
-          </button>
-        </div>
-      </section>
+      <header className="flex w-full items-center justify-between px-[15px]">
+        <span className="text-title-02 font-semibold leading-[1.4] tracking-[-0.45px]">
+          내가 만든 코스
+        </span>
+        <button type="button" onClick={() => navigate("/course/like")}>
+          <Heart />
+        </button>
+      </header>
 
       {isCompleteModalOpen && selectedCourse && (
         <CompleteConfirmModal

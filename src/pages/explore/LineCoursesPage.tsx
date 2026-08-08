@@ -144,7 +144,7 @@ export default function LineCoursesPage() {
   }, [isStationMenuOpen]);
 
   return (
-    <main className="h-dvh min-h-0 overflow-y-auto bg-gray-10 pt-[45px] text-gray-100 tracking-[-0.025em] [scrollbar-width:none]">
+    <main className="flex h-dvh flex-col bg-gray-10 text-gray-100 leading-[1.4] tracking-[-0.025em] pt-[calc(var(--safe-top)+12px)] text-gray-100 overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
       <Header showBack />
       <div className="px-[15px] pb-2.5">
         <h1 className="text-title-01 font-semibold leading-[1.4] tracking-[-0.025em]">
