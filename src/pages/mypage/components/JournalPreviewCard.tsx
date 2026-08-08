@@ -1,4 +1,4 @@
-import CardBG from "@/assets/like/card-background.svg?react";
+import CardBG from "@/assets/card-default.svg?react";
 import LineBadge from "@/components/LineBadge";
 import Heart from "@/assets/heart-active.svg?react";
 import type { SubwayLine } from "@/types/subway";
