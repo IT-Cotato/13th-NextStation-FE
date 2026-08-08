@@ -184,7 +184,7 @@ export default function DetailPage() {
   if (!hasValidJournalId || isLoading || !course) {
     return (
       <main className="mx-auto min-h-dvh w-full max-w-[390px] bg-gray-10 text-gray-100">
-        <header className="flex h-[91px] items-end px-[15px] pb-[10px] pt-[57px]">
+        <header className="flex items-end px-[15px] pb-[10px]">
           <button
             type="button"
             onClick={() => navigate(-1)}
@@ -207,8 +207,8 @@ export default function DetailPage() {
   }
 
   return (
-    <main className="mx-auto min-h-dvh w-full max-w-[390px] overflow-x-hidden bg-[linear-gradient(180deg,var(--color-secondary-20)_0%,var(--color-gray-10)_60%)] text-gray-100">
-      <header className="flex h-[91px] items-end justify-between px-[15px] pb-[10px] pt-[57px]">
+    <main className="flex h-dvh flex-col overflow-y-auto bg-gray-10 pt-[calc(var(--safe-top)+12px)] text-gray-100 bg-[linear-gradient(180deg,var(--color-secondary-20)_0%,var(--color-gray-10)_60%)] [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+      <header className="flex items-end justify-between px-[15px] pb-[10px]">
         <button
           type="button"
           onClick={() => navigate(-1)}
@@ -235,8 +235,8 @@ export default function DetailPage() {
         )}
       </header>
 
-      <section className="h-[226px] px-[15px] text-center">
-        <div className="flex h-[38px] items-center justify-center px-[14px] py-2">
+      <section className="flex flex-col gap-2 px-[15px] text-center">
+        <div className="flex items-center justify-center px-[14px] py-2">
           <StationLineList
             items={[{ line: course.line, stationName: course.stationName }]}
           />
@@ -294,7 +294,7 @@ export default function DetailPage() {
         </div>
       </section>
 
-      <section className="flex min-h-[151px] items-start px-[15px] pb-7 pt-0">
+      <section className="flex items-start px-[15px] pb-7 pt-0">
         <StarOne className="size-[68px] shrink-0" aria-hidden="true" />
         <p className="-ml-[47px] mt-12 whitespace-pre-line px-[21px] text-body-02 leading-[1.8] tracking-[-0.025em]">
           {course.review}
@@ -302,7 +302,7 @@ export default function DetailPage() {
       </section>
 
       <section className="border-b-[6px] border-gray-20 pb-9">
-        <h2 className="h-[41px] px-8 py-2 text-title-02 font-semibold leading-[1.4] tracking-[-0.025em]">
+        <h2 className="px-8 py-2 text-title-02 font-semibold leading-[1.4] tracking-[-0.025em]">
           다녀온 곳
         </h2>
         <div className="pointer-events-none -mb-[116px] ml-auto mr-[13px] flex size-[136px] items-center justify-center" aria-hidden="true">
@@ -315,12 +315,12 @@ export default function DetailPage() {
       </section>
 
       <div className="flex min-h-[97px] flex-wrap gap-2 px-[15px] py-8">
-        <span className="whitespace-nowrap rounded-[20px] bg-gray-30 px-3 py-2 text-caption text-gray-70">
+        <span className="whitespace-nowrap rounded-lg bg-gray-30 px-3 py-2 text-caption text-gray-70">
           여행시간 {course.duration}
         </span>
         {course.tags.map((tag) => (
           <span
-            className="whitespace-nowrap rounded-[20px] bg-gray-30 px-3 py-2 text-caption text-gray-70"
+            className="whitespace-nowrap rounded-lg bg-gray-30 px-3 py-2 text-caption text-gray-70"
             key={tag}
           >
             {tag.startsWith("#") ? tag : `#${tag}`}
