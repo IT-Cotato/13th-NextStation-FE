@@ -20,8 +20,10 @@ import {
   type PublicMemberCourse,
   type PublicMemberStamp,
 } from "@/api/member";
+import LineBadge, { type SubwayLine } from "@/components/LineBadge";
 import { STATION_STAMP_MAP } from "@/constants/stationStampMap";
-import { useEffect, useMemo, useState, type ComponentType, type SVGProps } from "react";
+import { useEffect, useMemo, useRef, useState, type ComponentType, type SVGProps } from "react";
+import { useInView } from "react-intersection-observer";
 import { useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
 
 type ProfileTab = "stamps" | "journals";
@@ -42,6 +44,9 @@ const stampIcons: StampIcon[] = [
   StampHeukseok,
 ];
 
+const isSubwayLine = (lineId: number): lineId is SubwayLine =>
+  Number.isInteger(lineId) && lineId >= 1 && lineId <= 9;
+
 export default function ProfilePage() {
   const navigate = useNavigate();
   const { memberId: memberIdParam } = useParams();
@@ -49,12 +54,18 @@ export default function ProfilePage() {
   const profileState = location.state as { nickname?: string; profileImageUrl?: string | null } | null;
   const [searchParams, setSearchParams] = useSearchParams();
   const initialProfile = getCachedMyProfile();
-  const isPublicProfile = location.pathname === "/profile";
   const [nickname, setNickname] = useState(profileState?.nickname ?? initialProfile?.nickname ?? "민성");
   const [profileImageUrl, setProfileImageUrl] = useState(profileState?.profileImageUrl ?? initialProfile?.profileImageUrl ?? null);
   const [publicStamps, setPublicStamps] = useState<PublicMemberStamp[]>([]);
   const [publicCourses, setPublicCourses] = useState<PublicMemberCourse[]>([]);
+  const [nextCursor, setNextCursor] = useState<string | null>(null);
+  const [hasNext, setHasNext] = useState(false);
+  const [loadedPublicMemberId, setLoadedPublicMemberId] = useState<
+    number | null
+  >(null);
   const [profileError, setProfileError] = useState<string | null>(null);
+  const isLoadingMoreRef = useRef(false);
+  const { ref: loadMoreRef, inView } = useInView({ rootMargin: "120px" });
   const requestedView = searchParams.get("view");
   const [tab, setTab] = useState<ProfileTab>(requestedView === "journals" ? "journals" : "stamps");
 
@@ -71,14 +82,14 @@ export default function ProfilePage() {
   const journals = publicCourses;
 
   useEffect(() => {
-    if (isPublicProfile) return;
+    if (hasPublicMemberId) return;
     getMyProfile()
       .then((profile) => {
         setNickname(profile.nickname);
         setProfileImageUrl(profile.profileImageUrl);
       })
       .catch(() => undefined);
-  }, [isPublicProfile]);
+  }, [hasPublicMemberId]);
 
   useEffect(() => {
     if (!hasPublicMemberId) return;
@@ -94,6 +105,9 @@ export default function ProfilePage() {
         setProfileImageUrl(profile.profileImageUrl);
         setPublicStamps(stampsResponse);
         setPublicCourses(coursesResponse.courses);
+        setNextCursor(coursesResponse.nextCursor);
+        setHasNext(coursesResponse.hasNext);
+        setLoadedPublicMemberId(memberId);
       })
       .catch((error) => {
         if (isActive) setProfileError(error instanceof Error ? error.message : "프로필 정보를 불러오지 못했습니다.");
@@ -102,6 +116,43 @@ export default function ProfilePage() {
       isActive = false;
     };
   }, [hasPublicMemberId, memberId]);
+
+  useEffect(() => {
+    if (
+      !hasPublicMemberId ||
+      loadedPublicMemberId !== memberId ||
+      !inView ||
+      !hasNext ||
+      !nextCursor ||
+      isLoadingMoreRef.current
+    )
+      return;
+
+    isLoadingMoreRef.current = true;
+    void getPublicMemberCourses(memberId, nextCursor)
+      .then((response) => {
+        setPublicCourses((current) => [...current, ...response.courses]);
+        setNextCursor(response.nextCursor);
+        setHasNext(response.hasNext);
+      })
+      .catch((error) => {
+        setProfileError(
+          error instanceof Error
+            ? error.message
+            : "여행일지를 더 불러오지 못했습니다.",
+        );
+      })
+      .finally(() => {
+        isLoadingMoreRef.current = false;
+      });
+  }, [
+    hasNext,
+    hasPublicMemberId,
+    inView,
+    loadedPublicMemberId,
+    memberId,
+    nextCursor,
+  ]);
 
   const selectTab = (nextTab: ProfileTab) => {
     setTab(nextTab);
@@ -167,7 +218,13 @@ export default function ProfilePage() {
               <div className="absolute inset-0 bg-linear-to-b from-transparent from-50% to-white" />
               <div className="relative flex flex-col gap-[9px]">
                 <div className="flex items-center gap-1 text-body-02">
-                  <span className="rounded-full bg-subway-2-dark px-[6px] text-body-01 font-semibold text-subway-2-light">{journal.line.id}</span>
+                  {isSubwayLine(journal.line.id) ? (
+                    <LineBadge line={journal.line.id} />
+                  ) : (
+                    <span className="rounded-full bg-gray-30 px-[6px] text-body-01 font-semibold text-gray-80">
+                      {journal.line.id}
+                    </span>
+                  )}
                   <span>{journal.stationName}</span>
                 </div>
                 <strong className="line-clamp-2 text-body-01 font-semibold leading-[1.4] tracking-[-0.35px]">{journal.name}</strong>
@@ -176,6 +233,13 @@ export default function ProfilePage() {
             </button>
             );
           })}
+          {hasNext && (
+            <div
+              ref={loadMoreRef}
+              className="col-span-3 h-px"
+              aria-hidden="true"
+            />
+          )}
         </section>
         )}
       </div>

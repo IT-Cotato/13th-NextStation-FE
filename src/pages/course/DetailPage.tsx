@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import ProfileDefault from "@/assets/profile-default.svg?react";
 import heartFilledUrl from "@/assets/explore/heart-filled.svg";
-import moreViewUrl from "@/assets/like/more.svg";
 import { getAccessToken } from "@/api/auth";
 import { copyCourse } from "@/api/courseDetail";
 import { likeExploreCourse, unlikeExploreCourse } from "@/api/explore";
@@ -210,11 +209,7 @@ export default function DetailPage() {
         <button type="button" onClick={() => navigate(-1)} aria-label="이전">
           <img src="/course-detail/back.svg" alt="" />
         </button>
-        {course.isMine ? (
-          <button type="button" aria-label="더보기">
-            <img src={moreViewUrl} alt="" />
-          </button>
-        ) : (
+        {!course.isMine && (
           <button
             type="button"
             onClick={handleToggleSave}
