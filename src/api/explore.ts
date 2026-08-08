@@ -94,7 +94,7 @@ export const getConceptTours = () =>
   request<ConceptTour[]>("/api/v1/explore/concept-tours");
 export const getConceptTourCourses = (
   conceptTourId: number,
-  sort: ExploreSort = "LATEST",
+  sort: ExploreSort = "POPULAR",
   cursor?: string,
   size = 50,
 ) =>
