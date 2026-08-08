@@ -1,18 +1,27 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import BackIcon from "@/assets/back.svg?react";
+import CardDefault from "@/assets/card-default.svg?react";
+import HeartIcon from "@/assets/heart.svg?react";
+import HeartFilledIcon from "@/assets/explore/heart-filled.svg?react";
 import ProfileDefault from "@/assets/profile-default.svg?react";
-import heartFilledUrl from "@/assets/explore/heart-filled.svg";
-import { getAccessToken } from "@/api/auth";
-import { copyCourse } from "@/api/courseDetail";
+import StarOne from "@/assets/course-detail/star-1.svg?react";
+import StarTwo from "@/assets/course-detail/star-2.svg?react";
+import StarThree from "@/assets/course-detail/star-3.svg?react";
+import {
+  copyCourse,
+  type CourseDetailData,
+} from "@/api/courseDetail";
 import { likeExploreCourse, unlikeExploreCourse } from "@/api/explore";
-import { getJournalDetail, type JournalDetail, type TravelDuration } from "@/api/journal";
-import LeadToLoginModal from "@/components/LeadToLoginModal";
+import {
+  getJournalDetail,
+  type JournalDetail,
+  type TravelDuration,
+} from "@/api/journal";
 import StationLineList from "@/components/StationLineList";
-import type { CourseDetailData } from "@/types/courseDetail";
 import type { SubwayLine } from "@/types/subway";
 import CourseDetailPlace from "./components/CourseDetailPlace";
 import { showToast } from "./components/ShowToast";
-import "./DetailPage.css";
 
 const isSubwayLine = (value: number): value is SubwayLine =>
   Number.isInteger(value) && value >= 1 && value <= 9;
@@ -20,14 +29,15 @@ const isSubwayLine = (value: number): value is SubwayLine =>
 const isPositiveId = (value: number) => Number.isSafeInteger(value) && value > 0;
 
 const durationLabels: Record<TravelDuration, string> = {
-  SHORT: "1~2시간",
-  HALF_DAY: "3~4시간",
+  SHORT: "3~4 시간",
+  HALF_DAY: "반나절",
   FULL_DAY: "하루",
 };
 
 function formatVisitedAt(value: string) {
-  const matchedDate = /^\d{4}-\d{2}-\d{2}$/.test(value);
-  return matchedDate ? `${value.replaceAll("-", ".")} 방문` : value;
+  return /^\d{4}-\d{2}-\d{2}$/.test(value)
+    ? `${value.replaceAll("-", ".")} 방문`
+    : value;
 }
 
 function mapJournalToCourse(journal: JournalDetail): CourseDetailData {
@@ -47,7 +57,6 @@ function mapJournalToCourse(journal: JournalDetail): CourseDetailData {
     viewCount: journal.viewCount,
     saveCount: journal.likeCount,
     authorName: journal.writerName,
-    authorId: journal.writerId,
     authorProfileImageUrl: journal.writerProfileImageUrl,
     visitedAt: formatVisitedAt(journal.traveledAt),
     isMine: journal.isMine,
@@ -78,36 +87,34 @@ export default function DetailPage() {
   const journalId = Number(journalIdParam);
   const hasValidJournalId = isPositiveId(journalId);
   const [course, setCourse] = useState<CourseDetailData | null>(null);
-  const [loadError, setLoadError] = useState<string | null>(null);
-  const [loadedJournalId, setLoadedJournalId] = useState<number | null>(null);
-  const [errorJournalId, setErrorJournalId] = useState<number | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isCopying, setIsCopying] = useState(false);
-  const [isCourseLoaded, setIsCourseLoaded] = useState(false);
-  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
-  const [copyError, setCopyError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!hasValidJournalId) return;
 
     let isActive = true;
-    getJournalDetail(journalId)
+    void getJournalDetail(journalId)
       .then((journal) => {
         if (!isActive) return;
         const nextCourse = mapJournalToCourse(journal);
         setCourse(nextCourse);
-        setLoadedJournalId(journalId);
-        setLoadError(null);
-        setErrorJournalId(null);
         setSaved(Boolean(nextCourse.isLiked));
-        setIsCourseLoaded(isPositiveId(nextCourse.id));
+        setErrorMessage(null);
       })
       .catch((error) => {
-        if (isActive) {
-          setLoadError(error instanceof Error ? error.message : "코스 상세 정보를 불러오지 못했습니다.");
-          setErrorJournalId(journalId);
-        }
+        if (!isActive) return;
+        setErrorMessage(
+          error instanceof Error
+            ? error.message
+            : "코스 상세 정보를 불러오지 못했습니다.",
+        );
+      })
+      .finally(() => {
+        if (isActive) setIsLoading(false);
       });
 
     return () => {
@@ -116,17 +123,21 @@ export default function DetailPage() {
   }, [hasValidJournalId, journalId]);
 
   const handleToggleSave = async () => {
-    if (isSaving || !course || !isCourseLoaded) return;
-    if (!getAccessToken()) {
-      setIsLoginModalOpen(true);
-      return;
-    }
+    if (isSaving || !course) return;
+
     const nextSaved = !saved;
     setSaved(nextSaved);
-    setCourse((current) => current ? ({
-      ...current,
-      saveCount: Math.max(0, current.saveCount + (nextSaved ? 1 : -1)),
-    }) : current);
+    setCourse((current) =>
+      current
+        ? {
+            ...current,
+            saveCount: Math.max(
+              0,
+              current.saveCount + (nextSaved ? 1 : -1),
+            ),
+          }
+        : current,
+    );
     setIsSaving(true);
 
     try {
@@ -134,10 +145,17 @@ export default function DetailPage() {
       else await unlikeExploreCourse(course.id);
     } catch {
       setSaved(!nextSaved);
-      setCourse((current) => current ? ({
-        ...current,
-        saveCount: Math.max(0, current.saveCount + (nextSaved ? -1 : 1)),
-      }) : current);
+      setCourse((current) =>
+        current
+          ? {
+              ...current,
+              saveCount: Math.max(
+                0,
+                current.saveCount + (nextSaved ? -1 : 1),
+              ),
+            }
+          : current,
+      );
       showToast({ message: "저장 상태를 변경하지 못했습니다." });
     } finally {
       setIsSaving(false);
@@ -145,69 +163,59 @@ export default function DetailPage() {
   };
 
   const handleCopyCourse = async () => {
-    if (!getAccessToken()) {
-      setIsLoginModalOpen(true);
-      return;
-    }
-    if (isCopying || !course || !isCourseLoaded) return;
+    if (isCopying || !course) return;
 
     try {
       setIsCopying(true);
-      setCopyError(null);
+      setErrorMessage(null);
       const copyName = course.title.trim().slice(0, 20);
       if (!copyName) throw new Error("코스 이름이 비어 있습니다.");
       const copiedCourse = await copyCourse(course.id, copyName);
-      navigateToCopyPage(copiedCourse.courseId, copiedCourse.name);
+      navigate(`/course/${copiedCourse.courseId}/verify`);
     } catch (error) {
-      setCopyError(error instanceof Error ? error.message : "코스를 복제하지 못했습니다.");
+      setErrorMessage(
+        error instanceof Error ? error.message : "코스를 복제하지 못했습니다.",
+      );
     } finally {
       setIsCopying(false);
     }
   };
 
-  const navigateToCopyPage = (copiedCourseId: number, courseName: string) => {
-      if (!course) return;
-      navigate(`/course/${copiedCourseId}/copy`, {
-        state: {
-          courseName,
-          stationName: course.stationName,
-          lineId: course.line,
-          places: [],
-        },
-      });
-  };
-
-  const isCurrentCourse = hasValidJournalId && loadedJournalId === journalId && course;
-  const currentLoadError = errorJournalId === journalId ? loadError : null;
-
-  if (!isCurrentCourse) {
+  if (!hasValidJournalId || isLoading || !course) {
     return (
-      <main className="course-detail course-detail--status">
-        <header className="course-detail__topbar">
-          <button type="button" onClick={() => navigate(-1)} aria-label="이전">
-            <img src="/course-detail/back.svg" alt="" />
+      <main className="mx-auto min-h-dvh w-full max-w-[390px] bg-gray-10 text-gray-100">
+        <header className="flex h-[91px] items-end px-[15px] pb-[10px] pt-[57px]">
+          <button
+            type="button"
+            onClick={() => navigate(-1)}
+            aria-label="이전"
+            className="grid size-6 place-items-center"
+          >
+            <BackIcon className="size-6" aria-hidden="true" />
           </button>
         </header>
-        <p role={!hasValidJournalId || currentLoadError ? "alert" : "status"}>
+        <p
+          className="mx-6 mt-[180px] text-center text-body-01 text-gray-80"
+          role={!hasValidJournalId || errorMessage ? "alert" : "status"}
+        >
           {!hasValidJournalId
             ? "올바르지 않은 여행일지 주소입니다."
-            : currentLoadError ?? "코스 상세 정보를 불러오는 중입니다."}
+            : errorMessage ?? "코스 상세 정보를 불러오는 중입니다."}
         </p>
       </main>
     );
   }
 
   return (
-    <main className="course-detail">
-      {isLoginModalOpen && (
-        <LeadToLoginModal
-          message={"내 코스로 만들려면\n로그인이 필요해요!"}
-          onClose={() => setIsLoginModalOpen(false)}
-        />
-      )}
-      <header className="course-detail__topbar">
-        <button type="button" onClick={() => navigate(-1)} aria-label="이전">
-          <img src="/course-detail/back.svg" alt="" />
+    <main className="mx-auto min-h-dvh w-full max-w-[390px] overflow-x-hidden bg-[linear-gradient(180deg,var(--color-secondary-20)_0%,var(--color-gray-10)_60%)] text-gray-100">
+      <header className="flex h-[91px] items-end justify-between px-[15px] pb-[10px] pt-[57px]">
+        <button
+          type="button"
+          onClick={() => navigate(-1)}
+          aria-label="이전"
+          className="grid size-6 place-items-center"
+        >
+          <BackIcon className="size-6" aria-hidden="true" />
         </button>
         {!course.isMine && (
           <button
@@ -216,83 +224,123 @@ export default function DetailPage() {
             aria-label={saved ? "저장 취소" : "저장"}
             aria-pressed={saved}
             disabled={isSaving}
+            className="grid size-6 place-items-center disabled:opacity-50"
           >
-            <img src={saved ? heartFilledUrl : "/course-detail/heart.svg"} alt="" />
+            {saved ? (
+              <HeartFilledIcon className="size-6" aria-hidden="true" />
+            ) : (
+              <HeartIcon className="size-6" aria-hidden="true" />
+            )}
           </button>
         )}
       </header>
 
-      <section className="course-detail__intro">
-        <div className="course-detail__station">
-          <StationLineList items={[{ line: course.line, stationName: course.stationName }]} />
+      <section className="h-[226px] px-[15px] text-center">
+        <div className="flex h-[38px] items-center justify-center px-[14px] py-2">
+          <StationLineList
+            items={[{ line: course.line, stationName: course.stationName }]}
+          />
         </div>
-        <h1>{course.title}{course.subtitle && <><br />{course.subtitle}</>}</h1>
-        <div className="course-detail__stats">
+        <h1 className="mt-0.5 h-[72px] px-[15px] py-2 text-title-01 font-semibold leading-[1.4] tracking-[-0.025em]">
+          {course.title}
+          {course.subtitle && (
+            <>
+              <br />
+              {course.subtitle}
+            </>
+          )}
+        </h1>
+        <div className="flex h-[33px] justify-center gap-2.5 px-[15px] py-2 text-caption text-gray-80">
           <span>조회수 {course.viewCount}</span>
           <span>저장 {course.saveCount}</span>
         </div>
-        <button
-          type="button"
-          className="course-detail__author"
-          onClick={() => {
-            if (!course.authorId) return;
-            navigate(`/profile/${course.authorId}`, {
-              state: {
-                nickname: course.authorName,
-                profileImageUrl: course.authorProfileImageUrl ?? null,
-              },
-            });
-          }}
-          aria-label={course.authorId ? `${course.authorName} 프로필 보기` : undefined}
-          disabled={!course.authorId}
-        >
+        <div className="flex h-[73px] w-full items-center gap-[14px] rounded-[20px] bg-secondary-10 px-[15px] py-3 text-left">
           {course.authorProfileImageUrl ? (
             <img
-              className="h-[49px] w-[49px] shrink-0 rounded-full object-cover"
+              className="size-[49px] shrink-0 rounded-full object-cover"
               src={course.authorProfileImageUrl}
               alt={`${course.authorName} 프로필`}
             />
           ) : (
-            <ProfileDefault className="h-[49px] w-[49px] shrink-0" aria-hidden="true" />
+            <ProfileDefault className="size-[49px] shrink-0" aria-hidden="true" />
           )}
-          <div><strong>{course.authorName}</strong><span>{course.visitedAt}</span></div>
-        </button>
-      </section>
-
-      <section className="course-detail__gallery" aria-label="코스 사진" tabIndex={0}>
-        <div>
-          {course.images.map((image) => <img key={image.id} src={image.src} alt={image.alt} />)}
-          <i aria-hidden="true" />
-        </div>
-      </section>
-
-      <section className="course-detail__note">
-        <img src="/course-detail/star-1.svg" alt="" />
-        <p>{course.review.split("\n").map((line, index) => <span key={index}>{index > 0 && <br />}{line}</span>)}</p>
-      </section>
-
-      <section className="course-detail__places">
-        <h2>다녀온 곳</h2>
-        <div className="course-detail__star-frame course-detail__star-frame--large" aria-hidden="true">
-          <div className="course-detail__star-rotate">
-            <img src="/course-detail/star-2.svg" alt="" />
+          <div className="flex flex-col">
+            <strong className="text-body-02 font-semibold text-gray-90">
+              {course.authorName}
+            </strong>
+            <span className="text-caption text-gray-60">{course.visitedAt}</span>
           </div>
         </div>
-        <div className="course-detail__star-frame course-detail__star-frame--small" aria-hidden="true">
-          <img src="/course-detail/star-3.svg" alt="" />
-        </div>
-        {course.places.map((place) => <CourseDetailPlace key={place.id} place={place} />)}
       </section>
 
-      <div className="course-detail__tags">
-        <span>여행시간 {course.duration}</span>
-        {course.tags.map((tag) => <span key={tag}>{tag.startsWith("#") ? tag : `#${tag}`}</span>)}
+      <section
+        className="h-[292px] w-full touch-pan-x overflow-x-auto overflow-y-hidden overscroll-x-contain [scrollbar-width:none]"
+        aria-label="코스 사진"
+        tabIndex={0}
+      >
+        <div className="flex h-[292px] w-max min-w-full gap-5 px-[15px] py-4">
+          {course.images.length > 0 ? (
+            course.images.map((image) => (
+              <img
+                key={image.id}
+                className="size-[260px] shrink-0 rounded-[20px] bg-primary-10 object-cover"
+                src={image.src}
+                alt={image.alt}
+              />
+            ))
+          ) : (
+            <CardDefault className="size-[260px] shrink-0 rounded-[20px]" />
+          )}
+        </div>
+      </section>
+
+      <section className="flex min-h-[151px] items-start px-[15px] pb-7 pt-0">
+        <StarOne className="size-[68px] shrink-0" aria-hidden="true" />
+        <p className="-ml-[47px] mt-12 whitespace-pre-line px-[21px] text-body-02 leading-[1.8] tracking-[-0.025em]">
+          {course.review}
+        </p>
+      </section>
+
+      <section className="border-b-[6px] border-gray-20 pb-9">
+        <h2 className="h-[41px] px-8 py-2 text-title-02 font-semibold leading-[1.4] tracking-[-0.025em]">
+          다녀온 곳
+        </h2>
+        <div className="pointer-events-none -mb-[116px] ml-auto mr-[13px] flex size-[136px] items-center justify-center" aria-hidden="true">
+          <StarTwo className="size-[100px] rotate-[30deg]" />
+        </div>
+        {course.places.map((place) => (
+          <CourseDetailPlace key={place.id} place={place} />
+        ))}
+        <StarThree className="pointer-events-none ml-[5px] -mt-[116px] size-[60px]" aria-hidden="true" />
+      </section>
+
+      <div className="flex min-h-[97px] flex-wrap gap-2 px-[15px] py-8">
+        <span className="whitespace-nowrap rounded-[20px] bg-gray-30 px-3 py-2 text-caption text-gray-70">
+          여행시간 {course.duration}
+        </span>
+        {course.tags.map((tag) => (
+          <span
+            className="whitespace-nowrap rounded-[20px] bg-gray-30 px-3 py-2 text-caption text-gray-70"
+            key={tag}
+          >
+            {tag.startsWith("#") ? tag : `#${tag}`}
+          </span>
+        ))}
       </div>
 
       {!course.isMine && (
-        <footer className="course-detail__footer">
-          {copyError && <p role="alert">{copyError}</p>}
-          <button type="button" onClick={handleCopyCourse} disabled={isCopying || !isCourseLoaded}>
+        <footer className="h-[125px] px-[15px] pb-[50px] pt-[15px]">
+          {errorMessage && (
+            <p className="pb-2 text-center text-caption text-primary-60" role="alert">
+              {errorMessage}
+            </p>
+          )}
+          <button
+            type="button"
+            onClick={handleCopyCourse}
+            disabled={isCopying}
+            className="h-[60px] w-full rounded-[20px] bg-linear-to-r from-secondary-50 to-primary-50 text-title-02 font-semibold text-gray-10 shadow-[0_0_4px_var(--color-secondary-50)] disabled:opacity-50"
+          >
             {isCopying ? "코스 만드는 중..." : "내 코스로 만들기"}
           </button>
         </footer>

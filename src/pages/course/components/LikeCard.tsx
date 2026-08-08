@@ -1,5 +1,5 @@
 import LineBadge, { type SubwayLine} from "@/components/LineBadge";
-import CardBG from '@/assets/like/card-background.svg?react';
+import CardBG from '@/assets/card-default.svg?react';
 import LikeCheckIcon from '@/assets/like/likeCheck.svg?react';
 import LikeSelectIcon from '@/assets/like/likeSelect.svg?react';
 
