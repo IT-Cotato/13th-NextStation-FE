@@ -4,12 +4,16 @@ import ModalButton from "./ModalButton";
 
 interface ConfirmModalProps extends ComponentPropsWithoutRef<"div"> {
   message: string;
+  leftButtonText?: string;
+  rightButtonText?: string;
   onClose: () => void;
   onConfirm: () => void;
 }
 
 export default function ConfirmModal({
   message,
+  leftButtonText,
+  rightButtonText,
   onClose,
   onConfirm,
 }: ConfirmModalProps) {
@@ -30,10 +34,10 @@ export default function ConfirmModal({
         </p>
         <div className="flex gap-2">
           <ModalButton variant="secondary" onClick={onClose}>
-            아니오
+            {leftButtonText ? leftButtonText : "아니오"}
           </ModalButton>
           <ModalButton variant="primary" onClick={onConfirm}>
-            예
+            {rightButtonText ? rightButtonText : "예"}
           </ModalButton>
         </div>
       </section>
