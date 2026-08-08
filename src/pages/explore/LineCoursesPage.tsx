@@ -278,8 +278,8 @@ export default function LineCoursesPage() {
               {stationNames.map((stationItem) => (
                 <button
                   type="button"
-                  disabled={!stationItem.hasCourses}
-                  className={`w-full border-0 bg-transparent p-0 text-left text-subtitle font-semibold leading-[1.4] ${station?.stationId === stationItem.stationId ? "text-gray-100" : "text-gray-60"} disabled:opacity-40`}
+                  aria-pressed={station?.stationId === stationItem.stationId}
+                  className={`w-full border-0 bg-transparent p-0 text-left text-subtitle font-semibold leading-[1.4] ${station?.stationId === stationItem.stationId ? "text-gray-100" : "text-gray-60"}`}
                   onClick={() => {
                     setStation(stationItem);
                     setNextCursor(null);
