@@ -14,14 +14,11 @@ import ExploreCourseItem from "./components/ExploreCourseItem";
 import ExploreLineTabs from "./components/ExploreLineTabs";
 import ExploreSearchBar from "./components/ExploreSearchBar";
 import { featuredConceptTours } from "./data/conceptTours";
-import {
-  getDisplayedExploreLines,
-  isSupportedExploreLineId,
-} from "./utils/exploreLines";
+import { getDisplayedExploreLines } from "./utils/exploreLines";
 
 export default function ExplorePage() {
   const navigate = useNavigate();
-  const [line, setLine] = useState(1);
+  const [line, setLine] = useState<number | null>(null);
   const [query, setQuery] = useState("");
   const [data, setData] = useState<ExploreMainResponse | null>(null);
   const displayedConceptTours = featuredConceptTours.map((design) => ({
@@ -41,11 +38,12 @@ export default function ExplorePage() {
     void getExploreMain()
       .then((response) => {
         setData(response);
-        if (
-          response.selectedLineId &&
-          isSupportedExploreLineId(response.selectedLineId)
-        )
-          setLine(response.selectedLineId);
+        const responseLines = getDisplayedExploreLines(response.lines);
+        const selectedLine =
+          responseLines.find(
+            (lineItem) => lineItem.id === response.selectedLineId,
+          ) ?? responseLines[0];
+        setLine(selectedLine?.id ?? null);
       })
       .catch(() => setData(null));
   }, []);
@@ -167,7 +165,9 @@ export default function ExplorePage() {
           <button
             className="border-0 bg-transparent p-0 text-body-02 font-semibold text-gray-60"
             type="button"
-            onClick={() => navigate(`/explore/lines?line=${line}`)}
+            onClick={() =>
+              navigate(line ? `/explore/lines?line=${line}` : "/explore/lines")
+            }
           >
             {renderMore("전체보기")}
           </button>

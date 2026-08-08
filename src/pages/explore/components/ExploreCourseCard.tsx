@@ -16,8 +16,9 @@ interface ExploreCourseCardProps {
   rank: number;
 }
 
-function isSubwayLine(lineId: number): lineId is SubwayLine {
-  return Number.isInteger(lineId) && lineId >= 1 && lineId <= 9;
+function getSubwayLine(code: string): SubwayLine | null {
+  const matchedLine = /^LINE_([1-9])$/.exec(code);
+  return matchedLine ? (Number(matchedLine[1]) as SubwayLine) : null;
 }
 
 export default function ExploreCourseCard({
@@ -31,6 +32,7 @@ export default function ExploreCourseCard({
   const likeCount =
     course.likeCount + (liked === originalLiked ? 0 : liked ? 1 : -1);
   const backgroundImage = `linear-gradient(to bottom, transparent 30%, rgb(255 255 255 / 60%) 66%, white), url(${course.imageUrl || coursePhoto})`;
+  const subwayLine = course.line ? getSubwayLine(course.line.code) : null;
 
   const handleLike = async () => {
     if (isLikePending) return;
@@ -69,9 +71,7 @@ export default function ExploreCourseCard({
       <CourseRankBadge className="self-end" rank={rank} />
       <div className="flex flex-col gap-2">
         <div className="inline-flex items-center gap-1 whitespace-nowrap text-body-02 text-gray-100">
-          {course.line && isSubwayLine(course.line.id) && (
-            <LineBadge line={course.line.id} />
-          )}
+          {subwayLine && <LineBadge line={subwayLine} />}
           {course.stationName}
         </div>
         <p className="text-subtitle font-semibold leading-[1.4] tracking-[-0.025em] text-gray-100">

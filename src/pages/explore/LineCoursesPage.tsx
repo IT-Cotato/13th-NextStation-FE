@@ -18,24 +18,19 @@ import {
 import ExploreLineTabs from "./components/ExploreLineTabs";
 import { stationsByLine } from "@/mocks/StationByLine";
 import { searchStations } from "@/api/stations";
-import {
-  getDisplayedExploreLines,
-  isSupportedExploreLineId,
-  supportedExploreLines,
-} from "./utils/exploreLines";
+import { getDisplayedExploreLines } from "./utils/exploreLines";
 
 type SortOption = "인기순" | "최신순";
 export default function LineCoursesPage() {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
-  const requestedLine = Number(searchParams.get("line"));
-  const line = isSupportedExploreLineId(requestedLine) ? requestedLine : 1;
+  const requestedLineId = Number(searchParams.get("line"));
   const [station, setStation] = useState<ExploreStation | null>(null);
   const [sortOption, setSortOption] = useState<SortOption>("인기순");
   const [isStationMenuOpen, setIsStationMenuOpen] = useState(false);
   const stationButtonRef = useRef<HTMLButtonElement>(null);
   const stationDialogRef = useRef<HTMLElement>(null);
-  const [lines, setLines] = useState<ExploreLine[]>(supportedExploreLines);
+  const [lines, setLines] = useState<ExploreLine[]>([]);
   const [stationNames, setStationNames] = useState<ExploreStation[]>([]);
   const [resolvingStationName, setResolvingStationName] = useState<
     string | null
@@ -46,31 +41,47 @@ export default function LineCoursesPage() {
   const [hasNext, setHasNext] = useState(false);
   const isLoadingMoreRef = useRef(false);
   const { ref: loadMoreRef, inView } = useInView({ rootMargin: "120px" });
+  const selectedLine =
+    lines.find((lineItem) => lineItem.id === requestedLineId) ??
+    lines[0] ??
+    null;
+  const lineId = selectedLine?.id;
+  const lineName = selectedLine?.name ?? "";
 
   useEffect(() => {
     void getExploreMain()
       .then((data) => {
-        setLines(getDisplayedExploreLines(data.lines));
-        if (!isSupportedExploreLineId(requestedLine)) {
-          const initialLine =
-            data.selectedLineId &&
-            isSupportedExploreLineId(data.selectedLineId)
-              ? data.selectedLineId
-              : 1;
+        const displayedLines = getDisplayedExploreLines(data.lines);
+        const initialLine =
+          displayedLines.find(
+            (lineItem) => lineItem.id === requestedLineId,
+          ) ??
+          displayedLines.find(
+            (lineItem) => lineItem.id === data.selectedLineId,
+          ) ??
+          displayedLines[0];
+
+        setLines(displayedLines);
+        if (initialLine && initialLine.id !== requestedLineId) {
           setSearchParams(
-            { line: String(initialLine) },
+            { line: String(initialLine.id) },
             { replace: true },
           );
         }
       })
-      .catch(() => setLines(supportedExploreLines));
-  }, [requestedLine, setSearchParams]);
+      .catch(() => {
+        setLines([]);
+        setIsLoading(false);
+      });
+  }, [requestedLineId, setSearchParams]);
 
   useEffect(() => {
+    if (!lineId) return undefined;
+
     let isActive = true;
     const sort: ExploreSort = sortOption === "인기순" ? "POPULAR" : "LATEST";
     void getExploreCourses({
-      lineId: line,
+      lineId,
       stationId: station?.stationId,
       sort,
       size: 50,
@@ -96,15 +107,22 @@ export default function LineCoursesPage() {
     return () => {
       isActive = false;
     };
-  }, [line, sortOption, station]);
+  }, [lineId, sortOption, station]);
 
   useEffect(() => {
-    if (!inView || !hasNext || !nextCursor || isLoadingMoreRef.current) return;
+    if (
+      !lineId ||
+      !inView ||
+      !hasNext ||
+      !nextCursor ||
+      isLoadingMoreRef.current
+    )
+      return;
 
     const sort: ExploreSort = sortOption === "인기순" ? "POPULAR" : "LATEST";
     isLoadingMoreRef.current = true;
     void getExploreCourses({
-      lineId: line,
+      lineId,
       stationId: station?.stationId,
       sort,
       cursor: nextCursor,
@@ -119,7 +137,7 @@ export default function LineCoursesPage() {
       .finally(() => {
         isLoadingMoreRef.current = false;
       });
-  }, [hasNext, inView, line, nextCursor, sortOption, station]);
+  }, [hasNext, inView, lineId, nextCursor, sortOption, station]);
 
   const handleLineChange = (nextLine: number) => {
     setStation(null);
@@ -142,7 +160,9 @@ export default function LineCoursesPage() {
           const matchedStation = stations.find(
             (stationItem) =>
               stationItem.name === stationName &&
-              stationItem.lines.some((stationLine) => stationLine.id === line),
+              stationItem.lines.some(
+                (stationLine) => stationLine.code === selectedLine?.code,
+              ),
           );
 
           return matchedStation
@@ -215,7 +235,7 @@ export default function LineCoursesPage() {
 
       <ExploreLineTabs
         lines={lines}
-        selectedLine={line}
+        selectedLine={lineId ?? null}
         onSelect={handleLineChange}
       />
 
@@ -252,7 +272,7 @@ export default function LineCoursesPage() {
 
       <section
         className="flex flex-col gap-3 px-[15px] py-7"
-        aria-label={`${line}호선 코스 목록`}
+        aria-label={`${lineName} 코스 목록`}
       >
         {isLoading && (
           <p className="py-16 text-center text-body-01 text-gray-60">
@@ -328,7 +348,7 @@ export default function LineCoursesPage() {
               >
                 전체
               </button>
-              {(stationsByLine[`${line}호선`] ?? []).map((stationName) => (
+              {(stationsByLine[lineName] ?? []).map((stationName) => (
                 <button
                   type="button"
                   aria-pressed={station?.stationName === stationName}
