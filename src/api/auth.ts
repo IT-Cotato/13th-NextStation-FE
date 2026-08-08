@@ -1,14 +1,14 @@
-const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL ?? '').replace(
+const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL ?? "").replace(
   /\/+$/,
-  '',
+  "",
 );
 
-const AGREED_TERMS_STORAGE_KEY = 'auth.agreedTermsIds';
-const SIGNUP_TOKEN_STORAGE_KEY = 'auth.signupToken';
-const ACCESS_TOKEN_STORAGE_KEY = 'auth.accessToken';
-const KAKAO_SIGNUP_TOKEN_STORAGE_KEY = 'auth.kakaoSignupToken';
-const KAKAO_PROFILE_STORAGE_KEY = 'auth.kakaoProfile';
-const KAKAO_OAUTH_STATE_STORAGE_KEY = 'auth.kakaoOAuthState';
+const AGREED_TERMS_STORAGE_KEY = "auth.agreedTermsIds";
+const SIGNUP_TOKEN_STORAGE_KEY = "auth.signupToken";
+const ACCESS_TOKEN_STORAGE_KEY = "auth.accessToken";
+const KAKAO_SIGNUP_TOKEN_STORAGE_KEY = "auth.kakaoSignupToken";
+const KAKAO_PROFILE_STORAGE_KEY = "auth.kakaoProfile";
+const KAKAO_OAUTH_STATE_STORAGE_KEY = "auth.kakaoOAuthState";
 
 export const REQUIRED_TERMS_IDS = [1, 2] as const;
 export const MARKETING_TERM_ID = 3;
@@ -42,7 +42,7 @@ export class AuthApiError extends Error {
     reasons?: Record<string, string>,
   ) {
     super(message);
-    this.name = 'AuthApiError';
+    this.name = "AuthApiError";
     this.status = status;
     this.code = code;
     this.reasons = reasons;
@@ -55,9 +55,9 @@ async function authRequest<T>(
 ): Promise<T> {
   const response = await fetch(`${API_BASE_URL}${path}`, {
     ...init,
-    credentials: 'include',
+    credentials: "include",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
       ...init.headers,
     },
   });
@@ -68,7 +68,7 @@ async function authRequest<T>(
     throw new AuthApiError(
       response.status,
       body.code,
-      body.message || '요청을 처리하지 못했습니다.',
+      body.message || "요청을 처리하지 못했습니다.",
       body.reasons,
     );
   }
@@ -90,7 +90,7 @@ export function getAgreedTermsIds(): number[] {
   try {
     const ids: unknown = JSON.parse(storedIds);
     return Array.isArray(ids)
-      ? ids.filter((id): id is number => typeof id === 'number')
+      ? ids.filter((id): id is number => typeof id === "number")
       : [];
   } catch {
     return [];
@@ -120,15 +120,19 @@ export function getAccessToken() {
   return sessionStorage.getItem(ACCESS_TOKEN_STORAGE_KEY);
 }
 
+export function clearAccessToken() {
+  sessionStorage.removeItem(ACCESS_TOKEN_STORAGE_KEY);
+}
+
 export function getTerms() {
-  return authRequest<AuthTerm[]>('/api/v1/auth/terms');
+  return authRequest<AuthTerm[]>("/api/v1/auth/terms");
 }
 
 export function createKakaoOAuthState() {
   const bytes = crypto.getRandomValues(new Uint8Array(32));
   const state = Array.from(bytes, (byte) =>
-    byte.toString(16).padStart(2, '0'),
-  ).join('');
+    byte.toString(16).padStart(2, "0"),
+  ).join("");
   sessionStorage.setItem(KAKAO_OAUTH_STATE_STORAGE_KEY, state);
   return state;
 }
@@ -142,15 +146,15 @@ export function clearKakaoOAuthState() {
 }
 
 export function sendEmailVerification(email: string, agreedTermsIds: number[]) {
-  return authRequest<string>('/api/v1/auth/email/verification', {
-    method: 'POST',
+  return authRequest<string>("/api/v1/auth/email/verification", {
+    method: "POST",
     body: JSON.stringify({ email, agreedTermsIds }),
   });
 }
 
 export function confirmEmailVerification(email: string, code: string) {
-  return authRequest<string>('/api/v1/auth/email/verification/confirm', {
-    method: 'POST',
+  return authRequest<string>("/api/v1/auth/email/verification/confirm", {
+    method: "POST",
     body: JSON.stringify({ email, code }),
   });
 }
@@ -166,8 +170,8 @@ export function signup(
   passwordConfirm: string,
   agreedTermsIds: number[],
 ) {
-  return authRequest<SignupResponse>('/api/v1/auth/signup', {
-    method: 'POST',
+  return authRequest<SignupResponse>("/api/v1/auth/signup", {
+    method: "POST",
     body: JSON.stringify({
       email,
       password,
@@ -180,7 +184,7 @@ export function signup(
 interface ProfileResponse {
   memberId: number;
   nickname: string;
-  status: 'ACTIVE';
+  status: "ACTIVE";
 }
 
 interface PresignedImageResponse {
@@ -191,8 +195,8 @@ interface PresignedImageResponse {
 
 export class ProfileImageUploadError extends Error {
   constructor() {
-    super('프로필 사진 업로드에 실패했습니다.');
-    this.name = 'ProfileImageUploadError';
+    super("프로필 사진 업로드에 실패했습니다.");
+    this.name = "ProfileImageUploadError";
   }
 }
 
@@ -200,20 +204,17 @@ export function getProfileImagePresignedUrl(
   signupToken: string,
   fileName: string,
 ) {
-  return authRequest<PresignedImageResponse>(
-    '/api/v1/images/presigned-url',
-    {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${signupToken}`,
-      },
-      body: JSON.stringify({
-        folder: 'PROFILE',
-        journalId: null,
-        fileName,
-      }),
+  return authRequest<PresignedImageResponse>("/api/v1/images/presigned-url", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${signupToken}`,
     },
-  );
+    body: JSON.stringify({
+      folder: "PROFILE",
+      journalId: null,
+      fileName,
+    }),
+  });
 }
 
 export async function uploadProfileImage(
@@ -225,9 +226,9 @@ export async function uploadProfileImage(
 
   try {
     response = await fetch(presignedUrl, {
-      method: 'PUT',
+      method: "PUT",
       headers: {
-        'Content-Type': contentType,
+        "Content-Type": contentType,
       },
       body: file,
     });
@@ -245,12 +246,12 @@ export function setupProfile(
   profile: {
     nickname: string;
     profileImageUrl?: string;
-    gender: 'MALE' | 'FEMALE' | 'UNSPECIFIED';
+    gender: "MALE" | "FEMALE" | "UNSPECIFIED";
     birthDate: string;
   },
 ) {
-  return authRequest<ProfileResponse>('/api/v1/auth/profile', {
-    method: 'POST',
+  return authRequest<ProfileResponse>("/api/v1/auth/profile", {
+    method: "POST",
     headers: {
       Authorization: `Bearer ${signupToken}`,
     },
@@ -264,15 +265,15 @@ interface LoginResponse {
 }
 
 export function login(email: string, password: string) {
-  return authRequest<LoginResponse>('/api/v1/auth/login', {
-    method: 'POST',
+  return authRequest<LoginResponse>("/api/v1/auth/login", {
+    method: "POST",
     body: JSON.stringify({ email, password }),
   });
 }
 
 export function reissueAccessToken() {
-  return authRequest<{ accessToken: string }>('/api/v1/auth/reissue', {
-    method: 'POST',
+  return authRequest<{ accessToken: string }>("/api/v1/auth/reissue", {
+    method: "POST",
   });
 }
 
@@ -308,7 +309,7 @@ export function getKakaoProfile(): KakaoProfileDraft | null {
 }
 
 interface KakaoLoginResponse {
-  resultType: 'LOGIN_SUCCESS' | 'PENDING_PROFILE' | 'NEW_MEMBER';
+  resultType: "LOGIN_SUCCESS" | "PENDING_PROFILE" | "NEW_MEMBER";
   memberId?: number;
   accessToken?: string;
   signupToken?: string;
@@ -318,28 +319,25 @@ interface KakaoLoginResponse {
 }
 
 export function kakaoLogin(code: string, signal?: AbortSignal) {
-  return authRequest<KakaoLoginResponse>('/api/v1/auth/kakao/login', {
-    method: 'POST',
+  return authRequest<KakaoLoginResponse>("/api/v1/auth/kakao/login", {
+    method: "POST",
     signal,
     body: JSON.stringify({ code }),
   });
 }
 
 export function sendPasswordResetVerification(email: string) {
-  return authRequest<string>(
-    '/api/v1/auth/password-reset/email/verification',
-    {
-      method: 'POST',
-      body: JSON.stringify({ email }),
-    },
-  );
+  return authRequest<string>("/api/v1/auth/password-reset/email/verification", {
+    method: "POST",
+    body: JSON.stringify({ email }),
+  });
 }
 
 export function confirmPasswordResetVerification(email: string, code: string) {
   return authRequest<string>(
-    '/api/v1/auth/password-reset/email/verification/confirm',
+    "/api/v1/auth/password-reset/email/verification/confirm",
     {
-      method: 'POST',
+      method: "POST",
       body: JSON.stringify({ email, code }),
     },
   );
@@ -351,8 +349,8 @@ export function resetPassword(
   newPassword: string,
   newPasswordConfirm: string,
 ) {
-  return authRequest<string>('/api/v1/auth/password-reset', {
-    method: 'POST',
+  return authRequest<string>("/api/v1/auth/password-reset", {
+    method: "POST",
     body: JSON.stringify({
       email,
       code,
@@ -366,8 +364,24 @@ export function kakaoSignup(
   kakaoSignupToken: string,
   agreedTermsIds: number[],
 ) {
-  return authRequest<SignupResponse>('/api/v1/auth/kakao/signup', {
-    method: 'POST',
+  return authRequest<SignupResponse>("/api/v1/auth/kakao/signup", {
+    method: "POST",
     body: JSON.stringify({ kakaoSignupToken, agreedTermsIds }),
   });
+}
+
+// 로그아웃
+export async function logout() {
+  const accessToken = getAccessToken();
+
+  const response = await fetch(`${API_BASE_URL}/api/v1/auth/logout`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error("로그아웃 실패");
+  }
 }

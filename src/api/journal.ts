@@ -95,3 +95,113 @@ export async function getJournalWriteInfo(
 
   return json.data;
 }
+
+export interface Line {
+  id: number;
+  name: string;
+  code: string;
+}
+
+export interface Journal {
+  journalId: number;
+  line: Line;
+  title: string;
+  stationName: string;
+  thumbnailUrl: string;
+  likeCount: number;
+}
+
+export interface JournalsResponseItem {
+  // 백으로부터의 응답 형태
+  journals: Journal[];
+  nextCursor: string;
+  hasNext: boolean;
+}
+
+export interface Journals {
+  // 프론트에서의 변수 형태
+  journals: Journal[];
+  nextCursor: string;
+  hasNext: boolean;
+}
+
+export interface Course {
+  memberStampId: number;
+  stationName: string;
+  line: Line;
+  courseName: string;
+  tags: string[];
+  acquiredAt: string;
+}
+
+export interface UnwrittenJournalsResponseItem {
+  // 백으로부터의 응답 형태
+  totalCount: number;
+  courses: Course[];
+}
+
+export interface UnwrittenJournals {
+  // 프론트에서의 변수 형태
+  totalCount: number;
+  courses: Course[];
+}
+
+// 내 여행일지 목록 조회
+export async function getJournals(cursor?: string): Promise<Journals> {
+  const accessToken = getAccessToken();
+
+  if (!accessToken) {
+    throw new Error("로그인 토큰이 없습니다");
+  }
+
+  const response = await fetch(
+    `${API_BASE_URL}/api/v1/members/me/journals?size=10${cursor ? `&cursor=${cursor}` : ""}`,
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    },
+  );
+
+  if (!response.ok) {
+    throw new Error("내 여행일지 목록 조회 실패");
+  }
+
+  const json = await response.json();
+
+  const item: JournalsResponseItem = json.data;
+
+  return {
+    journals: item.journals,
+    nextCursor: item.nextCursor,
+    hasNext: item.hasNext,
+  };
+}
+
+// 미작성 여행일지 목록 조회
+export async function getUnwrittenJournals(): Promise<UnwrittenJournals> {
+  const accessToken = getAccessToken();
+
+  if (!accessToken) {
+    throw new Error("로그인 토큰이 없습니다");
+  }
+
+  const response = await fetch(`${API_BASE_URL}/api/v1/journals/uncompleted`, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error("미작성 여행일지 목록 조회 실패");
+  }
+
+  const json = await response.json();
+
+  const item: UnwrittenJournalsResponseItem = json.data;
+
+  return {
+    totalCount: item.totalCount,
+    courses: item.courses,
+  };
+}
