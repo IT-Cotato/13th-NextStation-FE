@@ -15,7 +15,7 @@ export default function CourseCard({
   description: string;
   category: string;
   isActive: boolean;
-  width?: number;
+  width?: number | string;
 }) {
   return (
     <div

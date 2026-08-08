@@ -83,6 +83,41 @@ export interface PatchCourseDetailResult {
   name: string;
 }
 
+export interface CopiedCourse {
+  courseId: number;
+  name: string;
+  stationName: string;
+}
+
+// 공개 코스를 내 코스로 복제
+export async function copyCourse(
+  courseId: number,
+  name: string,
+): Promise<CopiedCourse> {
+  const accessToken = getAccessToken();
+
+  if (!accessToken) {
+    throw new Error("로그인이 필요합니다.");
+  }
+
+  const response = await fetch(`${API_BASE_URL}/api/v1/courses/${courseId}/copy`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ name }),
+  });
+
+  const json = await response.json().catch(() => null);
+
+  if (!response.ok) {
+    throw new Error(json?.message ?? "코스를 복제하지 못했습니다.");
+  }
+
+  return json.data;
+}
+
 // 코스 수정
 export async function patchCourseDetail(
   courseId: number,

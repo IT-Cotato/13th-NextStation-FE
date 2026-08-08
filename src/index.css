@@ -80,6 +80,10 @@
 }
 
 @layer base {
+  html:has(.profile-page) {
+    scrollbar-gutter: stable;
+  }
+
   :root {
     font-synthesis: none;
     text-rendering: optimizeLegibility;
