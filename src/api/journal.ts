@@ -155,7 +155,7 @@ export async function getJournals(cursor?: string): Promise<Journals> {
   }
 
   const response = await fetch(
-    `${API_BASE_URL}/api/v1/members/me/journals?size=10${cursor ? `&cursor=${cursor}` : ""}`,
+    `${API_BASE_URL}/api/v1/members/me/journals?size=10${cursor ? `&cursor=${encodeURIComponent(cursor)}` : ""}`,
     {
       headers: {
         Authorization: `Bearer ${accessToken}`,
