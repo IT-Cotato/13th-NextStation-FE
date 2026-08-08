@@ -16,81 +16,113 @@ import {
   type ExploreStation,
 } from "@/api/explore";
 import ExploreLineTabs from "./components/ExploreLineTabs";
-import {
-  getDisplayedExploreLines,
-  isSupportedExploreLineId,
-  supportedExploreLines,
-} from "./utils/exploreLines";
+import { stationsByLine } from "@/mocks/StationByLine";
+import { searchStations } from "@/api/stations";
+import { getDisplayedExploreLines } from "./utils/exploreLines";
 
 type SortOption = "인기순" | "최신순";
 export default function LineCoursesPage() {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
-  const requestedLine = Number(searchParams.get("line"));
-  const line = isSupportedExploreLineId(requestedLine) ? requestedLine : 1;
+  const requestedLineId = Number(searchParams.get("line"));
   const [station, setStation] = useState<ExploreStation | null>(null);
   const [sortOption, setSortOption] = useState<SortOption>("인기순");
   const [isStationMenuOpen, setIsStationMenuOpen] = useState(false);
   const stationButtonRef = useRef<HTMLButtonElement>(null);
   const stationDialogRef = useRef<HTMLElement>(null);
-  const [lines, setLines] = useState<ExploreLine[]>(supportedExploreLines);
+  const [lines, setLines] = useState<ExploreLine[]>([]);
   const [stationNames, setStationNames] = useState<ExploreStation[]>([]);
+  const [resolvingStationName, setResolvingStationName] = useState<
+    string | null
+  >(null);
   const [courses, setCourses] = useState<ExploreCourse[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [nextCursor, setNextCursor] = useState<string | null>(null);
   const [hasNext, setHasNext] = useState(false);
   const isLoadingMoreRef = useRef(false);
   const { ref: loadMoreRef, inView } = useInView({ rootMargin: "120px" });
+  const selectedLine =
+    lines.find((lineItem) => lineItem.id === requestedLineId) ??
+    lines[0] ??
+    null;
+  const lineId = selectedLine?.id;
+  const lineName = selectedLine?.name ?? "";
 
   useEffect(() => {
     void getExploreMain()
       .then((data) => {
-        setLines(getDisplayedExploreLines(data.lines));
-        if (!isSupportedExploreLineId(requestedLine)) {
-          const initialLine =
-            data.selectedLineId &&
-            isSupportedExploreLineId(data.selectedLineId)
-              ? data.selectedLineId
-              : 1;
+        const displayedLines = getDisplayedExploreLines(data.lines);
+        const initialLine =
+          displayedLines.find(
+            (lineItem) => lineItem.id === requestedLineId,
+          ) ??
+          displayedLines.find(
+            (lineItem) => lineItem.id === data.selectedLineId,
+          ) ??
+          displayedLines[0];
+
+        setLines(displayedLines);
+        if (initialLine && initialLine.id !== requestedLineId) {
           setSearchParams(
-            { line: String(initialLine) },
+            { line: String(initialLine.id) },
             { replace: true },
           );
         }
       })
-      .catch(() => setLines(supportedExploreLines));
-  }, [requestedLine, setSearchParams]);
+      .catch(() => {
+        setLines([]);
+        setIsLoading(false);
+      });
+  }, [requestedLineId, setSearchParams]);
 
   useEffect(() => {
+    if (!lineId) return undefined;
+
+    let isActive = true;
     const sort: ExploreSort = sortOption === "인기순" ? "POPULAR" : "LATEST";
     void getExploreCourses({
-      lineId: line,
+      lineId,
       stationId: station?.stationId,
       sort,
       size: 50,
     })
       .then((data) => {
+        if (!isActive) return;
         setCourses(data.courses);
         setStationNames(data.availableStations);
         setNextCursor(data.nextCursor);
         setHasNext(data.hasNext);
       })
       .catch(() => {
+        if (!isActive) return;
         setCourses([]);
         setStationNames([]);
         setNextCursor(null);
         setHasNext(false);
       })
-      .finally(() => setIsLoading(false));
-  }, [line, sortOption, station]);
+      .finally(() => {
+        if (isActive) setIsLoading(false);
+      });
+
+    return () => {
+      isActive = false;
+    };
+  }, [lineId, sortOption, station]);
 
   useEffect(() => {
-    if (!inView || !hasNext || !nextCursor || isLoadingMoreRef.current) return;
+    if (
+      !lineId ||
+      !inView ||
+      !hasNext ||
+      !nextCursor ||
+      isLoadingMoreRef.current
+    )
+      return;
 
     const sort: ExploreSort = sortOption === "인기순" ? "POPULAR" : "LATEST";
     isLoadingMoreRef.current = true;
     void getExploreCourses({
-      lineId: line,
+      lineId,
       stationId: station?.stationId,
       sort,
       cursor: nextCursor,
@@ -105,7 +137,7 @@ export default function LineCoursesPage() {
       .finally(() => {
         isLoadingMoreRef.current = false;
       });
-  }, [hasNext, inView, line, nextCursor, sortOption, station]);
+  }, [hasNext, inView, lineId, nextCursor, sortOption, station]);
 
   const handleLineChange = (nextLine: number) => {
     setStation(null);
@@ -113,6 +145,47 @@ export default function LineCoursesPage() {
     setHasNext(false);
     setIsLoading(true);
     setSearchParams({ line: String(nextLine) }, { replace: true });
+  };
+
+  const handleStationChange = async (stationName: string) => {
+    const availableStation = stationNames.find(
+      (stationItem) => stationItem.stationName === stationName,
+    );
+
+    setResolvingStationName(stationName);
+    try {
+      const selectedStation =
+        availableStation ??
+        (await searchStations(stationName).then((stations) => {
+          const matchedStation = stations.find(
+            (stationItem) =>
+              stationItem.name === stationName &&
+              stationItem.lines.some(
+                (stationLine) => stationLine.code === selectedLine?.code,
+              ),
+          );
+
+          return matchedStation
+            ? {
+                stationId: matchedStation.id,
+                stationName: matchedStation.name,
+                hasCourses: false,
+              }
+            : null;
+        }));
+
+      if (!selectedStation) return;
+
+      setStation(selectedStation);
+      setNextCursor(null);
+      setHasNext(false);
+      setIsLoading(true);
+      setIsStationMenuOpen(false);
+    } catch {
+      return;
+    } finally {
+      setResolvingStationName(null);
+    }
   };
 
   useEffect(() => {
@@ -162,7 +235,7 @@ export default function LineCoursesPage() {
 
       <ExploreLineTabs
         lines={lines}
-        selectedLine={line}
+        selectedLine={lineId ?? null}
         onSelect={handleLineChange}
       />
 
@@ -199,7 +272,7 @@ export default function LineCoursesPage() {
 
       <section
         className="flex flex-col gap-3 px-[15px] py-7"
-        aria-label={`${line}호선 코스 목록`}
+        aria-label={`${lineName} 코스 목록`}
       >
         {isLoading && (
           <p className="py-16 text-center text-body-01 text-gray-60">
@@ -275,21 +348,16 @@ export default function LineCoursesPage() {
               >
                 전체
               </button>
-              {stationNames.map((stationItem) => (
+              {(stationsByLine[lineName] ?? []).map((stationName) => (
                 <button
                   type="button"
-                  aria-pressed={station?.stationId === stationItem.stationId}
-                  className={`w-full border-0 bg-transparent p-0 text-left text-subtitle font-semibold leading-[1.4] ${station?.stationId === stationItem.stationId ? "text-gray-100" : "text-gray-60"}`}
-                  onClick={() => {
-                    setStation(stationItem);
-                    setNextCursor(null);
-                    setHasNext(false);
-                    setIsLoading(true);
-                    setIsStationMenuOpen(false);
-                  }}
-                  key={stationItem.stationId}
+                  aria-pressed={station?.stationName === stationName}
+                  disabled={resolvingStationName !== null}
+                  className={`w-full border-0 bg-transparent p-0 text-left text-subtitle font-semibold leading-[1.4] ${station?.stationName === stationName ? "text-gray-100" : "text-gray-60"}`}
+                  onClick={() => void handleStationChange(stationName)}
+                  key={stationName}
                 >
-                  {stationItem.stationName.replace(/역$/, "")}
+                  {stationName.replace(/역$/, "")}
                 </button>
               ))}
             </div>

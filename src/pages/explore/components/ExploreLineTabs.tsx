@@ -1,9 +1,8 @@
 import type { ExploreLine } from "@/api/explore";
-import { isSupportedExploreLineId } from "../utils/exploreLines";
 
 interface ExploreLineTabsProps {
   lines: ExploreLine[];
-  selectedLine: number;
+  selectedLine: number | null;
   onSelect: (lineId: number) => void;
 }
 
@@ -12,10 +11,6 @@ export default function ExploreLineTabs({
   selectedLine,
   onSelect,
 }: ExploreLineTabsProps) {
-  const supportedLines = lines.filter((line) =>
-    isSupportedExploreLineId(line.id),
-  );
-
   return (
     <div
       className="flex w-full min-w-0 touch-pan-x flex-nowrap gap-2 overflow-x-auto overflow-y-hidden overscroll-x-contain px-[15px] py-2 [scrollbar-width:none] [-webkit-overflow-scrolling:touch] focus:outline-none"
@@ -28,7 +23,7 @@ export default function ExploreLineTabs({
         }
       }}
     >
-      {supportedLines.map((line) => (
+      {lines.map((line) => (
         <button
           type="button"
           role="tab"

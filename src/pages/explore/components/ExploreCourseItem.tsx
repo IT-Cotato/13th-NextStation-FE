@@ -21,8 +21,9 @@ interface ExploreCourseItemProps {
   tags?: string[];
 }
 
-function isSubwayLine(lineId: number): lineId is SubwayLine {
-  return Number.isInteger(lineId) && lineId >= 1 && lineId <= 9;
+function getSubwayLine(code: string): SubwayLine | null {
+  const matchedLine = /^LINE_([1-9])$/.exec(code);
+  return matchedLine ? (Number(matchedLine[1]) as SubwayLine) : null;
 }
 
 export default function ExploreCourseItem({
@@ -41,6 +42,7 @@ export default function ExploreCourseItem({
   const [isLikePending, setIsLikePending] = useState(false);
   const displayedLikeCount =
     likeCount + (liked === isLiked ? 0 : liked ? 1 : -1);
+  const subwayLine = line ? getSubwayLine(line.code) : null;
 
   const handleLike = async () => {
     if (isLikePending) return;
@@ -96,7 +98,7 @@ export default function ExploreCourseItem({
       <div className="flex min-w-0 flex-1 flex-col justify-center gap-2.5">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-1">
-            {line && isSubwayLine(line.id) && <LineBadge line={line.id} />}
+            {subwayLine && <LineBadge line={subwayLine} />}
             <span className="whitespace-nowrap text-body-02 leading-[1.4] tracking-[-0.025em] text-gray-100">
               {stationName}
             </span>
