@@ -90,7 +90,7 @@ export default function CompleteConfirmModal({
       >
         {/* text */}
         <div className="flex flex-col gap-2 items-center">
-          <span className="text-center text-black text-headline font-semibold leading-[1.4] tracking-[-0.6px]">
+          <span className="text-center text-gray-100 text-headline font-semibold leading-[1.4] tracking-[-0.6px]">
             {stationName} 여행을 <br />
             마치셨나요?
           </span>
