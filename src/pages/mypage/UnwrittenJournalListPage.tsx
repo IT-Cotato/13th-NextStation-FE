@@ -16,7 +16,6 @@ export default function UnwrittenJournalListPage() {
   const navigate = useNavigate();
   const { draft, initializeFromStamp } = useLogDraft();
   const [initializingId, setInitializingId] = useState<number | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const [unwrittenJournal, setUnwrittenJournal] =
@@ -24,15 +23,12 @@ export default function UnwrittenJournalListPage() {
 
   const fetchUnwrittenJournals = async () => {
     try {
-      setIsLoading(true);
       setError(null);
       const data = await getUnwrittenJournals();
       setUnwrittenJournal(data);
     } catch (e) {
       console.error(e);
       setError("여행일지 목록을 불러오지 못했습니다.");
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -111,9 +107,7 @@ export default function UnwrittenJournalListPage() {
       {/* list */}
       <section className="flex justify-center">
         <div className="flex flex-col items-center gap-[9px] py-4">
-          {isLoading ? (
-            <p className="text-body-02 text-gray-70">로딩 중...</p>
-          ) : error ? (
+          {error ? (
             <div className="flex flex-col items-center gap-3">
               <p className="text-body-02 text-gray-70">{error}</p>
               <button
