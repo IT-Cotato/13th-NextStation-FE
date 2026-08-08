@@ -50,8 +50,8 @@ export default function ExplorePage() {
   );
 
   return (
-    <main className="min-h-dvh overflow-x-hidden bg-gray-10 pb-[130px] pt-[calc(var(--safe-top)+12px)] text-gray-100">
-      <header className="flex h-[123px] items-start justify-between px-[15px] pb-2.5 pt-[45px]">
+    <main className="flex h-dvh flex-col bg-gray-10 gap-3 pt-[calc(var(--safe-top)+12px)] text-gray-100 overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+      <header className="flex items-start justify-between px-[15px]">
         <h1 className="text-title-01 font-semibold leading-[1.4] tracking-[-0.025em]">
           오늘은 어떤 환승여행을
           <br />
@@ -67,7 +67,7 @@ export default function ExplorePage() {
         </button>
       </header>
 
-      <div className="mx-[15px] mb-4 mt-[9px]">
+      <div className="flex px-[15px]">
         <ExploreSearchBar
           onSubmit={(keyword) => {
             if (keyword) {
