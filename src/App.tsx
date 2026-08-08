@@ -41,6 +41,20 @@ const StampAcquiredPage = lazy(
 );
 const VerifyPage = lazy(() => import("@/pages/course/VerifyPage"));
 
+// explore pages
+const ExplorePage = lazy(() => import("@/pages/explore/ExplorePage"));
+const PopularCoursesPage = lazy(
+  () => import("@/pages/explore/PopularCoursesPage"),
+);
+const ConceptToursPage = lazy(() => import("@/pages/explore/ConceptToursPage"));
+const ConceptDetailPage = lazy(
+  () => import("@/pages/explore/ConceptDetailPage"),
+);
+const SearchResultsPage = lazy(
+  () => import("@/pages/explore/SearchResultsPage"),
+);
+const LineCoursesPage = lazy(() => import("@/pages/explore/LineCoursesPage"));
+
 // place pages
 const DetailPage = lazy(() => import("./pages/place/DetailPage"));
 const ReviewListPage = lazy(() => import("./pages/place/ReviewListPage"));
@@ -161,6 +175,17 @@ function App() {
                 path="/course/:courseId/log/visibility"
                 element={<LogVisibilityPage />}
               />
+
+              {/* explore */}
+              <Route path="/explore" element={<ExplorePage />} />
+              <Route path="/explore/popular" element={<PopularCoursesPage />} />
+              <Route path="/explore/concepts" element={<ConceptToursPage />} />
+              <Route
+                path="/explore/concepts/:conceptId"
+                element={<ConceptDetailPage />}
+              />
+              <Route path="/explore/search" element={<SearchResultsPage />} />
+              <Route path="/explore/lines" element={<LineCoursesPage />} />
 
               {/* place */}
               <Route path="/place/:placeId" element={<DetailPage />} />
