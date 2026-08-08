@@ -16,22 +16,24 @@ import {
   type ExploreStation,
 } from "@/api/explore";
 import ExploreLineTabs from "./components/ExploreLineTabs";
+import {
+  getDisplayedExploreLines,
+  isSupportedExploreLineId,
+  supportedExploreLines,
+} from "./utils/exploreLines";
 
 type SortOption = "인기순" | "최신순";
 export default function LineCoursesPage() {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const requestedLine = Number(searchParams.get("line"));
-  const line =
-    Number.isSafeInteger(requestedLine) && requestedLine > 0
-      ? requestedLine
-      : 1;
+  const line = isSupportedExploreLineId(requestedLine) ? requestedLine : 1;
   const [station, setStation] = useState<ExploreStation | null>(null);
   const [sortOption, setSortOption] = useState<SortOption>("인기순");
   const [isStationMenuOpen, setIsStationMenuOpen] = useState(false);
   const stationButtonRef = useRef<HTMLButtonElement>(null);
   const stationDialogRef = useRef<HTMLElement>(null);
-  const [lines, setLines] = useState<ExploreLine[]>([]);
+  const [lines, setLines] = useState<ExploreLine[]>(supportedExploreLines);
   const [stationNames, setStationNames] = useState<ExploreStation[]>([]);
   const [courses, setCourses] = useState<ExploreCourse[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -43,14 +45,20 @@ export default function LineCoursesPage() {
   useEffect(() => {
     void getExploreMain()
       .then((data) => {
-        if (data.lines.length) setLines(data.lines);
-        if (!requestedLine && data.selectedLineId)
+        setLines(getDisplayedExploreLines(data.lines));
+        if (!isSupportedExploreLineId(requestedLine)) {
+          const initialLine =
+            data.selectedLineId &&
+            isSupportedExploreLineId(data.selectedLineId)
+              ? data.selectedLineId
+              : 1;
           setSearchParams(
-            { line: String(data.selectedLineId) },
+            { line: String(initialLine) },
             { replace: true },
           );
+        }
       })
-      .catch(() => setLines([]));
+      .catch(() => setLines(supportedExploreLines));
   }, [requestedLine, setSearchParams]);
 
   useEffect(() => {
@@ -270,8 +278,8 @@ export default function LineCoursesPage() {
               {stationNames.map((stationItem) => (
                 <button
                   type="button"
-                  disabled={!stationItem.hasCourses}
-                  className={`w-full border-0 bg-transparent p-0 text-left text-subtitle font-semibold leading-[1.4] ${station?.stationId === stationItem.stationId ? "text-gray-100" : "text-gray-60"} disabled:opacity-40`}
+                  aria-pressed={station?.stationId === stationItem.stationId}
+                  className={`w-full border-0 bg-transparent p-0 text-left text-subtitle font-semibold leading-[1.4] ${station?.stationId === stationItem.stationId ? "text-gray-100" : "text-gray-60"}`}
                   onClick={() => {
                     setStation(stationItem);
                     setNextCursor(null);

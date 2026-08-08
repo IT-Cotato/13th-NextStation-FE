@@ -14,6 +14,10 @@ import ExploreCourseItem from "./components/ExploreCourseItem";
 import ExploreLineTabs from "./components/ExploreLineTabs";
 import ExploreSearchBar from "./components/ExploreSearchBar";
 import { featuredConceptTours } from "./data/conceptTours";
+import {
+  getDisplayedExploreLines,
+  isSupportedExploreLineId,
+} from "./utils/exploreLines";
 
 export default function ExplorePage() {
   const navigate = useNavigate();
@@ -31,13 +35,17 @@ export default function ExplorePage() {
       courseCount: 0,
     },
   }));
-  const displayedLines = data?.lines ?? [];
+  const displayedLines = getDisplayedExploreLines(data?.lines);
 
   useEffect(() => {
     void getExploreMain()
       .then((response) => {
         setData(response);
-        if (response.selectedLineId) setLine(response.selectedLineId);
+        if (
+          response.selectedLineId &&
+          isSupportedExploreLineId(response.selectedLineId)
+        )
+          setLine(response.selectedLineId);
       })
       .catch(() => setData(null));
   }, []);
