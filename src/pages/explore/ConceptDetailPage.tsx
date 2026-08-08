@@ -112,7 +112,7 @@ export default function ConceptDetailPage() {
   const design = tour ? getConceptTourDesign(tour.conceptTourId) : null;
 
   return (
-    <main className="min-h-dvh overflow-x-hidden bg-gray-10 pb-6 pt-[45px] text-gray-100">
+    <main className="flex h-dvh flex-col bg-gray-10 text-gray-100 pt-[calc(var(--safe-top)+12px)] text-gray-100 overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
       <Header showBack />
 
       {isLoading && !tour && (
