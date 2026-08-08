@@ -16,21 +16,32 @@ export default function UnwrittenJournalListPage() {
   const navigate = useNavigate();
   const { draft, initializeFromStamp } = useLogDraft();
   const [initializingId, setInitializingId] = useState<number | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const [unwrittenJournal, setUnwrittenJournal] =
     useState<UnwrittenJournals | null>(null);
 
+  const fetchUnwrittenJournals = async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      const data = await getUnwrittenJournals();
+      setUnwrittenJournal(data);
+    } catch (e) {
+      console.error(e);
+      setError("여행일지 목록을 불러오지 못했습니다.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchUnwrittenJournals = async () => {
-      try {
-        const data = await getUnwrittenJournals();
-        setUnwrittenJournal(data);
-      } catch (e) {
-        console.error(e);
-      }
+    const load = async () => {
+      await fetchUnwrittenJournals();
     };
 
-    fetchUnwrittenJournals();
+    load();
   }, []);
 
   const initializeJournalWriteInfo = async (course: Course) => {
@@ -88,28 +99,41 @@ export default function UnwrittenJournalListPage() {
       <Header showBack />
 
       {/* text */}
-      <section className="flex justify-center pb-[10px]">
-        <div className="flex flex-col gap-1 w-[360px]">
-          <span className="text-title-01 font-semibold leading-[1.4] tracking-[-0.5px] text-gray-100">
-            여행일지 작성하기
-          </span>
-          <p className="text-body-02 leading-[1.4] tracking-[-0.3px] text-gray-70">
-            여행을 선택해 여행일지를 작성해 보세요.
-          </p>
-        </div>
-      </section>
+      <header className="flex flex-col w-full gap-1 px-[15px]">
+        <span className="text-title-01 font-semibold leading-[1.4] tracking-[-0.5px] text-gray-100">
+          여행일지 작성하기
+        </span>
+        <p className="text-body-02 leading-[1.4] tracking-[-0.3px] text-gray-70">
+          여행을 선택해 여행일지를 작성해 보세요.
+        </p>
+      </header>
 
       {/* list */}
       <section className="flex justify-center">
-        <div className="flex flex-col gap-[9px] py-4">
-          {unwrittenJournal?.courses.map((course) => (
-            <UnwrittenJournalCard
-              key={course.memberStampId}
-              course={course}
-              disabled={initializingId === course.memberStampId}
-              onClick={() => void handleSelectCourse(course)}
-            />
-          ))}
+        <div className="flex flex-col items-center gap-[9px] py-4">
+          {isLoading ? (
+            <p className="text-body-02 text-gray-70">로딩 중...</p>
+          ) : error ? (
+            <div className="flex flex-col items-center gap-3">
+              <p className="text-body-02 text-gray-70">{error}</p>
+              <button
+                type="button"
+                onClick={() => void fetchUnwrittenJournals()}
+                className="text-body-02 text-primary-60 underline"
+              >
+                다시 시도
+              </button>
+            </div>
+          ) : (
+            unwrittenJournal?.courses.map((course) => (
+              <UnwrittenJournalCard
+                key={course.memberStampId}
+                course={course}
+                disabled={initializingId === course.memberStampId}
+                onClick={() => void handleSelectCourse(course)}
+              />
+            ))
+          )}
         </div>
       </section>
     </main>
