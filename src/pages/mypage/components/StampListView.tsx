@@ -19,7 +19,13 @@ const SWIPE_THRESHOLD = 50;
 const STAMPS_PER_PAGE = 12;
 const PAGE_WIDTH = 300; // 카드 내부 컨텐츠 너비
 
-export default function StampListView() {
+interface StampListViewProps {
+  isMyProfile?: boolean;
+}
+
+export default function StampListView({
+  isMyProfile = true,
+}: StampListViewProps) {
   const navigate = useNavigate();
   const [stamps, setStamps] = useState<Stamp[]>([]);
   const [isStampsLoading, setIsStampsLoading] = useState(true);
@@ -81,6 +87,7 @@ export default function StampListView() {
   };
 
   const openJournalReminderModal = () => {
+    setIsStampDetailModalOpen(false);
     setIsJournalReminderModalOpen(true);
   };
 
@@ -107,15 +114,21 @@ export default function StampListView() {
         <StampEmpty />
         <p className="text-center text-gray-80 text-body-01 leading-[1.4] tracking-[-0.35px]">
           아직 스탬프가 없어요!
-          <br />
-          환승여행을 떠나 첫 번째 스탬프를 모아보세요.
+          {isMyProfile && (
+            <>
+              <br />
+              환승여행을 떠나 첫 번째 스탬프를 모아보세요.
+            </>
+          )}
         </p>
-        <button
-          className="flex justify-center items-center rounded-lg px-3 py-2 bg-secondary-10 text-body-01 leading-[1.4] tracking-[-0.35px] text-primary-60"
-          onClick={() => navigate("/explore")}
-        >
-          여행 시작하기
-        </button>
+        {isMyProfile && (
+          <button
+            className="flex justify-center items-center rounded-lg px-3 py-2 bg-secondary-10 text-body-01 leading-[1.4] tracking-[-0.35px] text-primary-60"
+            onClick={() => navigate("/explore")}
+          >
+            여행 시작하기
+          </button>
+        )}
       </div>
     );
   }
@@ -167,11 +180,15 @@ export default function StampListView() {
                   const StampIcon =
                     STATION_STAMP_MAP[stamp.stationName] ?? null;
                   return StampIcon ? (
-                    <StampIcon
+                    <button
                       key={stamp.stationId}
+                      type="button"
+                      aria-label={`${stamp.stationName} 스탬프 상세 보기`}
                       className="size-[92px]"
                       onClick={() => void handleStampClick(stamp)}
-                    />
+                    >
+                      <StampIcon aria-hidden="true" className="size-[92px]" />
+                    </button>
                   ) : null;
                 })}
             </div>
