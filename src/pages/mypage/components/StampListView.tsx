@@ -93,7 +93,7 @@ export default function StampListView() {
   const handleSkipJournalReminder = () => {
     setIsJournalReminderModalOpen(false);
     closeStampDetailModal();
-    navigate("/course");
+    navigate("/mypage");
   };
 
   if (isStampsLoading) return <p>로딩 중...</p>;
