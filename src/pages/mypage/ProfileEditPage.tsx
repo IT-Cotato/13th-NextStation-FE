@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import WarningOutline from "@/assets/warning-outline.svg?react";
 import CTAButton from "@/components/CTAButton";
 import Header from "@/components/Header";
 import ProfileImageUploader from "./components/ProfileImageUploader";
 import { getMyProfile, updateMyProfile } from "@/api/member";
+import { deleteImage } from "@/api/image";
+import AuthInput from "../auth/components/AuthInput";
 
 const validateNickname = (value: string) => {
   const trimmedValue = value.trim();
@@ -45,6 +46,7 @@ export default function ProfileEditPage() {
         setOriginalImage(profile.profileImageUrl);
       } catch (e) {
         console.error(e);
+        setProfileError("내 정보를 불러오지 못했습니다.");
       }
     };
     fetchProfile();
@@ -79,6 +81,15 @@ export default function ProfileEditPage() {
 
     try {
       await updateMyProfile(updates);
+
+      if (originalImage && originalImage !== image) {
+        try {
+          await deleteImage(originalImage);
+        } catch (e) {
+          console.error(e);
+        }
+      }
+
       navigate("/mypage");
     } catch (e) {
       console.error(e);
@@ -115,23 +126,12 @@ export default function ProfileEditPage() {
             닉네임
           </span>
 
-          <div className="flex flex-col gap-1">
-            <input
-              type="text"
-              value={nickname}
-              onChange={handleNicknameChange}
-              className="border border-primary-50 outline-none rounded-[20px] px-4 py-3 text-body-01 text-gray-70 leading-[1.4] tracking-[-0.35px]"
-            />
-            {/* error message */}
-            {nicknameError && (
-              <div className="flex gap-[5px]">
-                <WarningOutline />
-                <p className="text-body-02 leading-[1.4] tracking-[-0.3px] text-primary-60">
-                  {nicknameError}
-                </p>
-              </div>
-            )}
-          </div>
+          <AuthInput
+            value={nickname}
+            onChange={handleNicknameChange}
+            placeholder="닉네임을 입력해주세요"
+            errorMessage={nicknameError}
+          />
         </div>
       </section>
 

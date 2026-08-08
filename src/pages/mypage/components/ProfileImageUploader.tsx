@@ -3,7 +3,6 @@ import PlusIcon from "@/assets/photoPlus.svg?react";
 import DeleteIcon from "@/assets/delete.svg?react";
 import {
   createUploadFileName,
-  deleteImage,
   getPresignedUrl,
   uploadFileToPresignedUrl,
 } from "@/api/image";
@@ -59,21 +58,9 @@ export default function ProfileImageUploader({
     }
   };
 
-  const handleDeletePhoto = async () => {
+  const handleDeletePhoto = () => {
     if (isUploading) return;
-
-    const targetImage = image;
-    if (!targetImage) return;
-
-    try {
-      await deleteImage(targetImage);
-      onChange(null);
-    } catch (e) {
-      showToast({
-        message:
-          e instanceof Error ? e.message : "대표 사진 삭제에 실패했습니다.",
-      });
-    }
+    onChange(null);
   };
 
   return (
@@ -83,6 +70,7 @@ export default function ProfileImageUploader({
           <button
             type="button"
             disabled={isUploading}
+            aria-label="프로필 사진 추가"
             onClick={() => inputRef.current?.click()}
             className="flex w-[108px] h-[108px] cursor-pointer items-center justify-center rounded-lg bg-secondary-10 border border-dashed border-secondary-40 outline-none"
           >
@@ -99,7 +87,8 @@ export default function ProfileImageUploader({
             <button
               type="button"
               disabled={isUploading}
-              onClick={() => void handleDeletePhoto()}
+              aria-label="프로필 사진 삭제"
+              onClick={handleDeletePhoto}
               className="absolute top-[10px] right-2"
             >
               <DeleteIcon className="size-5" />
