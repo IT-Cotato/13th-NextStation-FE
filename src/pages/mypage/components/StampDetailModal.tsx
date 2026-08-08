@@ -81,7 +81,7 @@ export default function StampDetailModal({
         {/* close button + station title */}
         <div className="flex flex-col gap-5">
           <button type="button" onClick={onClose} className="self-end">
-            <Close className="size-[23px]" />
+            <Close className="size-6" />
           </button>
           <StationTitle
             line={stamp.line.id as SubwayLine}

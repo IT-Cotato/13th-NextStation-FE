@@ -37,12 +37,13 @@ export default function AccordionSection({
         <div className="overflow-hidden">
           <ul className="flex flex-col gap-3 pt-3 pb-2">
             {items.map((item) => (
-              <li
-                key={item.label}
-                className="text-body-01 text-gray-70 font-semibold leading-[1.4] tracking-[-0.35px]"
-                onClick={item.onClick}
-              >
-                {item.label}
+              <li key={item.label}>
+                <button
+                  className="text-body-01 text-gray-70 font-semibold leading-[1.4] tracking-[-0.35px]"
+                  onClick={item.onClick}
+                >
+                  {item.label}
+                </button>
               </li>
             ))}
           </ul>

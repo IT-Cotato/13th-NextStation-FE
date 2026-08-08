@@ -19,14 +19,14 @@ export default function JournalPreviewCard({
   const isThumbnailEmpty = thumbnailUrl === null;
 
   return (
-    <div className="relative flex flex-col w-[116px] pt-[54px] px-3 pb-4 gap-[9px] rounded-[20px] overflow-hidden">
+    <div className="relative flex flex-col w-[116px] pt-[54px] px-3 pb-4 gap-[9px] rounded-lg overflow-hidden">
       {isThumbnailEmpty ? (
         <CardBG className="absolute inset-0 h-full w-full" />
       ) : (
         <div
           role="img"
           aria-label={journalTitle}
-          className="absolute inset-0 h-full w-full rounded-[20px]"
+          className="absolute inset-0 h-full w-full rounded-lg"
           style={{
             background: `linear-gradient(180deg, rgba(255, 255, 255, 0.00) 50%, #FFF 100%), url(${thumbnailUrl}) lightgray 50% / cover no-repeat`,
           }}
