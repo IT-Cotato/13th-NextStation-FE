@@ -38,7 +38,7 @@ export default function SearchResultsPage() {
       return;
     }
 
-    void getExploreCourses({ keyword, sort: "LATEST", size: 50 })
+    void getExploreCourses({ keyword, sort: "POPULAR", size: 50 })
       .then((data) => {
         setCourses(data.courses);
         setNextCursor(data.nextCursor);
@@ -66,7 +66,7 @@ export default function SearchResultsPage() {
     isLoadingMoreRef.current = true;
     void getExploreCourses({
       keyword,
-      sort: "LATEST",
+      sort: "POPULAR",
       cursor: nextCursor,
       size: 50,
     })
