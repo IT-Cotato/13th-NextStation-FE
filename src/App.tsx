@@ -68,6 +68,13 @@ function RouteFallback() {
   );
 }
 
+// mypage
+const MyPage = lazy(() => import("@/pages/mypage/MyPage"));
+const ProfileEditPage = lazy(() => import("@/pages/mypage/ProfileEditPage"));
+const UnwrittenJournalListPage = lazy(
+  () => import("@/pages/mypage/UnwrittenJournalListPage"),
+);
+
 interface RouteErrorBoundaryProps {
   children: ReactNode;
 }
@@ -194,6 +201,14 @@ function App() {
               <Route
                 path="/place/:placeId/reviews"
                 element={<ReviewListPage />}
+              />
+
+              {/* mypage */}
+              <Route path="/mypage" element={<MyPage />} />
+              <Route path="/mypage/edit" element={<ProfileEditPage />} />
+              <Route
+                path="/mypage/journal/unwritten"
+                element={<UnwrittenJournalListPage />}
               />
             </Routes>
           </Suspense>

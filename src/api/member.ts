@@ -62,6 +62,63 @@ export async function getMyProfile(): Promise<MemberProfile> {
   return profile;
 }
 
+export async function updateMyProfile(updates: {
+  nickname?: string;
+  profileImageUrl?: string;
+}): Promise<MemberProfile> {
+  const accessToken = getAccessToken();
+
+  if (!accessToken) {
+    throw new Error("로그인 토큰이 없습니다.");
+  }
+
+  const response = await fetch(`${API_BASE_URL}/api/v1/members/me`, {
+    method: "PATCH",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      "Content-Type": "application/json; charset=utf-8",
+    },
+    body: JSON.stringify(updates),
+  });
+
+  if (!response.ok) {
+    throw new Error("내 프로필 수정 실패");
+  }
+
+  const json = await response.json();
+  const data = json.data;
+
+  const profile = {
+    memberId: data.memberId,
+    nickname: data.nickname,
+    profileImageUrl: data.profileImageUrl,
+  };
+
+  saveCachedMyProfile(profile);
+
+  return profile;
+}
+
+// 회원탈퇴
+export async function deleteMyProfile() {
+  const accessToken = getAccessToken();
+
+  if (!accessToken) {
+    throw new Error("로그인 토큰이 없습니다.");
+  }
+
+  const response = await fetch(`${API_BASE_URL}/api/v1/members/me`, {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error("회원 탈퇴 실패");
+  }
+}
+
 export interface LikedCourseLine {
   id: number;
   name: string;
