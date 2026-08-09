@@ -56,9 +56,9 @@ function mapJournalToCourse(journal: JournalDetail): CourseDetailData {
     subtitle: "",
     viewCount: journal.viewCount,
     saveCount: journal.likeCount,
-    authorName: journal.writerName,
-    authorId: journal.writerId,
-    authorProfileImageUrl: journal.writerProfileImageUrl,
+    writerId: journal.writerId,
+    writerName: journal.writerName,
+    writerProfileImageUrl: journal.writerProfileImageUrl,
     visitedAt: formatVisitedAt(journal.traveledAt),
     isMine: journal.isMine,
     isLiked: journal.isLiked,
@@ -209,11 +209,11 @@ export default function DetailPage() {
 
   const authorProfileContent = (
     <>
-      {course.authorProfileImageUrl ? (
+      {course.writerProfileImageUrl ? (
         <img
           className="size-[49px] shrink-0 rounded-full object-cover"
-          src={course.authorProfileImageUrl}
-          alt={`${course.authorName} 프로필`}
+          src={course.writerProfileImageUrl}
+          alt={`${course.writerName} 프로필`}
         />
       ) : (
         <ProfileDefault
@@ -222,9 +222,9 @@ export default function DetailPage() {
         />
       )}
       <div className="flex flex-col">
-        <strong className="text-body-02 font-semibold text-gray-90">
-          {course.authorName}
-        </strong>
+        <span className="text-body-02 font-semibold text-gray-90">
+          {course.writerName}
+        </span>
         <span className="text-caption text-gray-60">{course.visitedAt}</span>
       </div>
     </>
@@ -278,20 +278,14 @@ export default function DetailPage() {
           <span>조회수 {course.viewCount}</span>
           <span>저장 {course.saveCount}</span>
         </div>
-        {course.authorId ? (
-          <button
-            type="button"
-            className="flex h-[73px] w-full items-center gap-[14px] rounded-[20px] bg-secondary-10 px-[15px] py-3 text-left"
-            onClick={() => navigate(`/profile/${course.authorId}`)}
-            aria-label={`${course.authorName} 프로필 보기`}
-          >
-            {authorProfileContent}
-          </button>
-        ) : (
-          <div className="flex h-[73px] w-full items-center gap-[14px] rounded-[20px] bg-secondary-10 px-[15px] py-3 text-left">
-            {authorProfileContent}
-          </div>
-        )}
+        <button
+          type="button"
+          className="flex h-[73px] w-full items-center gap-[14px] rounded-[20px] bg-secondary-10 px-[15px] py-3 text-left"
+          onClick={() => navigate(`/profile/${course.writerId}`)}
+          aria-label={`${course.writerName} 프로필 보기`}
+        >
+          {authorProfileContent}
+        </button>
       </section>
 
       <section

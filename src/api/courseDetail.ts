@@ -63,9 +63,9 @@ export interface CourseDetailData {
   subtitle: string;
   viewCount: number;
   saveCount: number;
-  authorName: string;
-  authorId?: number;
-  authorProfileImageUrl?: string | null;
+  writerId: number;
+  writerName: string;
+  writerProfileImageUrl: string | null;
   visitedAt: string;
   isMine?: boolean;
   isLiked?: boolean;

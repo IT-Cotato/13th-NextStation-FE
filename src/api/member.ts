@@ -25,9 +25,13 @@ export interface PublicMemberStamp {
 
 export interface PublicMemberCourse {
   courseId: number;
+  journalId: number;
   name: string;
+  stationId: number;
   stationName: string;
-  line: LikedCourseLine;
+  line: LikedCourseLine | null;
+  imageUrl: string | null;
+  likeCount: number;
 }
 
 export interface PublicMemberCourses {

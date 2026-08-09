@@ -71,9 +71,7 @@ function RouteFallback() {
 // mypage
 const MyPage = lazy(() => import("@/pages/mypage/MyPage"));
 const ProfileEditPage = lazy(() => import("@/pages/mypage/ProfileEditPage"));
-const PublicProfilePage = lazy(
-  () => import("@/pages/mypage/PublicProfilePage"),
-);
+const UserPage = lazy(() => import("@/pages/mypage/UserPage"));
 const UnwrittenJournalListPage = lazy(
   () => import("@/pages/mypage/UnwrittenJournalListPage"),
 );
@@ -211,7 +209,7 @@ function App() {
               <Route path="/mypage/edit" element={<ProfileEditPage />} />
               <Route
                 path="/profile/:memberId"
-                element={<PublicProfilePage />}
+                element={<UserPage />}
               />
               <Route
                 path="/mypage/journal/unwritten"
