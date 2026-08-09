@@ -88,7 +88,7 @@ export default function DetailPage() {
 
   const slideImages = place.images;
   const isImageEmpty = slideImages.length < 1;
-  const isContactNumberEmpty = place.contactNumber === null;
+  const contactNumber = place.contactNumber;
   const reviews = place.reviews;
   const isReviewEmpty = reviews.length < 1;
   const previewReviewCount = reviews.length < 3 ? reviews.length : 3;
@@ -220,14 +220,14 @@ export default function DetailPage() {
               <Phone className="w-6 h-6" />
               <div className="flex gap-1">
                 <span className="text-body-01 leading-[1.4] tracking-[-0.35px]">
-                  {place.contactNumber}
+                  {contactNumber}
                 </span>
-                {isContactNumberEmpty ? (
+                {contactNumber === null ? (
                   ""
                 ) : (
                   <button
                     className="flex text-body-01 text-primary-70 leading-[1.4] tracking-[-0.35px]"
-                    onClick={() => handleCopy(place.contactNumber)}
+                    onClick={() => handleCopy(contactNumber)}
                   >
                     복사
                   </button>
