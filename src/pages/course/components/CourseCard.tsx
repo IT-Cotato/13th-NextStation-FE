@@ -49,6 +49,7 @@ export default function CourseCard({
       <div className="px-1.5">
         <button
           type="button"
+          aria-label={`${name} 장소 상세 보기`}
           onClick={(e) => {
             e.stopPropagation();
             navigate(`/place/${placeId}`);

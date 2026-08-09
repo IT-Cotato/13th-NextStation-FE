@@ -45,10 +45,11 @@ interface VerifyCourse {
 }
 
 interface VerifySyncedState {
-  // 장소 상세 페이지 등으로 이동했다가 돌아와도 순서/이름이 유지되도록 저장해두는 최신 스냅샷
+  // 장소 상세 페이지로 이동했다가 돌아와도 순서/이름이 유지되도록 저장해두는 최신 스냅샷
   course: VerifyCourse;
   places: Place[];
   courseName: string;
+  hasUnSavedChanged: boolean;
 }
 
 interface VerifyLocationState extends Partial<DraftCourseState> {
@@ -107,7 +108,9 @@ export default function VerifyPage() {
   const [pressedId, setPressedId] = useState<number | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
-  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false); // 순서/이름을 바꾸고 아직 저장 안 한 상태인지
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(
+    () => synced?.hasUnSavedChanged ?? false,
+  ); // 순서/이름을 바꾸고 아직 저장 안 한 상태인지
   const [searchParams] = useSearchParams(); // 어떤 페이지로부터 진입했는지를 알기 위함
   const from = searchParams.get("from"); // draw (랜덤 뽑기) | recommend (맞춤 추천)
   const isLoggedIn = Boolean(getAccessToken());
@@ -144,8 +147,8 @@ export default function VerifyPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [courseId]);
 
-  // 장소 상세 등으로 이동했다가 돌아왔을 때 순서/이름이 유지되도록 현재 히스토리 항목에 최신 상태 동기화
-  // (다른 페이지로 완전히 떠나는 navigate와 경쟁하지 않도록 isLeavingRef가 켜져 있으면 건너뜀)
+  // 장소 상세 페이지로 이동했다가 돌아왔을 때 순서/이름이 유지되도록 현재 히스토리 항목에 최신 상태 동기화
+  // isLeavingRef가 켜져 있으면 건너뜀
   const isLeavingRef = useRef(false);
 
   useEffect(() => {
@@ -153,10 +156,10 @@ export default function VerifyPage() {
 
     navigate(location.pathname + location.search, {
       replace: true,
-      state: { synced: { course, places, courseName } },
+      state: { synced: { course, places, courseName, hasUnsavedChanges } },
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [course, places, courseName]);
+  }, [course, places, courseName, hasUnsavedChanges]);
 
   const handleSave = async (): Promise<number | null> => {
     if (!course) return null;
@@ -299,7 +302,7 @@ export default function VerifyPage() {
   };
 
   const handleCloseClick = () => {
-    if (!isRandomDraft && !isRecommendDraft) {
+    if (!isRandomDraft && !isRecommendDraft && !hasUnsavedChanges) {
       // 내가 만든 코스 목록에서 진입하는 경우, close --> 대문 페이지로 이동
       navigate("/course");
       return;
