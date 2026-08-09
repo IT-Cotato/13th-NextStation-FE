@@ -27,15 +27,15 @@ export default function CourseCard({
       style={{ width }}
       className={`flex items-center gap-3 p-3 border rounded-lg ${isActive ? "border-primary-50 bg-secondary-10" : "border-gray-40 bg-white"}`}
     >
-      <div className="flex items-center justify-center w-[67px] h-[66px] bg-gray-30 rounded-md">
+      <div className="flex items-center justify-center w-[67px] h-[66px] bg-gray-30 rounded-md overflow-hidden">
         {category === "CULTURE" ? (
-          <CulturalSpace className="w-[32px]" />
+          <CulturalSpace className="w-[32px] h-[32px]" />
         ) : category === "CAFE" ? (
-          <Cafe className="w-[32px]" />
+          <Cafe className="w-[32px] h-[32px]" />
         ) : category === "FOOD" ? (
-          <Restaurant className="w-[32px]" />
+          <Restaurant className="w-[32px] h-[32px]" />
         ) : (
-          <Walk className="w-[32px]" />
+          <Walk className="w-[32px] h-[32px]" />
         )}
       </div>
       <div className="flex flex-col flex-1 min-w-0 gap-1">
