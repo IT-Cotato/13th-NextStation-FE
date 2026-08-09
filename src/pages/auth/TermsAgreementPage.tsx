@@ -242,9 +242,9 @@ export default function TermsAgreementPage() {
             <div>
               <AgreementItem
                 checked={serviceAgreed}
-                label={serviceTerm?.title ?? '약관'}
+                label="서비스 이용약관"
                 required
-                termType={serviceTerm?.type}
+                termType="SERVICE"
                 onOpen={handleOpenTerm}
                 onChange={() => {
                   setServiceAgreed((value) => !value);
@@ -267,9 +267,9 @@ export default function TermsAgreementPage() {
             <div>
               <AgreementItem
                 checked={privacyAgreed}
-                label={privacyTerm?.title ?? '약관'}
+                label="개인정보 취급 방침"
                 required
-                termType={privacyTerm?.type}
+                termType="PRIVACY"
                 onOpen={handleOpenTerm}
                 onChange={() => {
                   setPrivacyAgreed((value) => !value);
@@ -291,8 +291,8 @@ export default function TermsAgreementPage() {
 
             <AgreementItem
               checked={marketingAgreed}
-              label={marketingTerm?.title ?? '약관'}
-              termType={marketingTerm?.type}
+              label="마케팅 정보 수신 동의"
+              termType="MARKETING"
               onOpen={handleOpenTerm}
               onChange={() => {
                 setMarketingAgreed((value) => !value);
