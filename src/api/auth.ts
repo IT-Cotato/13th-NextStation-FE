@@ -135,11 +135,13 @@ export function clearAccessToken() {
 }
 
 export function getTerms() {
-  return authRequest<AuthTerm[]>("/api/v1/auth/terms");
+  return authRequest<AuthTerm[]>("/api/v1/auth/terms", { cache: "no-store" });
 }
 
 export function getTerm(type: AuthTermType) {
-  return authRequest<AuthTermDetail>(`/api/v1/auth/terms/${type}`);
+  return authRequest<AuthTermDetail>(`/api/v1/auth/terms/${type}`, {
+    cache: "no-store",
+  });
 }
 
 export function createKakaoOAuthState() {
