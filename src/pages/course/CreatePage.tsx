@@ -19,23 +19,53 @@ type CreatePageState = {
   stationName: string;
   lineId: number;
   recommendationRequest?: CustomRecommendationRequest;
+  filterCategory?: string;
+  selectedIds?: number[];
+  station?: StationCourseRecommendation;
 };
 
 export default function CreatePage() {
   const { stationId } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
-  const createPageState = location.state as CreatePageState | null;
-  const [station, setStation] = useState<StationCourseRecommendation | null>(
-    null,
+  // 최초 진입 시점의 값을 한 번만 고정
+  const [createPageState] = useState(
+    () => location.state as CreatePageState | null,
   );
-  const [isStationLoading, setIsStationLoading] = useState(true);
+  const [station, setStation] = useState<StationCourseRecommendation | null>(
+    createPageState?.station ?? null,
+  );
+  const [isStationLoading, setIsStationLoading] = useState(
+    !createPageState?.station,
+  );
   const [stationError, setStationError] = useState<string | null>(null);
-  const [filterCateogry, setFilterCategory] = useState("");
-  const [selectedIds, setSelectedIds] = useState<number[]>([]);
+  const [filterCateogry, setFilterCategory] = useState(
+    createPageState?.filterCategory ?? "",
+  );
+  const [selectedIds, setSelectedIds] = useState<number[]>(
+    createPageState?.selectedIds ?? [],
+  );
   const isDisabled = selectedIds.length < 3; // 코스 만들기 버튼 활성화 여부
 
+  // 현재 히스토리 항목에 동기화
   useEffect(() => {
+    if (!station) return;
+
+    navigate(location.pathname, {
+      replace: true,
+      state: {
+        ...createPageState,
+        filterCategory: filterCateogry,
+        selectedIds,
+        station,
+      },
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [station, filterCateogry, selectedIds]);
+
+  useEffect(() => {
+    if (createPageState?.station) return; // 동기화된 스냅샷이 있으면 재조회하지 않음
+
     const fetchStationCourseRecommendation = async () => {
       if (!stationId) {
         setStationError("잘못된 역입니다.");
@@ -58,10 +88,26 @@ export default function CreatePage() {
       }
     };
     fetchStationCourseRecommendation();
-  }, [createPageState?.recommendationRequest?.travelStyles, stationId]);
+  }, [
+    createPageState?.recommendationRequest?.travelStyles,
+    createPageState?.station,
+    stationId,
+  ]);
 
-  if (isStationLoading) return <p>로딩 중...</p>;
-  if (stationError) return <p>{stationError}</p>;
+  if (isStationLoading) {
+    return (
+      <main className="flex h-dvh items-center justify-center bg-gray-10 text-body-01 text-gray-70">
+        로딩 중...
+      </main>
+    );
+  }
+  if (stationError) {
+    return (
+      <main className="flex h-dvh items-center justify-center bg-gray-10 text-body-01 text-gray-70">
+        {stationError}
+      </main>
+    );
+  }
   if (!station) return null;
 
   const handleSelected = (id: number) => {
@@ -78,10 +124,24 @@ export default function CreatePage() {
   const places = activeCategory?.places ?? [];
 
   const placeById = new Map<number, StationCategoryPlace>(
-    station.categories.flatMap((category) => category.places).map((place) => [
-      place.placeId,
-      place,
-    ]),
+    station.categories
+      .flatMap((category) => category.places)
+      .map((place) => [place.placeId, place]),
+  );
+
+  const categoryByPlaceId = new Map<
+    number,
+    { categoryCode: string; categoryName: string }
+  >(
+    station.categories.flatMap((category) =>
+      category.places.map((place) => [
+        place.placeId,
+        {
+          categoryCode: category.categoryCode,
+          categoryName: category.categoryName,
+        },
+      ]),
+    ),
   );
 
   const selectedPlaces = selectedIds
@@ -155,6 +215,7 @@ export default function CreatePage() {
               >
                 <CourseCard
                   key={place.placeId}
+                  placeId={place.placeId}
                   name={place.placeName}
                   description={place.description}
                   category={activeCategory?.categoryCode ?? "CULTURE"}
@@ -177,16 +238,20 @@ export default function CreatePage() {
               state: {
                 course: {
                   name: station.defaultCourseName,
-                  places: selectedPlaces.map((place) => ({
-                    placeId: place.placeId,
-                    placeName: place.placeName,
-                    description: place.description,
-                    categoryCode: activeCategory?.categoryCode ?? "CULTURE",
-                    categoryName: activeCategory?.categoryName ?? "문화공간",
-                    imageUrl: place.imageUrl,
-                    xCoordinate: place.xCoordinate,
-                    yCoordinate: place.yCoordinate,
-                  })),
+                  places: selectedPlaces.map((place) => {
+                    const category = categoryByPlaceId.get(place.placeId);
+
+                    return {
+                      placeId: place.placeId,
+                      placeName: place.placeName,
+                      description: place.description,
+                      categoryCode: category?.categoryCode ?? "CULTURE",
+                      categoryName: category?.categoryName ?? "문화공간",
+                      imageUrl: place.imageUrl,
+                      xCoordinate: place.xCoordinate,
+                      yCoordinate: place.yCoordinate,
+                    };
+                  }),
                 },
                 stationId: station.stationId,
                 stationName: station.stationName,
