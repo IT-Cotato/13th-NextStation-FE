@@ -52,6 +52,7 @@ export default function SavedCourseCard({
             코스 확인
           </CardActionButton>
           <CardActionButton
+            isCompleted={isCompleted}
             onClick={() => {
               if (!isDeleteMode) onCompletedClick();
             }}
