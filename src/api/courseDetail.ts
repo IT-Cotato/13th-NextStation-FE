@@ -8,6 +8,8 @@ export interface Place {
   placeId: number;
   placeName: string;
   description: string;
+  categoryCode: string;
+  categoryName: string;
   imageUrl: null | string;
   xCoordinate: number;
   yCoordinate: number;
@@ -136,14 +138,17 @@ export async function copyCourse(
     throw new Error("로그인이 필요합니다.");
   }
 
-  const response = await fetch(`${API_BASE_URL}/api/v1/courses/${courseId}/copy`, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-      "Content-Type": "application/json",
+  const response = await fetch(
+    `${API_BASE_URL}/api/v1/courses/${courseId}/copy`,
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ name }),
     },
-    body: JSON.stringify({ name }),
-  });
+  );
 
   const json = await response.json().catch(() => null);
 

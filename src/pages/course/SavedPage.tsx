@@ -20,8 +20,7 @@ export default function SavedPage() {
     if (!courseInfo) return;
 
     const result = await share({
-      title: "환승여행",
-      text: `${courseInfo.courseName} 코스를 확인해보세요!`,
+      title: `${courseInfo.courseName}를 확인해보세요!`,
       url: `https://next-station-git-develop-canofmatos-projects.vercel.app/course/${courseInfo.courseId}/verify`,
     });
 
