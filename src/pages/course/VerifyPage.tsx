@@ -432,6 +432,7 @@ export default function VerifyPage() {
               <CourseCard
                 placeId={place.placeId}
                 name={place.placeName}
+                imageUrl={place.imageUrl ?? ""}
                 description={place.description}
                 category={place.categoryCode}
                 isActive={pressedId === place.placeId}

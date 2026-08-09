@@ -217,6 +217,7 @@ export default function CreatePage() {
                   key={place.placeId}
                   placeId={place.placeId}
                   name={place.placeName}
+                  imageUrl={place.imageUrl}
                   description={place.description}
                   category={activeCategory?.categoryCode ?? "CULTURE"}
                   isActive={selectedIds.includes(place.placeId)}
