@@ -1,4 +1,5 @@
 import Heart from "@/assets/heart.svg?react";
+import CourseEmpty from "@/assets/course-empty.svg?react";
 import SavedCourseCard from "./components/SavedCourseCard";
 import { useEffect, useState } from "react";
 import CompleteConfirmModal from "./components/CompleteConfirmModal";
@@ -17,13 +18,12 @@ import { showToast } from "./components/ShowToast";
 export default function MainPage() {
   const navigate = useNavigate();
   const [courses, setCourses] = useState<Course[]>([]);
+  const isCourseEmpty = courses.length < 1;
   const [nextCursor, setNextCursor] = useState<string | null>(null);
   const [hasNext, setHasNext] = useState(false);
   const [isCoursesLoading, setIsCoursesLoading] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
-  const [initialLoadError, setInitialLoadError] = useState<string | null>(
-    null,
-  );
+  const [initialLoadError, setInitialLoadError] = useState<string | null>(null);
   const [isCompleteModalOpen, setIsCompleteModalOpen] = useState(false);
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -197,22 +197,35 @@ export default function MainPage() {
       </section>
 
       <section className="flex justify-center pb-25">
-        <div className="flex flex-col gap-[9px]">
-          {filteredCourses.map((course) => (
-            <SavedCourseCard
-              key={course.courseId}
-              courseId={course.courseId}
-              name={course.name}
-              line={course.line.name}
-              stationName={course.stationName}
-              isCompleted={course.isCompleted}
-              onCompletedClick={() => handleCompletedClick(course)}
-              isDeleteMode={isDeleteMode}
-              isSelect={selectedIds.includes(course.courseId)}
-              handleSelected={handleSelected}
-            />
-          ))}
-        </div>
+        {isCourseEmpty ? (
+          <div className="flex flex-col gap-5 items-center justify-center pt-20">
+            <CourseEmpty />
+            <p className="text-subtitle leading-[1.4] tracking-[-0.4px] text-gray-80 text-center">
+              아직 저장된 코스가 없어요!
+              <br />
+              나만의 환승여행 코스를 만들어보세요.
+            </p>
+          </div>
+        ) : (
+          <>
+            <div className="flex flex-col gap-[9px]">
+              {filteredCourses.map((course) => (
+                <SavedCourseCard
+                  key={course.courseId}
+                  courseId={course.courseId}
+                  name={course.name}
+                  line={course.line.name}
+                  stationName={course.stationName}
+                  isCompleted={course.isCompleted}
+                  onCompletedClick={() => handleCompletedClick(course)}
+                  isDeleteMode={isDeleteMode}
+                  isSelect={selectedIds.includes(course.courseId)}
+                  handleSelected={handleSelected}
+                />
+              ))}
+            </div>
+          </>
+        )}
       </section>
 
       <div ref={ref} className="h-1 w-full" />
