@@ -8,7 +8,6 @@ import cloudLeft from '@/assets/auth/welcome-cloud-left.svg';
 import cloudMiddle from '@/assets/auth/welcome-cloud-middle.svg';
 import cloudSmall from '@/assets/auth/welcome-cloud-small.svg';
 import cloudRight from '@/assets/auth/welcome-cloud-right.svg';
-import appleImage from '@/assets/auth/welcome-apple.svg';
 import kakaoImage from '@/assets/auth/welcome-kakao.svg';
 import Header from '@/components/Header';
 import CTAButton from '@/components/CTAButton';
@@ -41,7 +40,7 @@ export default function WelcomePage() {
   };
 
   return (
-    <main className="relative h-dvh overflow-hidden bg-linear-to-b from-primary-10 to-secondary-20 [--welcome-button-size:clamp(54px,7.11dvh,60px)] [--welcome-social-gap:calc(min(100vw,var(--app-max-width))*20/390)] [--welcome-stack-gap:2.84dvh] [--welcome-track-top:63.27dvh]">
+    <main className="relative h-dvh overflow-hidden bg-linear-to-b from-primary-10 to-secondary-20 [--welcome-button-size:clamp(54px,7.11dvh,60px)] [--welcome-stack-gap:2.84dvh] [--welcome-track-top:63.27dvh]">
       <div className="absolute left-0 top-[40px] z-30 w-full">
         <Header showBack />
       </div>
@@ -114,16 +113,7 @@ export default function WelcomePage() {
         </p>
 
         <section className="absolute left-[15px] right-[15px] top-[70.97dvh] flex flex-col items-center gap-[var(--welcome-stack-gap)]">
-          <div className="flex gap-[var(--welcome-social-gap)]">
-            <button
-              type="button"
-              disabled
-              className="size-[var(--welcome-button-size)] rounded-full focus:outline-none focus:ring-2 focus:ring-primary-60"
-              aria-label="Apple로 로그인"
-            >
-              <img src={appleImage} alt="" className="size-full" />
-            </button>
-
+          <div className="flex w-full justify-center">
             <button
               type="button"
               onClick={handleKakaoLogin}
