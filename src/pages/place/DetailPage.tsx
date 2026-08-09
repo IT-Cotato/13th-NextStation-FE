@@ -73,15 +73,22 @@ export default function DetailPage() {
     fetchPlaceCourses();
   }, [placeId]);
 
-  if (isPlaceLoading) return <p>로딩 중...</p>;
-  if (placeError) return <p>{placeError}</p>;
+  const fallback = (content: string) => (
+    <main className="flex h-dvh items-center justify-center bg-gray-10 text-body-01 text-gray-70">
+      {content}
+    </main>
+  );
+
+  if (isPlaceLoading) return fallback("로딩 중...");
+  if (placeError) return fallback(placeError);
   if (!place) return null;
-  if (isCoursesLoading) return <p>로딩 중...</p>;
-  if (coursesError) return <p>{coursesError}</p>;
+  if (isCoursesLoading) return fallback("로딩 중...");
+  if (coursesError) return fallback(coursesError);
   if (!courses) return null;
 
   const slideImages = place.images;
   const isImageEmpty = slideImages.length < 1;
+  const contactNumber = place.contactNumber;
   const reviews = place.reviews;
   const isReviewEmpty = reviews.length < 1;
   const previewReviewCount = reviews.length < 3 ? reviews.length : 3;
@@ -213,14 +220,18 @@ export default function DetailPage() {
               <Phone className="w-6 h-6" />
               <div className="flex gap-1">
                 <span className="text-body-01 leading-[1.4] tracking-[-0.35px]">
-                  {place.contactNumber}
+                  {contactNumber}
                 </span>
-                <button
-                  className="flex text-body-01 text-primary-70 leading-[1.4] tracking-[-0.35px]"
-                  onClick={() => handleCopy(place.contactNumber)}
-                >
-                  복사
-                </button>
+                {contactNumber === null ? (
+                  ""
+                ) : (
+                  <button
+                    className="flex text-body-01 text-primary-70 leading-[1.4] tracking-[-0.35px]"
+                    onClick={() => handleCopy(contactNumber)}
+                  >
+                    복사
+                  </button>
+                )}
               </div>
             </div>
           </div>
@@ -280,7 +291,7 @@ export default function DetailPage() {
       {/* other courses */}
       <section className="flex justify-center pt-7">
         <div className="flex flex-col w-[360px]">
-          <div className="flex pt-3">
+          <div className="flex py-3">
             <span className="flex font-semibold text-title-02 leading-[1.4] tracking-[-0.45px]">
               이 장소를 포함한 코스
             </span>

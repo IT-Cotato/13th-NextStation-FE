@@ -17,7 +17,7 @@ export interface PlaceResponseItem {
   description: string;
   category: string;
   address: string;
-  contactNumber: string;
+  contactNumber: string | null;
   kakaoPlaceUrl: string;
   totalReviewCount: number;
   images: string[] | null;
@@ -31,7 +31,7 @@ export interface Place {
   description: string;
   category: string;
   address: string;
-  contactNumber: string;
+  contactNumber: string | null;
   kakaoPlaceUrl: string;
   totalReviewCount: number;
   images: string[];

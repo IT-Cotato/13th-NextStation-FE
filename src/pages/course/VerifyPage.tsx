@@ -23,10 +23,7 @@ import {
   type Place,
 } from "@/api/courseDetail";
 import { createCourse } from "@/api/courseRecommendation";
-import {
-  rerollRandomCourse,
-  type RandomCourseResponse,
-} from "@/api/random";
+import { rerollRandomCourse, type RandomCourseResponse } from "@/api/random";
 import Button from "@/components/Button";
 import CTAButton from "@/components/CTAButton";
 import share from "@/utils/share";
@@ -47,11 +44,25 @@ interface VerifyCourse {
   lineId: number;
 }
 
+interface VerifySyncedState {
+  // 장소 상세 페이지로 이동했다가 돌아와도 순서/이름이 유지되도록 저장해두는 최신 스냅샷
+  course: VerifyCourse;
+  places: Place[];
+  courseName: string;
+  hasUnSavedChanged: boolean;
+}
+
+interface VerifyLocationState extends Partial<DraftCourseState> {
+  synced?: VerifySyncedState;
+}
+
 function draftToPlaces(draft: DraftCourseState): Place[] {
   return draft.course.places.map((place, index) => ({
     placeId: place.placeId,
     placeName: place.placeName,
     description: place.description,
+    categoryCode: place.categoryCode,
+    categoryName: place.categoryName,
     imageUrl: place.imageUrl,
     xCoordinate: place.xCoordinate,
     yCoordinate: place.yCoordinate,
@@ -63,9 +74,13 @@ export default function VerifyPage() {
   const { courseId } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
-  const draft = location.state as DraftCourseState | null; // Result Page에서 넘겨주는 랜덤 뽑기 결과
-  const [course, setCourse] = useState<VerifyCourse | null>(() =>
-    !courseId && draft
+  const locationState = location.state as VerifyLocationState | null;
+  const synced = locationState?.synced; // 장소 상세 등을 다녀온 뒤 복원할 최신 스냅샷
+  const draft = !synced ? (locationState as DraftCourseState | null) : null; // Result Page에서 넘겨주는 랜덤 뽑기 결과
+  const [course, setCourse] = useState<VerifyCourse | null>(() => {
+    if (synced) return synced.course;
+
+    return !courseId && draft
       ? {
           // 랜덤 뽑기 결과
           courseId: null,
@@ -73,23 +88,29 @@ export default function VerifyPage() {
           stationName: draft.stationName,
           lineId: draft.lineId,
         }
-      : null,
-  );
-  const [places, setPlaces] = useState<Place[]>(() =>
-    !courseId && draft ? draftToPlaces(draft) : [],
-  );
-  const [isPlacesLoading, setIsPlacesLoading] = useState(!!courseId);
+      : null;
+  });
+  const [places, setPlaces] = useState<Place[]>(() => {
+    if (synced) return synced.places;
+
+    return !courseId && draft ? draftToPlaces(draft) : [];
+  });
+  const [isPlacesLoading, setIsPlacesLoading] = useState(!synced && !!courseId);
   const [placesError, setPlacesError] = useState<string | null>(() =>
-    !courseId && !draft ? "코스 정보를 찾을 수 없습니다." : null,
+    !synced && !courseId && !draft ? "코스 정보를 찾을 수 없습니다." : null,
   );
-  const [courseName, setCourseName] = useState(() =>
-    !courseId && draft ? draft.course.name : "",
-  );
+  const [courseName, setCourseName] = useState(() => {
+    if (synced) return synced.courseName;
+
+    return !courseId && draft ? draft.course.name : "";
+  });
   const courseListRef = useRef<HTMLUListElement>(null);
   const [pressedId, setPressedId] = useState<number | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
-  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false); // 순서/이름을 바꾸고 아직 저장 안 한 상태인지
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(
+    () => synced?.hasUnSavedChanged ?? false,
+  ); // 순서/이름을 바꾸고 아직 저장 안 한 상태인지
   const [searchParams] = useSearchParams(); // 어떤 페이지로부터 진입했는지를 알기 위함
   const from = searchParams.get("from"); // draw (랜덤 뽑기) | recommend (맞춤 추천)
   const isLoggedIn = Boolean(getAccessToken());
@@ -101,7 +122,7 @@ export default function VerifyPage() {
   });
 
   useEffect(() => {
-    if (!courseId) return;
+    if (!courseId || synced) return;
 
     const fetchCourseDetail = async () => {
       try {
@@ -123,7 +144,22 @@ export default function VerifyPage() {
       }
     };
     fetchCourseDetail();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [courseId]);
+
+  // 장소 상세 페이지로 이동했다가 돌아왔을 때 순서/이름이 유지되도록 현재 히스토리 항목에 최신 상태 동기화
+  // isLeavingRef가 켜져 있으면 건너뜀
+  const isLeavingRef = useRef(false);
+
+  useEffect(() => {
+    if (!course || isLeavingRef.current) return;
+
+    navigate(location.pathname + location.search, {
+      replace: true,
+      state: { synced: { course, places, courseName, hasUnsavedChanges } },
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [course, places, courseName, hasUnsavedChanges]);
 
   const handleSave = async (): Promise<number | null> => {
     if (!course) return null;
@@ -175,6 +211,7 @@ export default function VerifyPage() {
       return;
     }
 
+    isLeavingRef.current = true;
     navigate("/course/saved", {
       state: { courseName, courseId: savedCourseId },
     });
@@ -191,6 +228,8 @@ export default function VerifyPage() {
     setIsSaving(true);
     const savedCourseId = await handleSave();
     setIsSaving(false);
+
+    navigate("/course");
 
     if (savedCourseId === null) {
       showToast({ message: "코스 저장에 실패했습니다." });
@@ -209,6 +248,8 @@ export default function VerifyPage() {
           placeId: place.placeId,
           placeName: place.placeName,
           description: place.description,
+          categoryCode: place.categoryCode,
+          categoryName: place.categoryName,
           imageUrl: place.imageUrl,
           xCoordinate: place.xCoordinate,
           yCoordinate: place.yCoordinate,
@@ -231,23 +272,42 @@ export default function VerifyPage() {
 
   if (loading || error) {
     return (
-      <div>{error ? "지도를 불러오지 못했어요." : "지도를 불러오는 중..."}</div>
+      <main className="flex h-dvh items-center justify-center bg-gray-10 text-body-01 text-gray-70">
+        {error ? "지도를 불러오지 못했어요." : "지도를 불러오는 중..."}
+      </main>
     );
   }
 
-  if (isPlacesLoading) return <p>로딩 중...</p>;
-  if (placesError) return <p>{placesError}</p>;
+  if (isPlacesLoading) {
+    return (
+      <main className="flex h-dvh items-center justify-center bg-gray-10 text-body-01 text-gray-70">
+        로딩 중...
+      </main>
+    );
+  }
+  if (placesError) {
+    return (
+      <main className="flex h-dvh items-center justify-center bg-gray-10 text-body-01 text-gray-70">
+        {placesError}
+      </main>
+    );
+  }
   if (!course) return null;
 
   const handleShareClick = async () => {
     await share({
-      title: "환승여행",
-      text: `${courseName} 코스를 확인해보세요!`,
+      title: `${courseName}를 확인해보세요!`,
       url: `https://next-station-git-develop-canofmatos-projects.vercel.app/course/${course.courseId}/verify`,
     });
   };
 
   const handleCloseClick = () => {
+    if (!isRandomDraft && !isRecommendDraft && !hasUnsavedChanges) {
+      // 내가 만든 코스 목록에서 진입하는 경우, close --> 대문 페이지로 이동
+      navigate("/course");
+      return;
+    }
+
     if (course.courseId !== null && !hasUnsavedChanges) {
       navigate("/");
       return;
@@ -364,17 +424,17 @@ export default function VerifyPage() {
               dragConstraints={courseListRef}
               dragElastic={0.05}
               className="flex items-center gap-[13px]"
-              onPointerDown={() =>
-                !isRerolling && setPressedId(place.placeId)
-              }
+              onPointerDown={() => !isRerolling && setPressedId(place.placeId)}
               onPointerUp={() => setPressedId(null)}
               onPointerLeave={() => setPressedId(null)}
             >
               <CourseNumber number={index + 1} />
               <CourseCard
+                placeId={place.placeId}
                 name={place.placeName}
+                imageUrl={place.imageUrl ?? ""}
                 description={place.description}
-                category="" // 코스 상세 조회 응답에 카테고리가 없어 기본(도보) 아이콘으로 표시됨
+                category={place.categoryCode}
                 isActive={pressedId === place.placeId}
               />
             </Reorder.Item>
@@ -403,7 +463,10 @@ export default function VerifyPage() {
           </div>
         ) : isRecommendDraft ? ( // 맞춤 추천으로부터 진입한 미저장 draft
           <div className="flex w-[360px]">
-            <CTAButton disabled={isSaving || isRerolling} onClick={handleSaveAndGo}>
+            <CTAButton
+              disabled={isSaving || isRerolling}
+              onClick={handleSaveAndGo}
+            >
               코스 저장하기
             </CTAButton>
           </div>
