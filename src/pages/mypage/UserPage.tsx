@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { useInView } from "react-intersection-observer";
 import { useNavigate, useParams } from "react-router-dom";
 import * as motion from "motion/react-client";
-import BackIcon from "@/assets/back.svg?react";
 import ProfileDefault from "@/assets/profile-default.svg?react";
 import {
   getPublicMemberCourses,
@@ -12,6 +11,7 @@ import {
   type PublicMemberProfile,
 } from "@/api/member";
 import type { Stamp } from "@/api/stamp";
+import Header from "@/components/Header";
 import JournalPreviewCard from "./components/JournalPreviewCard";
 import StampListView from "./components/StampListView";
 
@@ -107,17 +107,7 @@ export default function UserPage() {
 
   return (
     <main className="flex h-dvh flex-col gap-2.5 overflow-y-auto bg-gray-10 pt-[calc(var(--safe-top)+12px)] [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
-      <section className="flex justify-center">
-        <div className="flex w-[390px] justify-start px-[15px]">
-          <button
-            type="button"
-            onClick={() => navigate(-1)}
-            aria-label="이전"
-          >
-            <BackIcon className="size-6" aria-hidden="true" />
-          </button>
-        </div>
-      </section>
+      <Header showBack />
 
       <section className="flex justify-center">
         <div className="flex flex-col gap-4">
