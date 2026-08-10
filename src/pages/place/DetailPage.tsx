@@ -124,7 +124,7 @@ export default function DetailPage() {
   };
 
   return (
-    <main className="flex flex-col h-dvh overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden bg-gray-10 pt-[calc(var(--safe-top)+12px)]">
+    <main className="flex flex-col h-dvh overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden bg-gray-10 pt-[calc(var(--safe-top)+12px)] pb-[calc(var(--safe-bottom)+12px)]">
       <Header showBack />
 
       {/* basic info */}
