@@ -31,24 +31,26 @@ import { getAccessToken } from "@/api/auth";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
+function createOptionalAuthHeaders() {
+  const accessToken = getAccessToken();
+
+  return accessToken
+    ? {
+        Authorization: `Bearer ${accessToken}`,
+      }
+    : undefined;
+}
+
 // 장소 리뷰 목록 조회
 export async function getReviews(
   placeId: number,
   sort: "RECOMMEND" | "LATEST",
   cursor?: string,
 ): Promise<PlaceReviewListResponse> {
-  const accessToken = getAccessToken();
-
-  if (!accessToken) {
-    throw new Error("로그인 토큰이 없습니다");
-  }
-
   const response = await fetch(
     `${API_BASE_URL}/api/v1/places/${placeId}/reviews?sort=${sort}&size=10${cursor ? `&cursor=${cursor}` : ""}`,
     {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
+      headers: createOptionalAuthHeaders(),
     },
   );
   if (!response.ok) {
@@ -72,7 +74,7 @@ export async function createReviewLike(reviewId: number): Promise<void> {
   const accessToken = getAccessToken();
 
   if (!accessToken) {
-    throw new Error("로그인 토큰이 없습니다");
+    throw new Error("로그인이 필요합니다");
   }
 
   const response = await fetch(
@@ -95,7 +97,7 @@ export async function deleteReviewLike(reviewId: number): Promise<void> {
   const accessToken = getAccessToken();
 
   if (!accessToken) {
-    throw new Error("로그인 토큰이 없습니다");
+    throw new Error("로그인이 필요합니다");
   }
 
   const response = await fetch(
