@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useInView } from "react-intersection-observer";
 import { useNavigate, useParams } from "react-router-dom";
 import * as motion from "motion/react-client";
+import CourseEmpty from "@/assets/course-empty.svg?react";
 import ProfileDefault from "@/assets/profile-default.svg?react";
 import {
   getPublicMemberCourses,
@@ -182,8 +183,14 @@ export default function UserPage() {
         {isStampMode ? (
           <StampListView isMyProfile={false} stamps={stamps} />
         ) : journals.length === 0 ? (
-          <div className="flex h-[160px] w-[358px] items-center justify-center rounded-lg bg-white">
-            <p className="text-body-01 text-gray-70">공개된 여행일지가 없어요</p>
+          <div className="flex w-[180px] flex-col items-center gap-[29px] pt-[140px]">
+            <CourseEmpty
+              className="h-[177px] w-[180px] shrink-0"
+              aria-hidden="true"
+            />
+            <p className="whitespace-nowrap text-center text-body-01 leading-[1.4] tracking-[-0.35px] text-gray-80">
+              공개된 여행일지가 없어요
+            </p>
           </div>
         ) : (
           <div className="flex flex-col items-center gap-3">
