@@ -8,7 +8,6 @@ import cloudLeft from '@/assets/auth/welcome-cloud-left.svg';
 import cloudMiddle from '@/assets/auth/welcome-cloud-middle.svg';
 import cloudSmall from '@/assets/auth/welcome-cloud-small.svg';
 import cloudRight from '@/assets/auth/welcome-cloud-right.svg';
-import appleImage from '@/assets/auth/welcome-apple.svg';
 import kakaoImage from '@/assets/auth/welcome-kakao.svg';
 import Header from '@/components/Header';
 import CTAButton from '@/components/CTAButton';
@@ -41,10 +40,8 @@ export default function WelcomePage() {
   };
 
   return (
-    <main className="relative h-dvh overflow-hidden bg-linear-to-b from-primary-10 to-secondary-20 [--welcome-button-size:clamp(54px,7.11dvh,60px)] [--welcome-social-gap:calc(min(100vw,var(--app-max-width))*20/390)] [--welcome-stack-gap:2.84dvh] [--welcome-track-top:63.27dvh]">
-      <div className="absolute left-0 top-[40px] z-30 w-full">
-        <Header showBack />
-      </div>
+    <main className="relative flex h-dvh flex-col overflow-hidden bg-linear-to-b from-primary-10 to-secondary-20 pt-[40px] [--welcome-button-size:clamp(54px,7.11dvh,60px)] [--welcome-stack-gap:2.84dvh] [--welcome-track-top:63.27dvh]">
+      <Header showBack />
 
       <div aria-hidden className="pointer-events-none absolute inset-0 z-0">
         <img
@@ -104,26 +101,17 @@ export default function WelcomePage() {
         </div>
       </div>
 
-      <section className="relative z-10 h-full px-[15px] pb-[50px]">
+      <section className="relative z-10 flex min-h-0 flex-1 flex-col items-center px-[15px] pb-[50px]">
         <h1 className="sr-only">환승여행</h1>
 
-        <p className="absolute left-1/2 top-[calc(var(--welcome-track-top)-28.67dvh)] w-[min(184px,max(164px,42.05%))] -translate-x-1/2 text-center text-title-02 font-semibold leading-[1.35] tracking-[-0.025em] text-gray-80">
+        <p className="mt-[calc(var(--welcome-track-top)-28.67dvh-90px)] w-[min(184px,max(164px,42.05%))] text-center text-title-02 font-semibold leading-[1.35] tracking-[-0.025em] text-gray-80">
           매일 지나치던 역이,
           <br />
           오늘의 여행지가 됩니다.
         </p>
 
-        <section className="absolute left-[15px] right-[15px] top-[70.97dvh] flex flex-col items-center gap-[var(--welcome-stack-gap)]">
-          <div className="flex gap-[var(--welcome-social-gap)]">
-            <button
-              type="button"
-              disabled
-              className="size-[var(--welcome-button-size)] rounded-full focus:outline-none focus:ring-2 focus:ring-primary-60"
-              aria-label="Apple로 로그인"
-            >
-              <img src={appleImage} alt="" className="size-full" />
-            </button>
-
+        <section className="mt-auto flex w-full flex-col items-center gap-[var(--welcome-stack-gap)]">
+          <div className="flex w-full justify-center">
             <button
               type="button"
               onClick={handleKakaoLogin}
