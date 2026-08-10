@@ -1,5 +1,5 @@
-import type { SubwayLine } from '@/types/subway';
-import LineBadge from '@/components/LineBadge';
+import type { SubwayLine } from "@/types/subway";
+import LineBadge from "@/components/LineBadge";
 
 export interface StationLineItem {
   line: SubwayLine;
@@ -13,14 +13,17 @@ export interface StationLineListProps {
 
 export default function StationLineList({
   items,
-  className = '',
+  className = "",
 }: StationLineListProps) {
   return (
     <div className={`flex flex-col gap-[13px] ${className}`}>
       {items.map(({ line, stationName }) => (
-        <div key={`${line}-${stationName}`} className="flex items-center gap-1">
+        <div
+          key={`${line}-${stationName}`}
+          className="flex items-center justify-center gap-1"
+        >
           <LineBadge line={line} />
-          <span className="whitespace-nowrap text-body-02 font-regular leading-[1.4] text-gray-100">
+          <span className="whitespace-nowrap text-subtitle font-regular leading-[1.4] tracking-[-0.4px] text-gray-100">
             {stationName}
           </span>
         </div>
