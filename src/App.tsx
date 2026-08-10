@@ -16,6 +16,7 @@ const SignUpPage = lazy(() => import("@/pages/auth/SignUpPage"));
 const TermsAgreementPage = lazy(
   () => import("@/pages/auth/TermsAgreementPage"),
 );
+const TermDetailPage = lazy(() => import("@/pages/auth/TermDetailPage"));
 const WelcomePage = lazy(() => import("@/pages/auth/WelcomePage"));
 
 // draw pages
@@ -141,6 +142,7 @@ function App() {
               />
               <Route path="/auth/sign-up" element={<SignUpPage />} />
               <Route path="/auth/terms" element={<TermsAgreementPage />} />
+              <Route path="/auth/terms/:type" element={<TermDetailPage />} />
               <Route
                 path="/auth/reset-password"
                 element={<PasswordResetPage />}

@@ -4,21 +4,25 @@ const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL ?? "").replace(
 );
 
 const AGREED_TERMS_STORAGE_KEY = "auth.agreedTermsIds";
+const REQUIRED_TERMS_AGREED_STORAGE_KEY = "auth.requiredTermsAgreed";
 const SIGNUP_TOKEN_STORAGE_KEY = "auth.signupToken";
 const ACCESS_TOKEN_STORAGE_KEY = "auth.accessToken";
 const KAKAO_SIGNUP_TOKEN_STORAGE_KEY = "auth.kakaoSignupToken";
 const KAKAO_PROFILE_STORAGE_KEY = "auth.kakaoProfile";
 const KAKAO_OAUTH_STATE_STORAGE_KEY = "auth.kakaoOAuthState";
 
-export const REQUIRED_TERMS_IDS = [1, 2] as const;
-export const MARKETING_TERM_ID = 3;
+export type AuthTermType = "SERVICE" | "PRIVACY" | "MARKETING";
 
 export interface AuthTerm {
   id: number;
+  type: AuthTermType;
   title: string;
-  content: string;
   version: string;
   isRequired: boolean;
+}
+
+export interface AuthTermDetail extends AuthTerm {
+  content: string;
 }
 
 interface ApiResponse<T> {
@@ -76,8 +80,9 @@ async function authRequest<T>(
   return body.data;
 }
 
-export function saveAgreedTermsIds(ids: number[]) {
+export function saveAgreedTermsIds(ids: number[], requiredTermsAgreed = false) {
   sessionStorage.setItem(AGREED_TERMS_STORAGE_KEY, JSON.stringify(ids));
+  sessionStorage.setItem(REQUIRED_TERMS_AGREED_STORAGE_KEY, String(requiredTermsAgreed));
 }
 
 export function getAgreedTermsIds(): number[] {
@@ -101,12 +106,17 @@ export function saveSignupToken(token: string) {
   sessionStorage.setItem(SIGNUP_TOKEN_STORAGE_KEY, token);
 }
 
+export function hasAgreedToRequiredTerms() {
+  return sessionStorage.getItem(REQUIRED_TERMS_AGREED_STORAGE_KEY) === "true";
+}
+
 export function getSignupToken() {
   return sessionStorage.getItem(SIGNUP_TOKEN_STORAGE_KEY);
 }
 
 export function clearSignupFlow() {
   sessionStorage.removeItem(AGREED_TERMS_STORAGE_KEY);
+  sessionStorage.removeItem(REQUIRED_TERMS_AGREED_STORAGE_KEY);
   sessionStorage.removeItem(SIGNUP_TOKEN_STORAGE_KEY);
   sessionStorage.removeItem(KAKAO_SIGNUP_TOKEN_STORAGE_KEY);
   sessionStorage.removeItem(KAKAO_PROFILE_STORAGE_KEY);
@@ -125,7 +135,13 @@ export function clearAccessToken() {
 }
 
 export function getTerms() {
-  return authRequest<AuthTerm[]>("/api/v1/auth/terms");
+  return authRequest<AuthTerm[]>("/api/v1/auth/terms", { cache: "no-store" });
+}
+
+export function getTerm(type: AuthTermType) {
+  return authRequest<AuthTermDetail>(`/api/v1/auth/terms/${type}`, {
+    cache: "no-store",
+  });
 }
 
 export function createKakaoOAuthState() {

@@ -6,7 +6,7 @@ import {
   AuthApiError,
   confirmEmailVerification,
   getAgreedTermsIds,
-  REQUIRED_TERMS_IDS,
+  hasAgreedToRequiredTerms,
   saveSignupToken,
   sendEmailVerification,
   signup,
@@ -121,9 +121,7 @@ export default function SignUpPage() {
     }
 
     const agreedTermsIds = getAgreedTermsIds();
-    const hasRequiredTerms = REQUIRED_TERMS_IDS.every((id) =>
-      agreedTermsIds.includes(id),
-    );
+    const hasRequiredTerms = hasAgreedToRequiredTerms();
 
     if (!hasRequiredTerms) {
       navigate('/auth/terms');
@@ -171,7 +169,7 @@ export default function SignUpPage() {
 
     const agreedTermsIds = getAgreedTermsIds();
 
-    if (!REQUIRED_TERMS_IDS.every((id) => agreedTermsIds.includes(id))) {
+    if (!hasAgreedToRequiredTerms()) {
       navigate('/auth/terms');
       return;
     }

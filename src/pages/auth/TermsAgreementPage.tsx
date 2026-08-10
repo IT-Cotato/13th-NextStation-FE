@@ -2,10 +2,9 @@ import { type ReactNode, useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import termsAgreementImage from '@/assets/auth/terms-agreement.svg';
 import {
-  MARKETING_TERM_ID,
-  REQUIRED_TERMS_IDS,
   AuthApiError,
   type AuthTerm,
+  type AuthTermType,
   getTerms,
   getKakaoSignupToken,
   kakaoSignup,
@@ -49,18 +48,21 @@ interface AgreementItemProps {
   checked: boolean;
   label: string;
   required?: boolean;
-  description: string;
+  termType?: AuthTermType;
   onChange: () => void;
+  onOpen: (termType: AuthTermType) => void;
 }
 
 function AgreementItem({
   checked,
   label,
   required = false,
-  description,
+  termType,
   onChange,
+  onOpen,
 }: AgreementItemProps) {
   const agreementType = required ? '필수' : '선택';
+  const agreementLabel = label.endsWith('동의') ? label : `${label} 동의`;
 
   return (
     <div className="flex items-start gap-[10px]">
@@ -68,7 +70,7 @@ function AgreementItem({
         type="button"
         role="checkbox"
         aria-checked={checked}
-        aria-label={`${label} 동의`}
+        aria-label={agreementLabel}
         onClick={onChange}
         className={`mt-px flex size-5 shrink-0 items-center justify-center rounded-[4px] border ${
           checked ? 'border-primary-50 bg-primary-50' : 'border-primary-50 bg-white'
@@ -84,14 +86,14 @@ function AgreementItem({
         )}
       </button>
 
-      <details className="min-w-0 flex-1">
-        <summary className="cursor-pointer list-none text-body-01 font-regular leading-[1.4] text-gray-80 underline underline-offset-2 focus-visible:rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-50">
-          {label} 동의 ({agreementType})
-        </summary>
-        <p className="mt-2 rounded-lg bg-gray-20 p-3 text-body-02 font-regular leading-[1.4] text-gray-70">
-          {description}
-        </p>
-      </details>
+      <button
+        type="button"
+        disabled={termType === undefined}
+        onClick={() => termType !== undefined && onOpen(termType)}
+        className="min-w-0 flex-1 text-left text-body-01 font-regular leading-[1.4] text-gray-80 underline underline-offset-2 outline-none focus-visible:rounded-sm focus-visible:ring-2 focus-visible:ring-primary-50 disabled:cursor-default"
+      >
+        {agreementLabel} ({agreementType})
+      </button>
     </div>
   );
 }
@@ -133,9 +135,9 @@ export default function TermsAgreementPage() {
     };
   }, []);
 
-  const serviceTerm = terms.find(({ id }) => id === REQUIRED_TERMS_IDS[0]);
-  const privacyTerm = terms.find(({ id }) => id === REQUIRED_TERMS_IDS[1]);
-  const marketingTerm = terms.find(({ id }) => id === MARKETING_TERM_ID);
+  const serviceTerm = terms.find(({ type }) => type === 'SERVICE');
+  const privacyTerm = terms.find(({ type }) => type === 'PRIVACY');
+  const marketingTerm = terms.find(({ type }) => type === 'MARKETING');
 
   const isAllAgreed = serviceAgreed && privacyAgreed && marketingAgreed;
   const isRequiredAgreed = serviceAgreed && privacyAgreed;
@@ -150,17 +152,27 @@ export default function TermsAgreementPage() {
     setHasInteracted(true);
   };
 
+  const handleOpenTerm = (termType: AuthTermType) => {
+    navigate(`/auth/terms/${termType}`);
+  };
+
   const handleNext = async () => {
     if (!isRequiredAgreed) {
       setHasInteracted(true);
       return;
     }
 
+    if (!serviceTerm || !privacyTerm) {
+      setSubmitError('필수 약관 정보를 불러오지 못했습니다.');
+      return;
+    }
+
     const agreedTermsIds = [
-      ...REQUIRED_TERMS_IDS,
-      ...(marketingAgreed ? [MARKETING_TERM_ID] : []),
+      serviceTerm.id,
+      privacyTerm.id,
+      ...(marketingAgreed && marketingTerm ? [marketingTerm.id] : []),
     ];
-    saveAgreedTermsIds(agreedTermsIds);
+    saveAgreedTermsIds(agreedTermsIds, true);
 
     if (searchParams.get('provider') === 'kakao') {
       const kakaoSignupToken = getKakaoSignupToken();
@@ -230,12 +242,10 @@ export default function TermsAgreementPage() {
             <div>
               <AgreementItem
                 checked={serviceAgreed}
-                label={serviceTerm?.title ?? '서비스 이용약관'}
+                label="서비스 이용약관"
                 required
-                description={
-                  serviceTerm?.content ??
-                  '회원가입과 서비스 제공을 위한 이용약관입니다.'
-                }
+                termType="SERVICE"
+                onOpen={handleOpenTerm}
                 onChange={() => {
                   setServiceAgreed((value) => !value);
                   setHasInteracted(true);
@@ -257,12 +267,10 @@ export default function TermsAgreementPage() {
             <div>
               <AgreementItem
                 checked={privacyAgreed}
-                label={privacyTerm?.title ?? '개인정보 취급 방침'}
+                label="개인정보 취급 방침"
                 required
-                description={
-                  privacyTerm?.content ??
-                  '회원가입과 서비스 제공을 위한 개인정보 처리 방침입니다.'
-                }
+                termType="PRIVACY"
+                onOpen={handleOpenTerm}
                 onChange={() => {
                   setPrivacyAgreed((value) => !value);
                   setHasInteracted(true);
@@ -283,11 +291,9 @@ export default function TermsAgreementPage() {
 
             <AgreementItem
               checked={marketingAgreed}
-              label={marketingTerm?.title ?? '마케팅 정보 수신'}
-              description={
-                marketingTerm?.content ??
-                '이벤트, 혜택 및 서비스 소식 수신에 대한 약관입니다.'
-              }
+              label="마케팅 정보 수신 동의"
+              termType="MARKETING"
+              onOpen={handleOpenTerm}
               onChange={() => {
                 setMarketingAgreed((value) => !value);
                 setHasInteracted(true);
