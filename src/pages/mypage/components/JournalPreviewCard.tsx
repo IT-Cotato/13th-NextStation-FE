@@ -19,7 +19,7 @@ export default function JournalPreviewCard({
   const isThumbnailEmpty = thumbnailUrl === null;
 
   return (
-    <div className="relative flex flex-col w-[116px] pt-[54px] px-3 pb-4 gap-[9px] rounded-lg overflow-hidden">
+    <div className="relative flex flex-col w-[116px] h-[160px] pt-[54px] px-3 pb-4 gap-[9px] rounded-lg overflow-hidden">
       {isThumbnailEmpty ? (
         <CardBG className="absolute inset-0 h-full w-full" />
       ) : (
@@ -43,7 +43,7 @@ export default function JournalPreviewCard({
 
       {/* journalName */}
       <div className="flex z-10">
-        <p className="flex text-body-01 font-semibold leading-[1.4] tracking-[-0.35px] break-keep">
+        <p className="flex min-h-[39.2px] text-start text-body-01 font-semibold leading-[1.4] tracking-[-0.35px] min-h-[40px] line-clamp-2 break-keep">
           {journalTitle}
         </p>
       </div>
