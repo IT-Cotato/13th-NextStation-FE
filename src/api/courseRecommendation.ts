@@ -10,7 +10,7 @@ export interface StationCategoryPlace {
   placeId: number;
   placeName: string;
   description: string;
-  imageUrl: string;
+  imageUrl: string | null;
   xCoordinate: number;
   yCoordinate: number;
 }
