@@ -35,7 +35,7 @@ export default function LogDatePickerModal({
   const [draftDay, setDraftDay] = useState(initialDate.day);
 
   return (
-    <div className="flex w-[360px] px-[10px] py-4 gap-[10px] bg-white border border-primary-50 rounded-lg">
+    <div className="flex w-[360px] mx-auto px-[10px] py-4 gap-[10px] bg-white border border-primary-50 rounded-lg">
       {mode === "date" && (
         <CalendarDayView
           displayYear={draftYear}

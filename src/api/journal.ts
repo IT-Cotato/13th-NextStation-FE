@@ -72,15 +72,21 @@ export interface JournalDetail {
   visitedPlaces: JournalDetailVisitedPlace[];
 }
 
-export async function getJournalDetail(journalId: number): Promise<JournalDetail> {
+export async function getJournalDetail(
+  journalId: number,
+): Promise<JournalDetail> {
   const accessToken = getAccessToken();
   const response = await fetch(`${API_BASE_URL}/api/v1/journals/${journalId}`, {
-    headers: accessToken ? { Authorization: `Bearer ${accessToken}` } : undefined,
+    headers: accessToken
+      ? { Authorization: `Bearer ${accessToken}` }
+      : undefined,
   });
 
   if (!response.ok) {
     const errorJson = await response.json().catch(() => null);
-    throw new Error(errorJson?.message ?? "여행일지 상세 정보를 불러오지 못했습니다.");
+    throw new Error(
+      errorJson?.message ?? "여행일지 상세 정보를 불러오지 못했습니다.",
+    );
   }
 
   const json = await response.json();
@@ -253,4 +259,57 @@ export async function getUnwrittenJournals(): Promise<UnwrittenJournals> {
     totalCount: item.totalCount,
     courses: item.courses,
   };
+}
+
+export interface PatchJournalPhotoRequest {
+  photoId?: number; // KEEP/DELETE는 필수, UPDATE(신규 사진)는 없음
+  imageAction: "KEEP" | "DELETE" | "UPDATE";
+  image?: string; // UPDATE일 때만 필요
+  isRepresentative?: boolean;
+}
+
+export interface PatchJournalPlaceReviewRequest {
+  placeId: number;
+  review: string;
+  imageAction: "KEEP" | "DELETE" | "UPDATE";
+  image?: string; // UPDATE일 때만 필요, KEEP/DELETE는 불필요
+}
+
+export interface PatchJournalRequest {
+  title: string;
+  overallReview: string;
+  traveledAt: string; // "2026-07-08" 형태
+  travelDuration: TravelDuration;
+  isPublic: boolean;
+  journalPhotos?: PatchJournalPhotoRequest[];
+  placeReviews: PatchJournalPlaceReviewRequest[];
+}
+
+// 여행일지 수정
+export async function patchJournal({
+  journalId,
+  body,
+}: {
+  journalId: number;
+  body: PatchJournalRequest;
+}): Promise<void> {
+  const accessToken = getAccessToken();
+
+  if (!accessToken) {
+    throw new Error("로그인 토큰이 없습니다");
+  }
+
+  const response = await fetch(`${API_BASE_URL}/api/v1/journals/${journalId}`, {
+    method: "PATCH",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(body),
+  });
+
+  if (!response.ok) {
+    const errorJson = await response.json().catch(() => null);
+    throw new Error(errorJson?.message ?? "여행일지 수정에 실패했습니다.");
+  }
 }

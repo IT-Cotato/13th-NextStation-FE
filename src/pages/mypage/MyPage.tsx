@@ -313,15 +313,18 @@ export default function MyPage() {
                 <JournalAdd />
               </button>
               {journals.map((journal) => (
-                // TODO : 클릭 시 여행일지 상세 보기 페이지로 이동 경로 연결
-                <JournalPreviewCard
-                  key={journal.journalId}
-                  lineId={journal.line.id}
-                  stationName={journal.stationName}
-                  journalTitle={journal.title}
-                  thumbnailUrl={journal.thumbnailUrl}
-                  likeCount={journal.likeCount}
-                />
+                <button
+                  onClick={() => navigate(`/course/${journal.journalId}`)}
+                >
+                  <JournalPreviewCard
+                    key={journal.journalId}
+                    lineId={journal.line.id}
+                    stationName={journal.stationName}
+                    journalTitle={journal.title}
+                    thumbnailUrl={journal.thumbnailUrl}
+                    likeCount={journal.likeCount}
+                  />
+                </button>
               ))}
             </div>
             {loadMoreError && (
