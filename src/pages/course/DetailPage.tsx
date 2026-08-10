@@ -56,8 +56,9 @@ function mapJournalToCourse(journal: JournalDetail): CourseDetailData {
     subtitle: "",
     viewCount: journal.viewCount,
     saveCount: journal.likeCount,
-    authorName: journal.writerName,
-    authorProfileImageUrl: journal.writerProfileImageUrl,
+    writerId: journal.writerId,
+    writerName: journal.writerName,
+    writerProfileImageUrl: journal.writerProfileImageUrl,
     visitedAt: formatVisitedAt(journal.traveledAt),
     isMine: journal.isMine,
     isLiked: journal.isLiked,
@@ -206,6 +207,29 @@ export default function DetailPage() {
     );
   }
 
+  const authorProfileContent = (
+    <>
+      {course.writerProfileImageUrl ? (
+        <img
+          className="size-[49px] shrink-0 rounded-full object-cover"
+          src={course.writerProfileImageUrl}
+          alt={`${course.writerName} 프로필`}
+        />
+      ) : (
+        <ProfileDefault
+          className="size-[49px] shrink-0"
+          aria-hidden="true"
+        />
+      )}
+      <div className="flex flex-col">
+        <span className="text-body-02 font-semibold text-gray-90">
+          {course.writerName}
+        </span>
+        <span className="text-caption text-gray-60">{course.visitedAt}</span>
+      </div>
+    </>
+  );
+
   return (
     <main className="flex h-dvh flex-col overflow-y-auto bg-gray-10 pt-[calc(var(--safe-top)+12px)] text-gray-100 bg-[linear-gradient(180deg,var(--color-secondary-20)_0%,var(--color-gray-10)_60%)] [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
       <header className="flex items-end justify-between px-[15px] pb-[10px]">
@@ -254,23 +278,14 @@ export default function DetailPage() {
           <span>조회수 {course.viewCount}</span>
           <span>저장 {course.saveCount}</span>
         </div>
-        <div className="flex h-[73px] w-full items-center gap-[14px] rounded-[20px] bg-secondary-10 px-[15px] py-3 text-left">
-          {course.authorProfileImageUrl ? (
-            <img
-              className="size-[49px] shrink-0 rounded-full object-cover"
-              src={course.authorProfileImageUrl}
-              alt={`${course.authorName} 프로필`}
-            />
-          ) : (
-            <ProfileDefault className="size-[49px] shrink-0" aria-hidden="true" />
-          )}
-          <div className="flex flex-col">
-            <strong className="text-body-02 font-semibold text-gray-90">
-              {course.authorName}
-            </strong>
-            <span className="text-caption text-gray-60">{course.visitedAt}</span>
-          </div>
-        </div>
+        <button
+          type="button"
+          className="flex h-[73px] w-full items-center gap-[14px] rounded-[20px] bg-secondary-10 px-[15px] py-3 text-left"
+          onClick={() => navigate(`/profile/${course.writerId}`)}
+          aria-label={`${course.writerName} 프로필 보기`}
+        >
+          {authorProfileContent}
+        </button>
       </section>
 
       <section

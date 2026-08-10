@@ -10,11 +10,11 @@ export default function JournalPreviewCard({
   thumbnailUrl,
   likeCount,
 }: {
-  lineId: number;
+  lineId?: number;
   stationName: string;
   journalTitle: string;
   thumbnailUrl: string | null;
-  likeCount: number;
+  likeCount?: number;
 }) {
   const isThumbnailEmpty = thumbnailUrl === null;
 
@@ -35,7 +35,7 @@ export default function JournalPreviewCard({
 
       {/* station info */}
       <div className="flex gap-1 z-10 items-center">
-        <LineBadge line={lineId as SubwayLine} />
+        {lineId !== undefined && <LineBadge line={lineId as SubwayLine} />}
         <span className="text-body-02 justify-center leading-[1.4] tracking-[-0.3px]">
           {stationName}
         </span>
@@ -49,12 +49,14 @@ export default function JournalPreviewCard({
       </div>
 
       {/* heart */}
-      <div className="flex z-10 items-center">
-        <Heart />
-        <span className="text-caption leading-none tracking-[-0.25px] text-gray-70">
-          {likeCount}
-        </span>
-      </div>
+      {likeCount !== undefined && (
+        <div className="flex z-10 items-center">
+          <Heart />
+          <span className="text-caption leading-none tracking-[-0.25px] text-gray-70">
+            {likeCount}
+          </span>
+        </div>
+      )}
     </div>
   );
 }

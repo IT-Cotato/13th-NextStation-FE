@@ -53,7 +53,7 @@ export interface JournalDetailVisitedPlace {
 }
 
 export interface JournalDetail {
-  writerId?: number;
+  writerId: number;
   writerName: string;
   writerProfileImageUrl: string | null;
   traveledAt: string;

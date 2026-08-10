@@ -21,16 +21,21 @@ const PAGE_WIDTH = 300; // 카드 내부 컨텐츠 너비
 
 interface StampListViewProps {
   isMyProfile?: boolean;
+  stamps?: Stamp[];
 }
 
 export default function StampListView({
   isMyProfile = true,
+  stamps: providedStamps,
 }: StampListViewProps) {
   const navigate = useNavigate();
-  const [stamps, setStamps] = useState<Stamp[]>([]);
-  const [isStampsLoading, setIsStampsLoading] = useState(true);
+  const [myStamps, setMyStamps] = useState<Stamp[]>([]);
+  const [isStampsLoading, setIsStampsLoading] = useState(
+    providedStamps === undefined,
+  );
   const [stampsError, setStampsError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const stamps = providedStamps ?? myStamps;
   const pageCount = Math.ceil(stamps.length / STAMPS_PER_PAGE); // 전체 페이지 수
   const isStampEmpty = stamps.length < 1;
   const [isStampDetailModalOpen, setIsStampDetailModalOpen] = useState(false);
@@ -41,11 +46,13 @@ export default function StampListView({
   const [isStampDetailLoading, setIsStampDetailLoading] = useState(false);
 
   useEffect(() => {
+    if (providedStamps !== undefined) return;
+
     const fetchStamps = async () => {
       try {
         setIsStampsLoading(true);
         const data = await getStamps();
-        setStamps(data.stamps);
+        setMyStamps(data.stamps);
       } catch (e) {
         console.error(e);
         setStampsError("스탬프 목록을 불러오지 못했습니다.");
@@ -55,7 +62,7 @@ export default function StampListView({
     };
 
     fetchStamps();
-  }, []);
+  }, [providedStamps]);
 
   const handleDragEnd = (_: unknown, info: PanInfo) => {
     if (info.offset.x < -SWIPE_THRESHOLD && currentPage < pageCount) {
@@ -110,8 +117,10 @@ export default function StampListView({
   if (isStampEmpty === true) {
     // 스탬프가 없을 때
     return (
-      <div className="flex flex-col items-center justify-center w-[348px] h-[484px] bg-white gap-4 rounded-[36px]">
-        <StampEmpty />
+      <div
+        className={`flex h-[484px] w-[348px] flex-col items-center gap-4 rounded-[36px] bg-white ${isMyProfile ? "justify-center" : "justify-start pt-[120px]"}`}
+      >
+        <StampEmpty className="h-[180px] w-[200px] shrink-0" />
         <p className="text-center text-gray-80 text-body-01 leading-[1.4] tracking-[-0.35px]">
           아직 스탬프가 없어요!
           {isMyProfile && (
@@ -179,7 +188,9 @@ export default function StampListView({
                 .map((stamp) => {
                   const StampIcon =
                     STATION_STAMP_MAP[stamp.stationName] ?? null;
-                  return StampIcon ? (
+                  if (!StampIcon) return null;
+
+                  return isMyProfile ? (
                     <button
                       key={stamp.stationId}
                       type="button"
@@ -189,7 +200,13 @@ export default function StampListView({
                     >
                       <StampIcon aria-hidden="true" className="size-[92px]" />
                     </button>
-                  ) : null;
+                  ) : (
+                    <StampIcon
+                      key={stamp.stationId}
+                      aria-label={`${stamp.stationName} 스탬프`}
+                      className="size-[92px]"
+                    />
+                  );
                 })}
             </div>
           ))}

@@ -6,8 +6,106 @@ export interface MemberProfile {
   profileImageUrl: string | null;
 }
 
+export interface LikedCourseLine {
+  id: number;
+  name: string;
+  code: string;
+}
+
+export interface PublicMemberProfile extends MemberProfile {
+  publicCourseCount: number;
+  stampCount: number;
+}
+
+export interface PublicMemberStamp {
+  stationId: number;
+  stationName: string;
+  lines: LikedCourseLine[];
+}
+
+export interface PublicMemberCourse {
+  courseId: number;
+  journalId: number;
+  name: string;
+  stationId: number;
+  stationName: string;
+  line: LikedCourseLine | null;
+  imageUrl: string | null;
+  likeCount: number;
+}
+
+export interface PublicMemberCourses {
+  courses: PublicMemberCourse[];
+  nextCursor: string | null;
+  hasNext: boolean;
+}
+
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const MEMBER_PROFILE_STORAGE_KEY = "member.profile";
+
+async function getPublicMemberData<T>(path: string): Promise<T> {
+  const accessToken = getAccessToken();
+  const response = await fetch(`${API_BASE_URL}${path}`, {
+    headers: accessToken
+      ? { Authorization: `Bearer ${accessToken}` }
+      : undefined,
+  });
+  const json = await response.json().catch(() => null);
+
+  if (!response.ok) {
+    throw new Error(json?.message ?? "프로필 정보를 불러오지 못했습니다.");
+  }
+
+  return json.data as T;
+}
+
+export async function getPublicMemberProfile(
+  memberId: number,
+): Promise<PublicMemberProfile> {
+  const data = await getPublicMemberData<
+    Omit<PublicMemberProfile, "publicCourseCount" | "stampCount"> & {
+      publicCourseCount: string | number;
+      stampCount: string | number;
+    }
+  >(`/api/v1/members/${memberId}/profile`);
+
+  return {
+    ...data,
+    publicCourseCount: Number(data.publicCourseCount),
+    stampCount: Number(data.stampCount),
+  };
+}
+
+export async function getPublicMemberStamps(
+  memberId: number,
+): Promise<PublicMemberStamp[]> {
+  const data = await getPublicMemberData<{
+    stampCount: number;
+    stamps: PublicMemberStamp[];
+  }>(`/api/v1/members/${memberId}/stamps`);
+
+  return data.stamps ?? [];
+}
+
+export async function getPublicMemberCourses(
+  memberId: number,
+  cursor?: string,
+): Promise<PublicMemberCourses> {
+  const params = new URLSearchParams();
+  if (cursor) params.set("cursor", cursor);
+  const query = params.size ? `?${params}` : "";
+  const data = await getPublicMemberData<{
+    courses: PublicMemberCourse[];
+    nextCursor: string | number | null;
+    hasNext: boolean;
+  }>(`/api/v1/members/${memberId}/courses${query}`);
+
+  return {
+    courses: data.courses ?? [],
+    nextCursor: data.nextCursor == null ? null : String(data.nextCursor),
+    hasNext: data.hasNext ?? false,
+  };
+}
 
 export function saveCachedMyProfile(profile: MemberProfile) {
   sessionStorage.setItem(MEMBER_PROFILE_STORAGE_KEY, JSON.stringify(profile));
@@ -117,12 +215,6 @@ export async function deleteMyProfile() {
   if (!response.ok) {
     throw new Error("회원 탈퇴 실패");
   }
-}
-
-export interface LikedCourseLine {
-  id: number;
-  name: string;
-  code: string;
 }
 
 export interface LikedCourse {
