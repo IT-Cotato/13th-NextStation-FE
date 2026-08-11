@@ -22,7 +22,7 @@ export default function LikeCard({
   onToggleSelect,
 }: LikeCardProps) {
   return (
-    <div className="relative h-40 w-full overflow-hidden rounded-[20px]">
+    <div className="relative h-40 w-full overflow-hidden rounded-lg">
       <CardBG className="absolute inset-0 h-full w-full" />
       {/* <div className="absolute inset-0 bg-linear-to-b from-white/0 via-white/10 to-white/80" /> */}
 
