@@ -41,7 +41,7 @@ function LogVisibilityPage() {
     setIsSubmitting(true);
 
     try {
-      const response = await createJournal({
+      await createJournal({
         memberStampId: draft.memberStampId,
         title: draft.logName,
         overallReview: draft.review,
@@ -57,7 +57,7 @@ function LogVisibilityPage() {
       });
 
       showToast({
-        message: `여행일지가 저장되었습니다. (#${response.journalId})`,
+        message: "여행일지가 저장되었습니다.",
       });
       navigate("/course");
     } catch (error) {

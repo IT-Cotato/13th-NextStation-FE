@@ -16,14 +16,14 @@ export default function CourseCard({
 }: {
   placeId: number;
   name: string;
-  imageUrl: string;
+  imageUrl: string | null;
   description: string;
   category: string;
   isActive: boolean;
   width?: number;
 }) {
   const navigate = useNavigate();
-  const isImageEmpty = imageUrl.length < 1;
+  const isImageEmpty = !imageUrl || imageUrl.length < 1;
 
   return (
     <div

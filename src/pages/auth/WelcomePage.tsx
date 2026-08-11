@@ -40,7 +40,7 @@ export default function WelcomePage() {
   };
 
   return (
-    <main className="relative flex h-dvh flex-col overflow-hidden bg-linear-to-b from-primary-10 to-secondary-20 pt-[40px] [--welcome-button-size:clamp(54px,7.11dvh,60px)] [--welcome-stack-gap:2.84dvh] [--welcome-track-top:63.27dvh]">
+    <main className="relative flex h-dvh flex-col overflow-hidden bg-linear-to-b from-primary-10 to-secondary-20 pt-[calc(var(--safe-top)+12px)] gap-[28px] [--welcome-button-size:clamp(54px,7.11dvh,60px)] [--welcome-stack-gap:2.84dvh] [--welcome-track-top:63.27dvh]">
       <Header showBack />
 
       <div aria-hidden className="pointer-events-none absolute inset-0 z-0">

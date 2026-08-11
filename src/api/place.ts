@@ -70,18 +70,20 @@ export interface Course {
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-// 장소 상세 조회
-export async function getPlaceDetail(placeId: number): Promise<Place> {
+function createOptionalAuthHeaders() {
   const accessToken = getAccessToken();
 
-  if (!accessToken) {
-    throw new Error("로그인 토큰이 없습니다");
-  }
+  return accessToken
+    ? {
+        Authorization: `Bearer ${accessToken}`,
+      }
+    : undefined;
+}
 
+// 장소 상세 조회
+export async function getPlaceDetail(placeId: number): Promise<Place> {
   const response = await fetch(`${API_BASE_URL}/api/v1/places/${placeId}`, {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
+    headers: createOptionalAuthHeaders(),
   });
 
   if (!response.ok) {

@@ -20,14 +20,16 @@ import {
   type Course,
   type Place,
 } from "@/api/place";
+import { getAccessToken } from "@/api/auth";
 
 export default function DetailPage() {
   const { placeId } = useParams();
   const navigate = useNavigate();
+  const isLoggedIn = Boolean(getAccessToken());
   const [place, setPlace] = useState<Place | null>(null); // place
   const [isPlaceLoading, setIsPlaceLoading] = useState(true);
   const [placeError, setPlaceError] = useState<string | null>(null);
-  const [courses, setCourses] = useState<Course[] | null>([]); // 장소를 포함한 코스
+  const [courses, setCourses] = useState<Course[]>([]); // 장소를 포함한 코스
   const [isCoursesLoading, setIsCoursesLoading] = useState(true);
   const [coursesError, setCoursesError] = useState<string | null>(null);
   const [index, setIndex] = useState(0);
@@ -56,7 +58,7 @@ export default function DetailPage() {
   }, [placeId]);
 
   useEffect(() => {
-    if (!placeId) return;
+    if (!placeId || !isLoggedIn) return;
 
     const fetchPlaceCourses = async () => {
       try {
@@ -71,7 +73,7 @@ export default function DetailPage() {
       }
     };
     fetchPlaceCourses();
-  }, [placeId]);
+  }, [isLoggedIn, placeId]);
 
   const fallback = (content: string) => (
     <main className="flex h-dvh items-center justify-center bg-gray-10 text-body-01 text-gray-70">
@@ -82,9 +84,8 @@ export default function DetailPage() {
   if (isPlaceLoading) return fallback("로딩 중...");
   if (placeError) return fallback(placeError);
   if (!place) return null;
-  if (isCoursesLoading) return fallback("로딩 중...");
-  if (coursesError) return fallback(coursesError);
-  if (!courses) return null;
+  if (isLoggedIn && isCoursesLoading) return fallback("로딩 중...");
+  if (isLoggedIn && coursesError) return fallback(coursesError);
 
   const slideImages = place.images;
   const isImageEmpty = slideImages.length < 1;
@@ -123,7 +124,7 @@ export default function DetailPage() {
   };
 
   return (
-    <main className="flex flex-col h-dvh overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden bg-gray-10 pt-[calc(var(--safe-top)+12px)]">
+    <main className="flex flex-col h-dvh overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden bg-gray-10 pt-[calc(var(--safe-top)+12px)] pb-[calc(var(--safe-bottom)+12px)]">
       <Header showBack />
 
       {/* basic info */}
@@ -289,38 +290,40 @@ export default function DetailPage() {
       </section>
 
       {/* other courses */}
-      <section className="flex justify-center pt-7">
-        <div className="flex flex-col w-[360px]">
-          <div className="flex py-3">
-            <span className="flex font-semibold text-title-02 leading-[1.4] tracking-[-0.45px]">
-              이 장소를 포함한 코스
-            </span>
-          </div>
-          {isCourseEmpty ? (
-            <EmptyCard variant="course" />
-          ) : (
-            <div className="flex w-full overflow-x-auto overflow-y-hidden py-5 m-0 list-none font-semibold [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden gap-3">
-              {placeCourses.map((placeCourse) => (
-                <button
-                  key={placeCourse.courseId}
-                  type="button"
-                  className="flex shrink-0 border-0 bg-transparent p-0 text-left"
-                  onClick={() => navigate(`/explore/${placeCourse.courseId}`)}
-                >
-                  <CoursePreviewCard
-                    line={placeCourse.lineId}
-                    name={placeCourse.courseName}
-                    placeCount={placeCourse.placeCount}
-                    travelDuration={placeCourse.travelDuration}
-                    tags={placeCourse.tags}
-                    imageUrl={placeCourse.imageUrl}
-                  />
-                </button>
-              ))}
+      {isLoggedIn && (
+        <section className="flex justify-center pt-7">
+          <div className="flex flex-col w-[360px]">
+            <div className="flex py-3">
+              <span className="flex font-semibold text-title-02 leading-[1.4] tracking-[-0.45px]">
+                이 장소를 포함한 코스
+              </span>
             </div>
-          )}
-        </div>
-      </section>
+            {isCourseEmpty ? (
+              <EmptyCard variant="course" />
+            ) : (
+              <div className="flex w-full overflow-x-auto overflow-y-hidden py-5 m-0 list-none font-semibold [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden gap-3">
+                {placeCourses.map((placeCourse) => (
+                  <button
+                    key={placeCourse.courseId}
+                    type="button"
+                    className="flex shrink-0 border-0 bg-transparent p-0 text-left"
+                    onClick={() => navigate(`/explore/${placeCourse.courseId}`)}
+                  >
+                    <CoursePreviewCard
+                      line={placeCourse.lineId}
+                      name={placeCourse.courseName}
+                      placeCount={placeCourse.placeCount}
+                      travelDuration={placeCourse.travelDuration}
+                      tags={placeCourse.tags}
+                      imageUrl={placeCourse.imageUrl}
+                    />
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        </section>
+      )}
     </main>
   );
 }
