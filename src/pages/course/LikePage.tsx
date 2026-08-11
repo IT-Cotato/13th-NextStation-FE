@@ -220,6 +220,7 @@ function LikePage() {
                   : selectedIds.includes(course.courseId)
               }
               onToggleSelect={() => handleToggleSelect(course.courseId)}
+              onClick={() => navigate(`/course/${course.courseId}`)}
             />
           ))}
         </section>
