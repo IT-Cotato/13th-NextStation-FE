@@ -95,9 +95,18 @@ export default function MyPage() {
       id: "about",
       title: "about",
       items: [
-        { label: "이용약관" },
-        { label: "개인정보처리방침" },
-        { label: "오픈소스처리방침" },
+        {
+          label: "이용약관",
+          onClick: () => navigate("/auth/terms/SERVICE"),
+        },
+        {
+          label: "개인정보처리방침",
+          onClick: () => navigate("/auth/terms/PRIVACY"),
+        },
+        {
+          label: "마케팅 정보 수신 동의",
+          onClick: () => navigate("/auth/terms/MARKETING"),
+        },
       ],
     },
   ];

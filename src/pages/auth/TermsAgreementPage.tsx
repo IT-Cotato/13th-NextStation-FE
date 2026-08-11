@@ -310,6 +310,7 @@ export default function TermsAgreementPage() {
           </p>
         )}
         <CTAButton
+          submitOnEnter
           disabled={!isRequiredAgreed || isSubmitting}
           className="disabled:!bg-gray-40 disabled:!text-gray-10"
           onClick={handleNext}
