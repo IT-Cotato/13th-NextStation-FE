@@ -1,3 +1,7 @@
+import {
+  TRAVEL_STYLE_LABELS,
+  type RecommendationTravelStyle,
+} from "@/api/recommendation";
 import { useLogDraft } from "../contexts/LogDraftContext";
 
 export default function LogPreviewCard() {
@@ -33,9 +37,13 @@ export default function LogPreviewCard() {
           </h3>
 
           <div className="flex gap-2 items-center justify-center text-body-02 text-gray-70 leading-[1.4] tracking-[-0.025em]">
-            <p>{displayDate ?? '날짜 미입력'}</p>
-            <div className="w-1 h-1 rounded-full bg-gray-50"/>
-            <p>{draft.selectedTime ? `${draft.selectedTime} 소요` : '시간 미입력'}</p>
+            <p>{displayDate ?? "날짜 미입력"}</p>
+            <div className="w-1 h-1 rounded-full bg-gray-50" />
+            <p>
+              {draft.selectedTime
+                ? `${draft.selectedTime} 소요`
+                : "시간 미입력"}
+            </p>
           </div>
 
           <div className="flex items-center justify-center gap-1">
@@ -45,7 +53,7 @@ export default function LogPreviewCard() {
                 className="flex items-center justify-center rounded-lg px-2 py-1 bg-gray-20"
               >
                 <p className="whitespace-nowrap text-caption text-gray-80 leading-none tracking-[-0.025em]">
-                  {tag}
+                  #{TRAVEL_STYLE_LABELS[tag as RecommendationTravelStyle]}
                 </p>
               </div>
             ))}
@@ -75,5 +83,5 @@ export default function LogPreviewCard() {
         )}
       </div>
     </div>
-  )
+  );
 }
