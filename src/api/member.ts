@@ -20,7 +20,7 @@ export interface PublicMemberProfile extends MemberProfile {
 export interface PublicMemberStamp {
   stationId: number;
   stationName: string;
-  lines: LikedCourseLine[];
+  line: LikedCourseLine | null;
 }
 
 export interface PublicMemberCourse {
