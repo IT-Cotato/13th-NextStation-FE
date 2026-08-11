@@ -87,10 +87,14 @@ function renderTermContent(content: string) {
     );
 
     if (standaloneEmail) {
+      const contactLabel = standaloneEmail[1]
+        .replace(/^(?:\s*[-*•]\s*)+/u, '')
+        .trimStart();
+
       return (
         <p key={index} className="pl-[8px] text-primary-70">
           <span aria-hidden="true">• </span>
-          {standaloneEmail[1]}:{' '}
+          {contactLabel}:{' '}
           <a href={`mailto:${standaloneEmail[2]}`} className="underline">
             {standaloneEmail[2]}
           </a>
@@ -111,9 +115,13 @@ function renderTermContent(content: string) {
     }
 
     if (bulletedItem) {
-      const containsEmail = /[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/.test(
-        bulletedItem[1],
-      );
+      const bulletContent = bulletedItem[1].trimStart();
+      const containsEmail =
+        /[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/.test(bulletContent);
+      const contactLabelIndex = bulletContent.indexOf('개인정보');
+      const visibleBulletContent = containsEmail
+        ? bulletContent.slice(Math.max(contactLabelIndex, 0))
+        : bulletContent.replace(/^(?:\s*[-*•]\s*)+/u, '').trimStart();
 
       return (
         <p
@@ -121,7 +129,7 @@ function renderTermContent(content: string) {
           className={`-indent-[14px] ${containsEmail ? 'text-primary-70' : ''}`}
           style={{ paddingLeft: 14 + indentation * 3.5 }}
         >
-          • {renderInlineLinks(bulletedItem[1])}
+          • {renderInlineLinks(visibleBulletContent)}
         </p>
       );
     }
