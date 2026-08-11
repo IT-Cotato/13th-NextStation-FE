@@ -1,4 +1,5 @@
 import Share from "@/assets/share.svg?react";
+import { useEffect, useRef } from "react";
 import type { ButtonHTMLAttributes, ReactNode } from "react";
 
 type CTAButtonVariant = "primary" | "secondary";
@@ -9,6 +10,7 @@ interface CTAButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: CTAButtonVariant;
   mode?: CTAButtonMode;
   width?: number;
+  submitOnEnter?: boolean;
 }
 
 const variantStyles: Record<CTAButtonVariant, string> = {
@@ -34,11 +36,49 @@ export default function CTAButton({
   className = "",
   disabled = false,
   width = 360,
+  submitOnEnter = false,
   ...props
 }: CTAButtonProps) {
+  const buttonRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    if (!submitOnEnter) return;
+
+    const handleEnter = (event: KeyboardEvent) => {
+      if (
+        event.key !== "Enter" ||
+        event.repeat ||
+        event.isComposing ||
+        event.altKey ||
+        event.ctrlKey ||
+        event.metaKey ||
+        event.shiftKey
+      ) {
+        return;
+      }
+
+      const target = event.target;
+      if (
+        target instanceof HTMLButtonElement ||
+        target instanceof HTMLAnchorElement ||
+        target instanceof HTMLTextAreaElement ||
+        (target instanceof HTMLElement && target.isContentEditable)
+      ) {
+        return;
+      }
+
+      event.preventDefault();
+      buttonRef.current?.click();
+    };
+
+    document.addEventListener("keydown", handleEnter);
+    return () => document.removeEventListener("keydown", handleEnter);
+  }, [submitOnEnter]);
+
   if (mode === "share") {
     return (
       <button
+        ref={buttonRef}
         type="button"
         disabled={disabled}
         style={{ width }}
@@ -59,6 +99,7 @@ export default function CTAButton({
 
   return (
     <button
+      ref={buttonRef}
       type="button"
       disabled={disabled}
       style={{ width }}

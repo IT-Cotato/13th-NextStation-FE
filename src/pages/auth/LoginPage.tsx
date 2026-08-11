@@ -121,7 +121,11 @@ export default function LoginPage() {
       </section>
 
       <div className="mt-auto flex justify-center px-[15px] pb-[calc(var(--safe-bottom)+50px)]">
-        <CTAButton disabled={isLoginDisabled} onClick={handleLogin}>
+        <CTAButton
+          submitOnEnter
+          disabled={isLoginDisabled}
+          onClick={handleLogin}
+        >
           {isSubmitting ? '로그인 중' : '로그인하기'}
         </CTAButton>
       </div>

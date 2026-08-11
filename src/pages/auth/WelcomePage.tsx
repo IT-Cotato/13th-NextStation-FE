@@ -132,6 +132,7 @@ export default function WelcomePage() {
 
           <div className="w-full">
             <CTAButton
+              submitOnEnter
               className="mx-auto shadow-[0_0_4px_var(--color-secondary-50)]"
               onClick={() => navigate('/auth/login')}
             >
