@@ -4,6 +4,7 @@ import { LogDraftProvider } from "@/pages/course/contexts/LogDraftContext";
 import "react-toastify/dist/ReactToastify.css";
 import Toast from "@/pages/course/components/Toast";
 
+const SplashPage = lazy(() => import("@/pages/SplashPage"));
 const MainPage = lazy(() => import("@/pages/MainPage"));
 
 // auth pages
@@ -131,7 +132,8 @@ function App() {
         <RouteErrorBoundary>
           <Suspense fallback={<RouteFallback />}>
             <Routes>
-              <Route path="/" element={<MainPage />} />
+              <Route path="/" element={<SplashPage />} />
+              <Route path="/main" element={<MainPage />} />
 
               {/* auth */}
               <Route path="/auth" element={<WelcomePage />} />
