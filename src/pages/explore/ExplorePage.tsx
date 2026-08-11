@@ -37,13 +37,42 @@ export default function ExplorePage() {
   useEffect(() => {
     void getExploreMain()
       .then((response) => {
-        setData(response);
         const responseLines = getDisplayedExploreLines(response.lines);
         const selectedLine =
-          responseLines.find(
-            (lineItem) => lineItem.id === response.selectedLineId,
-          ) ?? responseLines[0];
+          responseLines.find((lineItem) => lineItem.id === 1) ??
+          responseLines[0];
+
         setLine(selectedLine?.id ?? null);
+
+        if (!selectedLine) {
+          setData(response);
+          return;
+        }
+
+        setData((current) => ({
+          ...(current ?? response),
+          ...response,
+          lineCourses:
+            selectedLine.id === response.selectedLineId
+              ? response.lineCourses
+              : [],
+        }));
+
+        if (selectedLine.id !== response.selectedLineId) {
+          void getExploreCourses({ lineId: selectedLine.id, size: 3 })
+            .then((courseResponse) =>
+              setData((current) =>
+                current
+                  ? { ...current, lineCourses: courseResponse.courses }
+                  : current,
+              ),
+            )
+            .catch(() =>
+              setData((current) =>
+                current ? { ...current, lineCourses: [] } : current,
+              ),
+            );
+        }
       })
       .catch(() => setData(null));
   }, []);
