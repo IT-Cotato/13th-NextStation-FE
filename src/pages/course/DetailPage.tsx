@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import BackIcon from "@/assets/back.svg?react";
 import HeartIcon from "@/assets/heart.svg?react";
 import HeartFilledIcon from "@/assets/explore/heart-filled.svg?react";
@@ -11,7 +11,9 @@ import StarThree from "@/assets/course-detail/star-3.svg?react";
 import { copyCourse, type CourseDetailData } from "@/api/courseDetail";
 import { likeExploreCourse, unlikeExploreCourse } from "@/api/explore";
 import {
+  deleteJournal,
   getJournalDetail,
+  patchJournal,
   type JournalDetail,
   type TravelDuration,
 } from "@/api/journal";
@@ -34,7 +36,7 @@ const isPositiveId = (value: number) =>
   Number.isSafeInteger(value) && value > 0;
 
 const durationLabels: Record<TravelDuration, string> = {
-  SHORT: "3~4 시간",
+  SHORT: "3~4시간",
   HALF_DAY: "반나절",
   FULL_DAY: "하루종일",
 };
@@ -42,10 +44,22 @@ const durationLabels: Record<TravelDuration, string> = {
 const timeOptions = Object.values(durationLabels);
 const publicOptions = ["전체 공개", "나만 보기"];
 
+const travelDurationByLabel: Record<string, TravelDuration> =
+  Object.fromEntries(
+    Object.entries(durationLabels).map(([duration, label]) => [
+      label,
+      duration as TravelDuration,
+    ]),
+  );
+
 function formatVisitedAt(value: string) {
   return /^\d{4}-\d{2}-\d{2}$/.test(value)
     ? `${value.replaceAll("-", ".")}`
     : value;
+}
+
+function toApiDate(date: string) {
+  return date.replaceAll(".", "-");
 }
 
 function mapJournalToCourse(journal: JournalDetail): CourseDetailData {
@@ -86,11 +100,13 @@ function mapJournalToCourse(journal: JournalDetail): CourseDetailData {
         imageUrl: place.imageUrl,
         imagePosition: index % 2 === 0 ? "left" : "right",
       })),
+    isPublic: journal.isPublic,
   };
 }
 
 export default function DetailPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { courseId: journalIdParam } = useParams();
   const journalId = Number(journalIdParam);
   const hasValidJournalId = isPositiveId(journalId);
@@ -111,6 +127,8 @@ export default function DetailPage() {
   const [editTime, setEditTime] = useState<string | null>(null);
   const [editDate, setEditDate] = useState<string | null>(null);
   const [editPublic, setEditPublic] = useState<string | null>(null);
+  const [isSavingJournal, setIsSavingJournal] = useState(false);
+  const [isLeaveConfirmModalOpen, setIsLeaveConfirmModalOpen] = useState(false);
 
   useEffect(() => {
     if (!hasValidJournalId) return;
@@ -229,7 +247,7 @@ export default function DetailPage() {
     setEditTitle(course.title);
     setEditTime(course.duration);
     setEditDate(course.visitedAt);
-    setEditPublic(null);
+    setEditPublic(course.isPublic ? "전체 공개" : "나만 보기");
     setIsJournalSettingOpen(false);
     setIsEditMode(true);
   };
@@ -239,11 +257,100 @@ export default function DetailPage() {
     setIsDeleteModalOpen(true);
   };
 
-  // TODO: patchJournal 연동 보류
-  const handleJournalSave = () => {
-    showToast({ message: "여행일지 수정 기능은 준비 중입니다." });
+  const handleConfirmDelete = async () => {
+    try {
+      await deleteJournal(journalId);
+      navigate("/mypage");
+    } catch (e) {
+      console.error(e);
+      showToast({ message: "여행일지 삭제에 실패했습니다." });
+    } finally {
+      setIsDeleteModalOpen(false);
+    }
   };
 
+  const handleJournalSave = async () => {
+    if (isSavingJournal) return;
+
+    const travelDuration = editTime
+      ? travelDurationByLabel[editTime]
+      : travelDurationByLabel[course.duration];
+    const traveledDate = editDate ?? course.visitedAt;
+    const isPublic = editPublic !== "나만 보기";
+
+    setIsSavingJournal(true);
+
+    try {
+      await patchJournal({
+        journalId,
+        body: {
+          title: editTitle,
+          overallReview: course.review,
+          traveledAt: toApiDate(traveledDate),
+          travelDuration,
+          isPublic,
+          placeReviews: course.places.map((place) => ({
+            placeId: place.id,
+            review: place.description,
+            imageAction: "KEEP",
+          })),
+        },
+      });
+
+      showToast({ message: "여행일지가 저장되었습니다." });
+      setCourse((current) =>
+        current
+          ? {
+              ...current,
+              title: editTitle,
+              duration: editTime ?? current.duration,
+              visitedAt: traveledDate,
+            }
+          : current,
+      );
+      setIsJournalSettingOpen(false);
+      setIsEditMode(false);
+    } catch (e) {
+      showToast({
+        message:
+          e instanceof Error ? e.message : "여행일지 수정에 실패했습니다.",
+      });
+    } finally {
+      setIsSavingJournal(false);
+    }
+  };
+
+  // 수정사항이 있는지 확인
+  const hasUnsavedJournalChanges =
+    isEditMode &&
+    (editTitle !== course.title ||
+      editTime !== course.duration ||
+      editDate !== course.visitedAt ||
+      editPublic !== (course.isPublic ? "전체 공개" : "나만 보기"));
+
+  // 여행일지 목록에서 들어온 경우에 뒤로 가면 여행일지 탭이 보이도록 설정
+  const navigateBack = () => {
+    if (
+      (location.state as { from?: string } | null)?.from === "mypage-journal"
+    ) {
+      navigate("/mypage", { state: { tab: "journal" } });
+      return;
+    }
+
+    // 아닌 경우 그냥 뒤로 가기
+    navigate(-1);
+  };
+
+  // 뒤로 가기 버튼 클릭 시 실행
+  const handleBack = () => {
+    if (hasUnsavedJournalChanges) {
+      setIsLeaveConfirmModalOpen(true);
+      return;
+    }
+    navigateBack();
+  };
+
+  // TODO : 경로 오류?
   const authorProfileContent = (
     <>
       <div className="flex gap-[14px] justify-center items-center">
@@ -274,14 +381,26 @@ export default function DetailPage() {
         <ConfirmModal
           message="여행일지를 삭제하시겠습니까?"
           onClose={() => setIsDeleteModalOpen(false)}
-          onConfirm={() => navigate("/mypage")}
+          onConfirm={handleConfirmDelete}
+        />
+      )}
+
+      {isLeaveConfirmModalOpen && (
+        <ConfirmModal
+          message={`해당 기록은 저장되지 않습니다.\n저장하지 않고 나가시겠습니까?`}
+          onClose={() => setIsLeaveConfirmModalOpen(false)}
+          onConfirm={() => {
+            setIsLeaveConfirmModalOpen(false);
+            setIsEditMode(false);
+            navigateBack();
+          }}
         />
       )}
 
       <header className="flex items-end justify-between px-[15px] pb-[10px]">
         <button
           type="button"
-          onClick={() => navigate(-1)}
+          onClick={handleBack}
           aria-label="이전"
           className="grid size-6 place-items-center"
         >
@@ -304,8 +423,9 @@ export default function DetailPage() {
           </button>
         ) : isEditMode ? (
           <button
-            className="text-subtitle font-semibold leading-[1.4] tracking-[-0.4px] text-gray-90"
+            className="text-subtitle font-semibold leading-[1.4] tracking-[-0.4px] text-gray-90 disabled:opacity-50"
             onClick={handleJournalSave}
+            disabled={isSavingJournal}
           >
             완료
           </button>
@@ -379,13 +499,12 @@ export default function DetailPage() {
         )}
       </section>
 
-      <section
-        className="h-[292px] w-full shrink-0 touch-pan-x overflow-x-auto overflow-y-hidden overscroll-x-contain [scrollbar-width:none]"
-        aria-label="코스 사진"
-        tabIndex={0}
-      >
-        {/* image */}
-        {!isImageEmpty && (
+      {!isImageEmpty && (
+        <section
+          className="h-[292px] w-full shrink-0 touch-pan-x overflow-x-auto overflow-y-hidden overscroll-x-contain [scrollbar-width:none]"
+          aria-label="코스 사진"
+          tabIndex={0}
+        >
           <div className="flex p-4">
             <div
               ref={sliderRef}
@@ -406,8 +525,8 @@ export default function DetailPage() {
               ))}
             </div>
           </div>
-        )}
-      </section>
+        </section>
+      )}
 
       <section className="flex items-start px-[15px] pb-7 pt-0">
         <StarOne className="size-[68px] shrink-0" aria-hidden="true" />

@@ -73,6 +73,7 @@ export interface CourseDetailData {
   tags: string[];
   images: CourseDetailImage[];
   places: CourseDetailPlaceData[];
+  isPublic: boolean;
 }
 
 // 내가 만든 코스 확인
