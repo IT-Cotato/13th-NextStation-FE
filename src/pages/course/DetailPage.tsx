@@ -74,7 +74,7 @@ function mapJournalToCourse(journal: JournalDetail): CourseDetailData {
     id: journal.courseId,
     line: journal.line.id,
     stationName: journal.stationName,
-    title: journal.courseName,
+    journalTitle: journal.journalTitle,
     viewCount: journal.viewCount,
     saveCount: journal.likeCount,
     writerId: journal.writerId,
@@ -199,7 +199,7 @@ export default function DetailPage() {
     try {
       setIsCopying(true);
       setErrorMessage(null);
-      const copyName = course.title.trim().slice(0, 20);
+      const copyName = course.journalTitle.trim().slice(0, 20);
       if (!copyName) throw new Error("코스 이름이 비어 있습니다.");
       const copiedCourse = await copyCourse(course.id, copyName);
       navigate(`/course/${copiedCourse.courseId}/verify`);
@@ -244,7 +244,7 @@ export default function DetailPage() {
   }
 
   const handleEdit = () => {
-    setEditTitle(course.title);
+    setEditTitle(course.journalTitle);
     setEditTime(course.duration);
     setEditDate(course.visitedAt);
     setEditPublic(course.isPublic ? "전체 공개" : "나만 보기");
@@ -301,7 +301,7 @@ export default function DetailPage() {
         current
           ? {
               ...current,
-              title: editTitle,
+              journalTitle: editTitle,
               duration: editTime ?? current.duration,
               visitedAt: traveledDate,
             }
@@ -322,7 +322,7 @@ export default function DetailPage() {
   // 수정사항이 있는지 확인
   const hasUnsavedJournalChanges =
     isEditMode &&
-    (editTitle !== course.title ||
+    (editTitle !== course.journalTitle ||
       editTime !== course.duration ||
       editDate !== course.visitedAt ||
       editPublic !== (course.isPublic ? "전체 공개" : "나만 보기"));
@@ -474,7 +474,7 @@ export default function DetailPage() {
         ) : (
           <div className="flex flex-col">
             <h1 className="mt-0.5 px-[15px] py-2 text-title-01 font-semibold leading-[1.4] tracking-[-0.025em]">
-              {course.title}
+              {course.journalTitle}
             </h1>
             <div className="flex flex-col gap-2">
               <div className="flex justify-center gap-2.5 px-[15px] py-2">

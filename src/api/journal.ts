@@ -59,6 +59,7 @@ export interface JournalDetail {
   traveledAt: string;
   line: JournalDetailLine;
   stationName: string;
+  journalTitle: string;
   courseId: number;
   courseName: string;
   isMine: boolean;
