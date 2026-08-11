@@ -297,7 +297,6 @@ export default function DetailPage() {
         },
       });
 
-      showToast({ message: "여행일지가 저장되었습니다." });
       setCourse((current) =>
         current
           ? {
