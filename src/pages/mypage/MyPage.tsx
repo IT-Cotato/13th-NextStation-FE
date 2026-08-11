@@ -6,7 +6,7 @@ import * as motion from "motion/react-client";
 import { useEffect, useState } from "react";
 import StampListView from "./components/StampListView";
 import JournalPreviewCard from "./components/JournalPreviewCard";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   clearCachedMyProfile,
   deleteMyProfile,
@@ -24,10 +24,13 @@ import { showToast } from "@/pages/course/components/ShowToast";
 
 export default function MyPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [myProfile, setMyProfile] = useState<MemberProfile | null>(null);
   const [isMyProfileLoading, setIsMyProfileLoading] = useState(true);
   const [myProfileError, setMyProfileError] = useState<string | null>(null);
-  const [isStampMode, setIsStampMode] = useState(true);
+  const [isStampMode, setIsStampMode] = useState(
+    (location.state as { tab?: string } | null)?.tab !== "journal",
+  );
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [journals, setJournals] = useState<Journal[]>([]);
   const [nextCursor, setNextCursor] = useState<string | null>(null);
@@ -257,7 +260,7 @@ export default function MyPage() {
 
       {/* segment */}
       <section className="flex justify-center">
-        <div className="flex realtive items-center w-[358px] rounded-[36px] bg-gray-30 p-1">
+        <div className="flex relative items-center w-[358px] rounded-[36px] bg-gray-30 p-1">
           <button
             onClick={() => setIsStampMode(true)}
             className={"relative z-10 flex-1 rounded-[28px] text-center py-2"}
@@ -322,15 +325,22 @@ export default function MyPage() {
                 <JournalAdd />
               </button>
               {journals.map((journal) => (
-                // TODO : 클릭 시 여행일지 상세 보기 페이지로 이동 경로 연결
-                <JournalPreviewCard
-                  key={journal.journalId}
-                  lineId={journal.line.id}
-                  stationName={journal.stationName}
-                  journalTitle={journal.title}
-                  thumbnailUrl={journal.thumbnailUrl}
-                  likeCount={journal.likeCount}
-                />
+                <button
+                  onClick={() =>
+                    navigate(`/course/${journal.journalId}`, {
+                      state: { from: "mypage-journal" },
+                    })
+                  }
+                >
+                  <JournalPreviewCard
+                    key={journal.journalId}
+                    lineId={journal.line.id}
+                    stationName={journal.stationName}
+                    journalTitle={journal.title}
+                    thumbnailUrl={journal.thumbnailUrl}
+                    likeCount={journal.likeCount}
+                  />
+                </button>
               ))}
             </div>
             {loadMoreError && (

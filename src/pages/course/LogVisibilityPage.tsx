@@ -31,7 +31,9 @@ function LogVisibilityPage() {
 
     const traveledDate = draft.selectedDate ?? draft.acquiredDate;
     const travelDuration =
-      draft.selectedTime !== null ? TRAVEL_DURATION_MAP[draft.selectedTime] : null;
+      draft.selectedTime !== null
+        ? TRAVEL_DURATION_MAP[draft.selectedTime]
+        : null;
 
     if (!draft.memberStampId || !traveledDate || !travelDuration) {
       showToast({ message: "여행일지 저장에 필요한 정보가 부족합니다." });
@@ -41,7 +43,7 @@ function LogVisibilityPage() {
     setIsSubmitting(true);
 
     try {
-      const response = await createJournal({
+      await createJournal({
         memberStampId: draft.memberStampId,
         title: draft.logName,
         overallReview: draft.review,
@@ -57,7 +59,7 @@ function LogVisibilityPage() {
       });
 
       showToast({
-        message: `여행일지가 저장되었습니다. (#${response.journalId})`,
+        message: "여행일지가 저장되었습니다.",
       });
       navigate("/course");
     } catch (error) {
@@ -74,7 +76,7 @@ function LogVisibilityPage() {
 
   return (
     <main className="flex flex-col h-dvh overflow-y-auto bg-gray-10 items-center pt-[var(--safe-top)] pb-[calc(var(--safe-bottom)+140px)] [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
-      <Header 
+      <Header
         showBack
         showClose
         onCloseClick={() => {
@@ -87,9 +89,11 @@ function LogVisibilityPage() {
         }}
       />
       {isLogConfirmOpen && (
-        <ConfirmModal 
-          message={"해당 기록은 저장되지 않았습니다.\n저장하지 않고 나가시겠습니까?"}
-          onClose={() => setIsLogConfirmOpen(false)} 
+        <ConfirmModal
+          message={
+            "해당 기록은 저장되지 않습니다.\n저장하지 않고 나가시겠습니까?"
+          }
+          onClose={() => setIsLogConfirmOpen(false)}
           onConfirm={() => navigate(`/course`)}
         />
       )}
@@ -101,21 +105,23 @@ function LogVisibilityPage() {
           <p className="text-subtitle font-semibold text-gray-100 leading-[1.4] tracking-[-0.025em]">
             공개 범위 설정
           </p>
-          <VisibilityCard 
+          <VisibilityCard
             type="private"
-            selected={draft.visibility === 'private'}
-            onClick={() => setVisibility('private')}
+            selected={draft.visibility === "private"}
+            onClick={() => setVisibility("private")}
           />
           <VisibilityCard
             type="public"
-            selected={draft.visibility === 'public'}
-            onClick={() => setVisibility('public')}
+            selected={draft.visibility === "public"}
+            onClick={() => setVisibility("public")}
           />
         </div>
 
         <div className="flex items-center justify-center p-10">
           <p className="text-body-02 text-gray-60 leading-[1.4] tracking-[-0.025em] text-center">
-            공유한 장소 후기와 사진은 {stationName} 코스와 장소 상세화면에서 다른 사용자에게<br />
+            공유한 장소 후기와 사진은 {stationName} 코스와 장소 상세화면에서
+            다른 사용자에게
+            <br />
             보여질 수 있어요. 공개 범위는 언제든 변경 가능해요.
           </p>
         </div>
@@ -127,6 +133,6 @@ function LogVisibilityPage() {
         </CTAButton>
       </section>
     </main>
-  )
+  );
 }
-export default LogVisibilityPage
+export default LogVisibilityPage;

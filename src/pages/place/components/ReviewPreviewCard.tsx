@@ -31,7 +31,7 @@ export default function ReviewPreviewCard({
             {writerNickname}
           </span>
           {/* 리뷰 */}
-          <p className="text-body-02 text-gray-70 line-clamp-2 min-h-[2lh] min-w-0 leading-[1.4] tracking-[-0.3px]">
+          <p className="text-body-02 text-gray-70 line-clamp-2 leading-[1.4] tracking-[-0.025em]">
             {content}
           </p>
         </div>

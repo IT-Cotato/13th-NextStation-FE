@@ -56,7 +56,7 @@ export default function ConceptToursPage() {
       </div>
 
       <section
-        className="grid grid-cols-2 gap-3 px-[15px]"
+        className="grid grid-cols-2 gap-3 px-[15px] pb-5"
         aria-label="컨셉별 투어 목록"
       >
         {displayedTours.map(({ tour, design }) => (

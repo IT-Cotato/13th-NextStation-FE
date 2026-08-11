@@ -1,20 +1,19 @@
-import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import BackIcon from "@/assets/back.svg?react";
-import CardDefault from "@/assets/card-default.svg?react";
 import HeartIcon from "@/assets/heart.svg?react";
 import HeartFilledIcon from "@/assets/explore/heart-filled.svg?react";
+import More from "@/assets/like/more.svg?react";
 import ProfileDefault from "@/assets/profile-default.svg?react";
 import StarOne from "@/assets/course-detail/star-1.svg?react";
 import StarTwo from "@/assets/course-detail/star-2.svg?react";
 import StarThree from "@/assets/course-detail/star-3.svg?react";
-import {
-  copyCourse,
-  type CourseDetailData,
-} from "@/api/courseDetail";
+import { copyCourse, type CourseDetailData } from "@/api/courseDetail";
 import { likeExploreCourse, unlikeExploreCourse } from "@/api/explore";
 import {
+  deleteJournal,
   getJournalDetail,
+  patchJournal,
   type JournalDetail,
   type TravelDuration,
 } from "@/api/journal";
@@ -22,22 +21,45 @@ import StationLineList from "@/components/StationLineList";
 import type { SubwayLine } from "@/types/subway";
 import CourseDetailPlace from "./components/CourseDetailPlace";
 import { showToast } from "./components/ShowToast";
+import {
+  TRAVEL_STYLE_LABELS,
+  type RecommendationTravelStyle,
+} from "@/api/recommendation";
+import JournalSetting from "./components/JournalSetting";
+import ConfirmModal from "@/components/ConfirmModal";
+import JournalEditForm from "./components/JournalEditForm";
 
 const isSubwayLine = (value: number): value is SubwayLine =>
   Number.isInteger(value) && value >= 1 && value <= 9;
 
-const isPositiveId = (value: number) => Number.isSafeInteger(value) && value > 0;
+const isPositiveId = (value: number) =>
+  Number.isSafeInteger(value) && value > 0;
 
 const durationLabels: Record<TravelDuration, string> = {
-  SHORT: "3~4 시간",
+  SHORT: "3~4시간",
   HALF_DAY: "반나절",
-  FULL_DAY: "하루",
+  FULL_DAY: "하루종일",
 };
+
+const timeOptions = Object.values(durationLabels);
+const publicOptions = ["전체 공개", "나만 보기"];
+
+const travelDurationByLabel: Record<string, TravelDuration> =
+  Object.fromEntries(
+    Object.entries(durationLabels).map(([duration, label]) => [
+      label,
+      duration as TravelDuration,
+    ]),
+  );
 
 function formatVisitedAt(value: string) {
   return /^\d{4}-\d{2}-\d{2}$/.test(value)
-    ? `${value.replaceAll("-", ".")} 방문`
+    ? `${value.replaceAll("-", ".")}`
     : value;
+}
+
+function toApiDate(date: string) {
+  return date.replaceAll(".", "-");
 }
 
 function mapJournalToCourse(journal: JournalDetail): CourseDetailData {
@@ -53,7 +75,6 @@ function mapJournalToCourse(journal: JournalDetail): CourseDetailData {
     line: journal.line.id,
     stationName: journal.stationName,
     title: journal.courseName,
-    subtitle: "",
     viewCount: journal.viewCount,
     saveCount: journal.likeCount,
     writerId: journal.writerId,
@@ -79,11 +100,13 @@ function mapJournalToCourse(journal: JournalDetail): CourseDetailData {
         imageUrl: place.imageUrl,
         imagePosition: index % 2 === 0 ? "left" : "right",
       })),
+    isPublic: journal.isPublic,
   };
 }
 
 export default function DetailPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { courseId: journalIdParam } = useParams();
   const journalId = Number(journalIdParam);
   const hasValidJournalId = isPositiveId(journalId);
@@ -93,6 +116,19 @@ export default function DetailPage() {
   const [saved, setSaved] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isCopying, setIsCopying] = useState(false);
+  const [isJournalSettingOpen, setIsJournalSettingOpen] = useState(false);
+  const slideImages = course?.images;
+  const isImageEmpty = (slideImages?.length ?? 0) < 1;
+  const [, setIndex] = useState(0);
+  const sliderRef = useRef<HTMLDivElement>(null);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [editTitle, setEditTitle] = useState("");
+  const [editTime, setEditTime] = useState<string | null>(null);
+  const [editDate, setEditDate] = useState<string | null>(null);
+  const [editPublic, setEditPublic] = useState<string | null>(null);
+  const [isSavingJournal, setIsSavingJournal] = useState(false);
+  const [isLeaveConfirmModalOpen, setIsLeaveConfirmModalOpen] = useState(false);
 
   useEffect(() => {
     if (!hasValidJournalId) return;
@@ -132,10 +168,7 @@ export default function DetailPage() {
       current
         ? {
             ...current,
-            saveCount: Math.max(
-              0,
-              current.saveCount + (nextSaved ? 1 : -1),
-            ),
+            saveCount: Math.max(0, current.saveCount + (nextSaved ? 1 : -1)),
           }
         : current,
     );
@@ -150,10 +183,7 @@ export default function DetailPage() {
         current
           ? {
               ...current,
-              saveCount: Math.max(
-                0,
-                current.saveCount + (nextSaved ? -1 : 1),
-              ),
+              saveCount: Math.max(0, current.saveCount + (nextSaved ? -1 : 1)),
             }
           : current,
       );
@@ -182,6 +212,12 @@ export default function DetailPage() {
     }
   };
 
+  const handleSliderScroll = () => {
+    const slider = sliderRef.current;
+    if (!slider) return;
+    setIndex(Math.round(slider.scrollLeft / slider.clientWidth));
+  };
+
   if (!hasValidJournalId || isLoading || !course) {
     return (
       <main className="mx-auto min-h-dvh w-full max-w-[390px] bg-gray-10 text-gray-100">
@@ -201,47 +237,176 @@ export default function DetailPage() {
         >
           {!hasValidJournalId
             ? "올바르지 않은 여행일지 주소입니다."
-            : errorMessage ?? "코스 상세 정보를 불러오는 중입니다."}
+            : (errorMessage ?? "코스 상세 정보를 불러오는 중입니다.")}
         </p>
       </main>
     );
   }
 
+  const handleEdit = () => {
+    setEditTitle(course.title);
+    setEditTime(course.duration);
+    setEditDate(course.visitedAt);
+    setEditPublic(course.isPublic ? "전체 공개" : "나만 보기");
+    setIsJournalSettingOpen(false);
+    setIsEditMode(true);
+  };
+
+  const handleDelete = () => {
+    setIsJournalSettingOpen(false);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    try {
+      await deleteJournal(journalId);
+      navigate("/mypage");
+    } catch (e) {
+      console.error(e);
+      showToast({ message: "여행일지 삭제에 실패했습니다." });
+    } finally {
+      setIsDeleteModalOpen(false);
+    }
+  };
+
+  const handleJournalSave = async () => {
+    if (isSavingJournal) return;
+
+    const travelDuration = editTime
+      ? travelDurationByLabel[editTime]
+      : travelDurationByLabel[course.duration];
+    const traveledDate = editDate ?? course.visitedAt;
+    const isPublic = editPublic !== "나만 보기";
+
+    setIsSavingJournal(true);
+
+    try {
+      await patchJournal({
+        journalId,
+        body: {
+          title: editTitle,
+          overallReview: course.review,
+          traveledAt: toApiDate(traveledDate),
+          travelDuration,
+          isPublic,
+          placeReviews: course.places.map((place) => ({
+            placeId: place.id,
+            review: place.description,
+            imageAction: "KEEP",
+          })),
+        },
+      });
+
+      showToast({ message: "여행일지가 저장되었습니다." });
+      setCourse((current) =>
+        current
+          ? {
+              ...current,
+              title: editTitle,
+              duration: editTime ?? current.duration,
+              visitedAt: traveledDate,
+            }
+          : current,
+      );
+      setIsJournalSettingOpen(false);
+      setIsEditMode(false);
+    } catch (e) {
+      showToast({
+        message:
+          e instanceof Error ? e.message : "여행일지 수정에 실패했습니다.",
+      });
+    } finally {
+      setIsSavingJournal(false);
+    }
+  };
+
+  // 수정사항이 있는지 확인
+  const hasUnsavedJournalChanges =
+    isEditMode &&
+    (editTitle !== course.title ||
+      editTime !== course.duration ||
+      editDate !== course.visitedAt ||
+      editPublic !== (course.isPublic ? "전체 공개" : "나만 보기"));
+
+  // 여행일지 목록에서 들어온 경우에 뒤로 가면 여행일지 탭이 보이도록 설정
+  const navigateBack = () => {
+    if (
+      (location.state as { from?: string } | null)?.from === "mypage-journal"
+    ) {
+      navigate("/mypage", { state: { tab: "journal" } });
+      return;
+    }
+
+    // 아닌 경우 그냥 뒤로 가기
+    navigate(-1);
+  };
+
+  // 뒤로 가기 버튼 클릭 시 실행
+  const handleBack = () => {
+    if (hasUnsavedJournalChanges) {
+      setIsLeaveConfirmModalOpen(true);
+      return;
+    }
+    navigateBack();
+  };
+
+  // TODO : 경로 오류?
   const authorProfileContent = (
     <>
-      {course.writerProfileImageUrl ? (
-        <img
-          className="size-[49px] shrink-0 rounded-full object-cover"
-          src={course.writerProfileImageUrl}
-          alt={`${course.writerName} 프로필`}
-        />
-      ) : (
-        <ProfileDefault
-          className="size-[49px] shrink-0"
-          aria-hidden="true"
-        />
-      )}
-      <div className="flex flex-col">
-        <span className="text-body-02 font-semibold text-gray-90">
-          {course.writerName}
-        </span>
-        <span className="text-caption text-gray-60">{course.visitedAt}</span>
+      <div className="flex gap-[14px] justify-center items-center">
+        {course.writerProfileImageUrl ? (
+          <img
+            className="size-[49px] shrink-0 rounded-full object-cover"
+            src={course.writerProfileImageUrl}
+            alt={`${course.writerName} 프로필`}
+          />
+        ) : (
+          <ProfileDefault className="size-[49px] shrink-0" aria-hidden="true" />
+        )}
+        <div className="flex flex-col">
+          <span className="text-body-01 font-semibold text-gray-90 leading-[1.4] tracking-[-0.35px]">
+            {course.writerName}
+          </span>
+          <span className="text-body-02 text-gray-60 leading-[1.4] tracking-[-0.3px]">
+            {course.visitedAt} 방문
+          </span>
+        </div>
       </div>
     </>
   );
 
   return (
     <main className="flex h-dvh flex-col overflow-y-auto bg-gray-10 pt-[calc(var(--safe-top)+12px)] text-gray-100 bg-[linear-gradient(180deg,var(--color-secondary-20)_0%,var(--color-gray-10)_60%)] [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+      {isDeleteModalOpen && (
+        <ConfirmModal
+          message="여행일지를 삭제하시겠습니까?"
+          onClose={() => setIsDeleteModalOpen(false)}
+          onConfirm={handleConfirmDelete}
+        />
+      )}
+
+      {isLeaveConfirmModalOpen && (
+        <ConfirmModal
+          message={`해당 기록은 저장되지 않습니다.\n저장하지 않고 나가시겠습니까?`}
+          onClose={() => setIsLeaveConfirmModalOpen(false)}
+          onConfirm={() => {
+            setIsLeaveConfirmModalOpen(false);
+            setIsEditMode(false);
+            navigateBack();
+          }}
+        />
+      )}
+
       <header className="flex items-end justify-between px-[15px] pb-[10px]">
         <button
           type="button"
-          onClick={() => navigate(-1)}
+          onClick={handleBack}
           aria-label="이전"
           className="grid size-6 place-items-center"
         >
           <BackIcon className="size-6" aria-hidden="true" />
         </button>
-        {!course.isMine && (
+        {!course.isMine ? (
           <button
             type="button"
             onClick={handleToggleSave}
@@ -256,6 +421,33 @@ export default function DetailPage() {
               <HeartIcon className="size-6" aria-hidden="true" />
             )}
           </button>
+        ) : isEditMode ? (
+          <button
+            className="text-subtitle font-semibold leading-[1.4] tracking-[-0.4px] text-gray-90 disabled:opacity-50"
+            onClick={handleJournalSave}
+            disabled={isSavingJournal}
+          >
+            완료
+          </button>
+        ) : (
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() => setIsJournalSettingOpen((prev) => !prev)}
+              aria-label="더보기"
+              className="flex items-center"
+            >
+              <More className="size-6" />
+            </button>
+            {isJournalSettingOpen && (
+              <div className="absolute right-0 top-full z-10 mt-2">
+                <JournalSetting
+                  handleEdit={handleEdit}
+                  handleDelete={handleDelete}
+                />
+              </div>
+            )}
+          </div>
         )}
       </header>
 
@@ -265,80 +457,113 @@ export default function DetailPage() {
             items={[{ line: course.line, stationName: course.stationName }]}
           />
         </div>
-        <h1 className="mt-0.5 h-[72px] px-[15px] py-2 text-title-01 font-semibold leading-[1.4] tracking-[-0.025em]">
-          {course.title}
-          {course.subtitle && (
-            <>
-              <br />
-              {course.subtitle}
-            </>
-          )}
-        </h1>
-        <div className="flex h-[33px] justify-center gap-2.5 px-[15px] py-2 text-caption text-gray-80">
-          <span>조회수 {course.viewCount}</span>
-          <span>저장 {course.saveCount}</span>
-        </div>
-        <button
-          type="button"
-          className="flex h-[73px] w-full items-center gap-[14px] rounded-[20px] bg-secondary-10 px-[15px] py-3 text-left"
-          onClick={() => navigate(`/profile/${course.writerId}`)}
-          aria-label={`${course.writerName} 프로필 보기`}
-        >
-          {authorProfileContent}
-        </button>
+        {isEditMode ? (
+          <JournalEditForm
+            title={editTitle}
+            onTitleChange={setEditTitle}
+            timeOptions={timeOptions}
+            selectedTime={editTime}
+            onTimeChange={setEditTime}
+            tags={course.tags}
+            defaultDate={course.visitedAt}
+            selectedDate={editDate}
+            onDateChange={setEditDate}
+            publicOptions={publicOptions}
+            selectedPublic={editPublic}
+            onPublicChange={setEditPublic}
+          />
+        ) : (
+          <div className="flex flex-col">
+            <h1 className="mt-0.5 px-[15px] py-2 text-title-01 font-semibold leading-[1.4] tracking-[-0.025em]">
+              {course.title}
+            </h1>
+            <div className="flex flex-col gap-2">
+              <div className="flex justify-center gap-2.5 px-[15px] py-2">
+                <span className="text-body-02 leading-[1.4] tracking-[-0.3px] text-gray-80">
+                  조회수 {course.viewCount}
+                </span>
+                <span className="text-body-02 leading-[1.4] tracking-[-0.3px] text-gray-80">
+                  저장 {course.saveCount}
+                </span>
+              </div>
+              <button
+                type="button"
+                className="flex h-[73px] w-full items-center gap-[14px] rounded-[20px] bg-secondary-10 px-[15px] py-3 text-left"
+                onClick={() => navigate(`/profile/${course.writerId}`)}
+                aria-label={`${course.writerName} 프로필 보기`}
+              >
+                {authorProfileContent}
+              </button>
+            </div>
+          </div>
+        )}
       </section>
 
-      <section
-        className="h-[292px] w-full touch-pan-x overflow-x-auto overflow-y-hidden overscroll-x-contain [scrollbar-width:none]"
-        aria-label="코스 사진"
-        tabIndex={0}
-      >
-        <div className="flex h-[292px] w-max min-w-full gap-5 px-[15px] py-4">
-          {course.images.length > 0 ? (
-            course.images.map((image) => (
-              <img
-                key={image.id}
-                className="size-[260px] shrink-0 rounded-[20px] bg-primary-10 object-cover"
-                src={image.src}
-                alt={image.alt}
-              />
-            ))
-          ) : (
-            <CardDefault className="size-[260px] shrink-0 rounded-[20px]" />
-          )}
-        </div>
-      </section>
+      {!isImageEmpty && (
+        <section
+          className="h-[292px] w-full shrink-0 touch-pan-x overflow-x-auto overflow-y-hidden overscroll-x-contain [scrollbar-width:none]"
+          aria-label="코스 사진"
+          tabIndex={0}
+        >
+          <div className="flex p-4">
+            <div
+              ref={sliderRef}
+              onScroll={handleSliderScroll}
+              className="flex gap-5 overflow-x-auto snap-x snap-mandatory [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+            >
+              {slideImages?.map((image, i) => (
+                <div
+                  className="relative shrink-0 snap-start w-[260px] h-[260px]"
+                  key={i}
+                >
+                  <img
+                    src={image.src}
+                    alt={image.alt}
+                    className="rounded-lg w-full h-full object-cover"
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       <section className="flex items-start px-[15px] pb-7 pt-0">
         <StarOne className="size-[68px] shrink-0" aria-hidden="true" />
-        <p className="-ml-[47px] mt-12 whitespace-pre-line px-[21px] text-body-02 leading-[1.8] tracking-[-0.025em]">
+        <p className="-ml-[47px] mt-12 whitespace-pre-line px-[21px] text-body-01 leading-[1.8] tracking-[-0.025em] break-keep z-10">
           {course.review}
         </p>
       </section>
 
-      <section className="border-b-[6px] border-gray-20 pb-9">
+      <section className="relative isolate border-b-[6px] border-gray-20 pb-9">
         <h2 className="px-8 py-2 text-title-02 font-semibold leading-[1.4] tracking-[-0.025em]">
           다녀온 곳
         </h2>
-        <div className="pointer-events-none -mb-[116px] ml-auto mr-[13px] flex size-[136px] items-center justify-center" aria-hidden="true">
+        <div
+          className="pointer-events-none absolute top-[42px] right-[13px] -z-10 flex size-[136px] items-center justify-center"
+          aria-hidden="true"
+        >
           <StarTwo className="size-[100px] rotate-[30deg]" />
         </div>
         {course.places.map((place) => (
           <CourseDetailPlace key={place.id} place={place} />
         ))}
-        <StarThree className="pointer-events-none ml-[5px] -mt-[116px] size-[60px]" aria-hidden="true" />
+        <StarThree
+          className="pointer-events-none absolute bottom-[56px] left-[5px] -z-10 size-[60px]"
+          aria-hidden="true"
+        />
       </section>
 
       <div className="flex min-h-[97px] flex-wrap gap-2 px-[15px] py-8">
-        <span className="whitespace-nowrap rounded-lg bg-gray-30 px-3 py-2 text-caption text-gray-70">
+        <span className="whitespace-nowrap rounded-lg bg-gray-30 px-3 py-2 text-body-02 leading-[1.4] tracking-[-0.3px] text-gray-70">
           여행시간 {course.duration}
         </span>
         {course.tags.map((tag) => (
           <span
-            className="whitespace-nowrap rounded-lg bg-gray-30 px-3 py-2 text-caption text-gray-70"
+            className="whitespace-nowrap rounded-lg bg-gray-30 px-3 py-2 text-body-02 leading-[1.4] tracking-[-0.3px] text-gray-70"
             key={tag}
           >
-            {tag.startsWith("#") ? tag : `#${tag}`}
+            #{TRAVEL_STYLE_LABELS[tag as RecommendationTravelStyle] ?? tag}
           </span>
         ))}
       </div>
@@ -346,7 +571,10 @@ export default function DetailPage() {
       {!course.isMine && (
         <footer className="h-[125px] px-[15px] pb-[50px] pt-[15px]">
           {errorMessage && (
-            <p className="pb-2 text-center text-caption text-primary-60" role="alert">
+            <p
+              className="pb-2 text-center text-caption text-primary-60"
+              role="alert"
+            >
               {errorMessage}
             </p>
           )}
