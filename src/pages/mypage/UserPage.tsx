@@ -38,8 +38,12 @@ export default function UserPage() {
     let isActive = true;
     void Promise.all([
       getPublicMemberProfile(memberId),
-      getPublicMemberStamps(memberId),
-      getPublicMemberCourses(memberId),
+      getPublicMemberStamps(memberId).catch(() => []),
+      getPublicMemberCourses(memberId).catch(() => ({
+        courses: [],
+        nextCursor: null,
+        hasNext: false,
+      })),
     ])
       .then(([profileResponse, stampResponse, courseResponse]) => {
         if (!isActive) return;
@@ -47,7 +51,7 @@ export default function UserPage() {
         setProfile(profileResponse);
         setStamps(
           stampResponse.flatMap((stamp) => {
-            const line = stamp.lines[0];
+            const line = stamp.line;
             return line ? [{ ...stamp, line }] : [];
           }),
         );

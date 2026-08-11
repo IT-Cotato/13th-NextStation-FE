@@ -543,15 +543,19 @@ export default function DetailPage() {
           className="pointer-events-none absolute top-[42px] right-[13px] -z-10 flex size-[136px] items-center justify-center"
           aria-hidden="true"
         >
-          <StarTwo className="size-[100px] rotate-[30deg]" />
+          <div className="relative size-[100px] rotate-[30deg]">
+            <StarTwo className="absolute left-[7.6%] top-[1.35%] h-[97.3%] w-[84.8%]" />
+          </div>
         </div>
         {course.places.map((place) => (
           <CourseDetailPlace key={place.id} place={place} />
         ))}
-        <StarThree
+        <div
           className="pointer-events-none absolute bottom-[56px] left-[5px] -z-10 size-[60px]"
           aria-hidden="true"
-        />
+        >
+          <StarThree className="absolute left-[3.69%] top-[2.59%] h-[90.46%] w-[92.62%]" />
+        </div>
       </section>
 
       <div className="flex min-h-[97px] flex-wrap gap-2 px-[15px] py-8">
