@@ -59,7 +59,7 @@ export interface CourseDetailData {
   id: number;
   line: SubwayLine;
   stationName: string;
-  title: string;
+  journalTitle: string;
   viewCount: number;
   saveCount: number;
   writerId: number;

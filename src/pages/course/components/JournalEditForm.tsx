@@ -90,7 +90,7 @@ export default function JournalEditForm({
           </span>
           <button
             type="button"
-            onClick={() => setIsDatePickerOpen(true)}
+            onClick={() => setIsDatePickerOpen((prev) => !prev)}
             className="flex w-full rounded-lg items-center justify-between px-[10px] py-2 outline-none border border-primary-50"
           >
             <span className="text-body-01 leading-[1.4] tracking-[-0.35px] text-gray-70">
