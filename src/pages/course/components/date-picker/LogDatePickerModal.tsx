@@ -11,7 +11,7 @@ type LogDatePickerModalProps = {
   selectedDate: string | null;
   onClose: () => void;
   onConfirm: (date: string) => void;
-}
+};
 
 export default function LogDatePickerModal({
   defaultDate,
@@ -74,5 +74,5 @@ export default function LogDatePickerModal({
         />
       )}
     </div>
-  )
+  );
 }
