@@ -75,6 +75,7 @@ function mapJournalToCourse(journal: JournalDetail): CourseDetailData {
     line: journal.line.id,
     stationName: journal.stationName,
     journalTitle: journal.journalTitle,
+    courseName: journal.courseName,
     viewCount: journal.viewCount,
     saveCount: journal.likeCount,
     writerId: journal.writerId,
@@ -199,7 +200,7 @@ export default function DetailPage() {
     try {
       setIsCopying(true);
       setErrorMessage(null);
-      const copyName = course.journalTitle.trim().slice(0, 20);
+      const copyName = course.courseName.trim().slice(0, 20);
       if (!copyName) throw new Error("코스 이름이 비어 있습니다.");
       const copiedCourse = await copyCourse(course.id, copyName);
       navigate(`/course/${copiedCourse.courseId}/verify`);
