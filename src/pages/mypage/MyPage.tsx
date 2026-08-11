@@ -308,7 +308,7 @@ export default function MyPage() {
       </section>
 
       {/* list */}
-      <section className="flex justify-center">
+      <section className="flex justify-center pb-20">
         {isStampMode ? (
           <StampListView />
         ) : isJournalsLoading ? (
