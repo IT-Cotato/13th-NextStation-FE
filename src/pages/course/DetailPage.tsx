@@ -488,7 +488,11 @@ export default function DetailPage() {
               <button
                 type="button"
                 className="flex h-[73px] w-full items-center gap-[14px] rounded-[20px] bg-secondary-10 px-[15px] py-3 text-left"
-                onClick={() => navigate(`/profile/${course.writerId}`)}
+                onClick={() =>
+                  course.isMine
+                    ? navigate("/mypage", { state: { tab: "journal" } })
+                    : navigate(`/profile/${course.writerId}`)
+                }
                 aria-label={`${course.writerName} 프로필 보기`}
               >
                 {authorProfileContent}
