@@ -1,16 +1,16 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { useState } from "react";
 import CTAButton from "@/components/CTAButton";
-import Header from "@/components/Header"
+import Header from "@/components/Header";
 import TimeChip from "./components/TimeChip";
 import LogPhotoUploader from "./components/LogPhotoUploader";
 import LogDatePickerModal from "./components/date-picker/LogDatePickerModal";
-import CalendarIcon from '@/assets/calendar.svg?react';
+import CalendarIcon from "@/assets/calendar.svg?react";
 import ConfirmModal from "@/components/ConfirmModal";
 import NameEditInput from "./components/NameEditInput";
 import { useLogDraft } from "./contexts/LogDraftContext";
 
-const timeOptions = ['3~4시간', '반나절', '하루종일'];
+const timeOptions = ["3~4시간", "반나절", "하루종일"];
 
 function LogInfoPage() {
   const navigate = useNavigate();
@@ -38,7 +38,7 @@ function LogInfoPage() {
   return (
     <main className="flex flex-col h-dvh overflow-y-auto bg-gray-10 items-center pt-[var(--safe-top)] pb-[calc(var(--safe-bottom)+140px)] [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
       {/* 수정사항이 있을경우 경고 모달이 떠야함 */}
-      <Header 
+      <Header
         showClose
         onCloseClick={() => {
           if (isDirty) {
@@ -50,15 +50,21 @@ function LogInfoPage() {
         }}
       />
       {isLogConfirmOpen && (
-        <ConfirmModal 
-          message={"해당 기록은 저장되지 않았습니다.\n저장하지 않고 나가시겠습니까?"}
-          onClose={() => setIsLogConfirmOpen(false)} 
+        <ConfirmModal
+          message={
+            "해당 기록은 저장되지 않았습니다.\n저장하지 않고 나가시겠습니까?"
+          }
+          onClose={() => setIsLogConfirmOpen(false)}
           onConfirm={() => navigate(`/course`)}
         />
       )}
       {/* 코스 제목 */}
       <section className="flex flex-col w-[390px] p-5">
-        <NameEditInput value={draft.logName} onChange={setLogName} className="border-none"/>
+        <NameEditInput
+          value={draft.logName}
+          onChange={setLogName}
+          className="border-none"
+        />
       </section>
 
       <section className="flex flex-col w-[360px] items-start gap-8">
@@ -71,15 +77,17 @@ function LogInfoPage() {
           <div className="flex flex-col w-full gap-2">
             <button
               type="button"
-              onClick={() => setIsDatePickerOpen(true)}
+              onClick={() => setIsDatePickerOpen((prev) => !prev)}
               className="flex w-full rounded-lg items-center justify-between px-[10px] py-2 bg-white outline-none"
             >
-              <span 
+              <span
                 className={`
                   text-body-01 leading-[1.4] tracking-[-0.025em]
                   ${displayDate ? "text-gray-100" : "text-gray-70"}
                 `}
-              >{displayDate ?? "날짜를 선택해주세요"}</span>
+              >
+                {displayDate ?? "날짜를 선택해주세요"}
+              </span>
               <CalendarIcon className="size-6" />
             </button>
 
@@ -148,11 +156,10 @@ function LogInfoPage() {
             />
           </div>
         </div>
-
       </section>
 
       <section className="absolute bottom-[calc(var(--safe-bottom)+10px)] z-10 flex flex-col w-full items-center justify-center ">
-        <CTAButton 
+        <CTAButton
           disabled={!isInfoComplete}
           onClick={() => navigate(`/course/${courseId}/log/place`)}
         >
@@ -160,6 +167,6 @@ function LogInfoPage() {
         </CTAButton>
       </section>
     </main>
-  )
+  );
 }
-export default LogInfoPage
+export default LogInfoPage;
