@@ -6,7 +6,7 @@ import * as motion from "motion/react-client";
 import { useEffect, useState } from "react";
 import StampListView from "./components/StampListView";
 import JournalPreviewCard from "./components/JournalPreviewCard";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   clearCachedMyProfile,
   deleteMyProfile,
@@ -24,10 +24,13 @@ import { showToast } from "@/pages/course/components/ShowToast";
 
 export default function MyPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [myProfile, setMyProfile] = useState<MemberProfile | null>(null);
   const [isMyProfileLoading, setIsMyProfileLoading] = useState(true);
   const [myProfileError, setMyProfileError] = useState<string | null>(null);
-  const [isStampMode, setIsStampMode] = useState(true);
+  const [isStampMode, setIsStampMode] = useState(
+    (location.state as { tab?: string } | null)?.tab !== "journal",
+  );
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [journals, setJournals] = useState<Journal[]>([]);
   const [nextCursor, setNextCursor] = useState<string | null>(null);
@@ -314,7 +317,11 @@ export default function MyPage() {
               </button>
               {journals.map((journal) => (
                 <button
-                  onClick={() => navigate(`/course/${journal.journalId}`)}
+                  onClick={() =>
+                    navigate(`/course/${journal.journalId}`, {
+                      state: { from: "mypage-journal" },
+                    })
+                  }
                 >
                   <JournalPreviewCard
                     key={journal.journalId}

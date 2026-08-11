@@ -70,6 +70,7 @@ export interface JournalDetail {
   imageUrls: string[] | null;
   overallReview: string;
   visitedPlaces: JournalDetailVisitedPlace[];
+  isPublic: boolean;
 }
 
 export async function getJournalDetail(
@@ -311,5 +312,26 @@ export async function patchJournal({
   if (!response.ok) {
     const errorJson = await response.json().catch(() => null);
     throw new Error(errorJson?.message ?? "여행일지 수정에 실패했습니다.");
+  }
+}
+
+// 여행일지 삭제
+export async function deleteJournal(journalId: number): Promise<void> {
+  const accessToken = getAccessToken();
+
+  if (!accessToken) {
+    throw new Error("로그인 토큰이 없습니다");
+  }
+
+  const response = await fetch(`${API_BASE_URL}/api/v1/journals/${journalId}`, {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+
+  if (!response.ok) {
+    const errorJson = await response.json().catch(() => null);
+    throw new Error(errorJson?.message ?? "여행일지 삭제에 실패했습니다.");
   }
 }

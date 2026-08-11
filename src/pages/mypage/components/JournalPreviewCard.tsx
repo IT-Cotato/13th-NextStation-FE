@@ -43,7 +43,7 @@ export default function JournalPreviewCard({
 
       {/* journalName */}
       <div className="flex z-10">
-        <p className="flex min-h-[39.2px] text-start text-body-01 font-semibold leading-[1.4] tracking-[-0.35px] min-h-[40px] line-clamp-2 break-keep">
+        <p className="flex text-start text-body-01 font-semibold leading-[1.4] tracking-[-0.35px] line-clamp-2 break-keep">
           {journalTitle}
         </p>
       </div>
