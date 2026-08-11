@@ -60,7 +60,6 @@ export interface CourseDetailData {
   line: SubwayLine;
   stationName: string;
   title: string;
-  subtitle: string;
   viewCount: number;
   saveCount: number;
   writerId: number;

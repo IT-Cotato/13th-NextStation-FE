@@ -11,6 +11,7 @@ import Star1 from "@/assets/Star1.svg?react";
 import Star2 from "@/assets/Star2.svg?react";
 import Star3 from "@/assets/Star3.svg?react";
 import { formatAcquiredAtToDisplayDate } from "@/utils/logDate";
+import { useNavigate } from "react-router-dom";
 
 export default function StampDetailModal({
   onClose,
@@ -21,13 +22,13 @@ export default function StampDetailModal({
   stamp: StampDetail;
   onWriteJournal: () => void;
 }) {
+  const navigate = useNavigate();
   const StampIcon = STATION_STAMP_MAP[stamp.stationName] ?? null;
   const targetRef = useRef<HTMLDivElement>(null);
 
   const handleGoToJournal = () => {
     if (stamp.journalId) {
-      // 여행일지가 존재한다면
-      // TODO : 여행 일지 상세보기 페이지 라우트 연결 필요
+      navigate(`/course/${stamp.journalId}`);
       return;
     }
 
