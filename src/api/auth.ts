@@ -161,6 +161,13 @@ export function clearKakaoOAuthState() {
   sessionStorage.removeItem(KAKAO_OAUTH_STATE_STORAGE_KEY);
 }
 
+export function getKakaoRedirectUri() {
+  return (
+    import.meta.env.VITE_KAKAO_REDIRECT_URI ??
+    `${window.location.origin}/auth/kakao/callback`
+  );
+}
+
 export function sendEmailVerification(email: string, agreedTermsIds: number[]) {
   return authRequest<string>("/api/v1/auth/email/verification", {
     method: "POST",
@@ -334,11 +341,15 @@ interface KakaoLoginResponse {
   kakaoProfileImageUrl?: string;
 }
 
-export function kakaoLogin(code: string, signal?: AbortSignal) {
+export function kakaoLogin(
+  code: string,
+  redirectUri: string,
+  signal?: AbortSignal,
+) {
   return authRequest<KakaoLoginResponse>("/api/v1/auth/kakao/login", {
     method: "POST",
     signal,
-    body: JSON.stringify({ code }),
+    body: JSON.stringify({ code, redirectUri }),
   });
 }
 
