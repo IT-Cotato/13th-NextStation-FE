@@ -263,7 +263,7 @@ export default function MyPage() {
         <div className="flex relative items-center w-[358px] rounded-[36px] bg-gray-30 p-1">
           <button
             onClick={() => setIsStampMode(true)}
-            className={"relative z-10 flex-1 rounded-[28px] text-center py-2"}
+            className={"relative z-10 flex-1 rounded-[28px] text-center py-2 outline-none"}
           >
             {isStampMode && (
               <motion.div
@@ -285,7 +285,7 @@ export default function MyPage() {
 
           <button
             onClick={() => setIsStampMode(false)}
-            className={"relative z-10 flex-1 rounded-[28px] text-center py-2"}
+            className={"relative z-10 flex-1 rounded-[28px] text-center py-2 outline-none"}
           >
             {!isStampMode && (
               <motion.div
@@ -308,7 +308,7 @@ export default function MyPage() {
       </section>
 
       {/* list */}
-      <section className="flex justify-center">
+      <section className="flex justify-center pb-20">
         {isStampMode ? (
           <StampListView />
         ) : isJournalsLoading ? (

@@ -15,9 +15,9 @@ import { drawRandomStation, RandomDrawNotFoundError } from "@/api/random";
 import loadingComplete from "@/assets/lottie/loading-complete.json";
 import loadingSearch from "@/assets/lottie/loading-search.json";
 
-const SEARCH_MIN_LOADING_MS = 4000;
-const SEARCH_ANIMATION_SPEED = 1.5;
-const COMPLETE_ANIMATION_SPEED = 1;
+const SEARCH_MIN_LOADING_MS = 2500;
+const SEARCH_ANIMATION_SPEED = 1.75;
+const COMPLETE_ANIMATION_SPEED = 1.5;
 const Lottie = (
   "default" in LottieModule && typeof LottieModule.default === "function"
     ? LottieModule.default

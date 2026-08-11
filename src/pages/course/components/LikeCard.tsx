@@ -11,6 +11,7 @@ interface LikeCardProps {
   isSelectMode: boolean;
   isSelected: boolean;
   onToggleSelect: () => void;
+  onClick?: () => void;
 }
 
 export default function LikeCard({
@@ -20,16 +21,35 @@ export default function LikeCard({
   isSelectMode,
   isSelected,
   onToggleSelect,
+  onClick,
 }: LikeCardProps) {
   return (
-    <div className="relative h-40 w-full overflow-hidden rounded-[20px]">
+    <div
+      role="button"
+      tabIndex={0}
+      onClick={isSelectMode ? onToggleSelect : onClick}
+      onKeyDown={(event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          if (isSelectMode) {
+            onToggleSelect();
+            return;
+          }
+          onClick?.();
+        }
+      }}
+      className="relative h-40 w-full overflow-hidden rounded-lg text-left"
+    >
       <CardBG className="absolute inset-0 h-full w-full" />
       {/* <div className="absolute inset-0 bg-linear-to-b from-white/0 via-white/10 to-white/80" /> */}
 
       {isSelectMode ? (
         <button
           type="button"
-          onClick={onToggleSelect}
+          onClick={(event) => {
+            event.stopPropagation();
+            onToggleSelect();
+          }}
           aria-label={isSelected ? '선택 해제' : '선택'}
           className="absolute top-3 right-3 z-20 flex size-8 items-center justify-center outline-none"
         >
