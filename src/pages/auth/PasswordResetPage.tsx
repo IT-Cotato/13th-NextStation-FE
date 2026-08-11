@@ -323,6 +323,7 @@ export default function PasswordResetPage() {
             </p>
           )}
           <CTAButton
+            submitOnEnter
             disabled={isNextDisabled}
             className="disabled:!bg-gray-40 disabled:!text-gray-10"
             onClick={handleNext}

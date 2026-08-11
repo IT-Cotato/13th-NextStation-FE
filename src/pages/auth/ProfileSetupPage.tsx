@@ -321,7 +321,11 @@ export default function ProfileSetupPage() {
               {submitError}
             </p>
           )}
-          <CTAButton disabled={isNextDisabled} onClick={handleNext}>
+          <CTAButton
+            submitOnEnter
+            disabled={isNextDisabled}
+            onClick={handleNext}
+          >
             {isSubmitting ? '저장 중' : '다음'}
           </CTAButton>
         </div>
