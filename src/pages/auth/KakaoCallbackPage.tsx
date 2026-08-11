@@ -4,6 +4,7 @@ import {
   AuthApiError,
   clearKakaoOAuthState,
   clearSignupFlow,
+  getKakaoRedirectUri,
   getKakaoOAuthState,
   kakaoLogin,
   saveAccessToken,
@@ -20,6 +21,7 @@ export default function KakaoCallbackPage() {
   const kakaoError = searchParams.get('error');
   const returnedState = searchParams.get('state');
   const expectedState = getKakaoOAuthState();
+  const redirectUri = getKakaoRedirectUri();
   const isValidState =
     Boolean(returnedState) && returnedState === expectedState;
   const [errorMessage, setErrorMessage] = useState(() =>
@@ -38,7 +40,7 @@ export default function KakaoCallbackPage() {
 
     const processKakaoLogin = async () => {
       try {
-        const result = await kakaoLogin(code, controller.signal);
+        const result = await kakaoLogin(code, redirectUri, controller.signal);
 
         if (controller.signal.aborted) {
           return;
@@ -88,7 +90,7 @@ export default function KakaoCallbackPage() {
     void processKakaoLogin();
 
     return () => controller.abort();
-  }, [code, isValidState, kakaoError, navigate]);
+  }, [code, isValidState, kakaoError, navigate, redirectUri]);
 
   return (
     <main className="flex h-dvh flex-col items-center justify-center gap-4 bg-white px-[15px] text-center tracking-[-0.025em] text-gray-100">
