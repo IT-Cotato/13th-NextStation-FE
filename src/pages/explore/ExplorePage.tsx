@@ -186,7 +186,7 @@ export default function ExplorePage() {
         </div>
       </section>
 
-      <section className="pb-20">
+      <section className="pb-25">
         <div className="flex items-center justify-between px-[15px] py-3">
           <h2 className="text-title-02 font-semibold leading-[1.4] tracking-[-0.025em]">
             노선 따라 둘러보기
