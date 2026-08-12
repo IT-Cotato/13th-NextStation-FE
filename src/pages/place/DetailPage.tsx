@@ -128,19 +128,22 @@ export default function DetailPage() {
       <Header showBack />
 
       {/* basic info */}
-      <section className="flex justify-center pt-4">
+      <section className="flex justify-center">
         <div className="flex flex-col gap-2.5 w-[360px]">
           <div className="flex flex-col gap-2">
-            <div className="flex flex-col gap-1">
+            <div className="flex flex-col gap-2">
               <div className="flex self-start px-3 py-1.5 bg-primary-50 text-gray-10 text-body-02 rounded-lg leading-none tracking-[-0.25px]">
                 {place.category}
               </div>
-              <span className="text-headline font-semibold leading-[1.4] tracking-[-0.5px]">
-                {place.placeName}
-              </span>
-              <span className="text-body-01 text-gray-70 leading-[1.4] tracking-[-0.3px]">
-                {place.description}
-              </span>
+              <div className="flex flex-col gap-1">
+                <span className="text-headline font-semibold leading-[1.4] tracking-[-0.5px]">
+                  {place.placeName}
+                </span>
+                <span className="text-body-01 text-gray-70 leading-[1.4] tracking-[-0.3px]">
+                  {place.description}
+                </span>
+              </div>
+              
             </div>
           </div>
 
