@@ -36,6 +36,24 @@ export interface CourseDetail {
   places: Place[];
 }
 
+export interface CopyPreviewCourseResponseItem {
+  courseId: number;
+  name: string;
+  stationId: number;
+  stationName: string;
+  line: Line;
+  places: Place[];
+}
+
+export interface CopyPreviewCourse {
+  courseId: number;
+  courseName: string;
+  stationId: number;
+  stationName: string;
+  lineId: number;
+  places: Place[];
+}
+
 import { getAccessToken } from "@/api/auth";
 import type { SubwayLine } from "@/types/subway";
 
@@ -111,6 +129,42 @@ export async function getCourseDetail(courseId: number): Promise<CourseDetail> {
   };
 }
 
+export async function getCopyPreviewCourse(
+  courseId: number,
+): Promise<CopyPreviewCourse> {
+  const accessToken = getAccessToken();
+
+  if (!accessToken) {
+    throw new Error("로그인이 필요합니다.");
+  }
+
+  const response = await fetch(
+    `${API_BASE_URL}/api/v1/courses/${courseId}/copy-preview`,
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    },
+  );
+
+  const json = await response.json().catch(() => null);
+
+  if (!response.ok) {
+    throw new Error(json?.message ?? "코스 미리보기를 불러오지 못했습니다.");
+  }
+
+  const item: CopyPreviewCourseResponseItem = json.data;
+
+  return {
+    courseId: item.courseId,
+    courseName: item.name,
+    stationId: item.stationId,
+    stationName: item.stationName,
+    lineId: item.line.id,
+    places: item.places,
+  };
+}
+
 export interface PatchCourseDetailPayload {
   name?: string;
   placeIds?: number[];
@@ -131,6 +185,7 @@ export interface CopiedCourse {
 export async function copyCourse(
   courseId: number,
   name: string,
+  placeIds?: number[],
 ): Promise<CopiedCourse> {
   const accessToken = getAccessToken();
 
@@ -146,7 +201,10 @@ export async function copyCourse(
         Authorization: `Bearer ${accessToken}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ name }),
+      body: JSON.stringify({
+        name,
+        ...(placeIds ? { placeIds } : {}),
+      }),
     },
   );
 

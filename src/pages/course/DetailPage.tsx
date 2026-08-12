@@ -8,7 +8,7 @@ import ProfileDefault from "@/assets/profile-default.svg?react";
 import StarOne from "@/assets/course-detail/star-1.svg?react";
 import StarTwo from "@/assets/course-detail/star-2.svg?react";
 import StarThree from "@/assets/course-detail/star-3.svg?react";
-import { copyCourse, type CourseDetailData } from "@/api/courseDetail";
+import { type CourseDetailData } from "@/api/courseDetail";
 import { likeExploreCourse, unlikeExploreCourse } from "@/api/explore";
 import {
   deleteJournal,
@@ -199,13 +199,10 @@ export default function DetailPage() {
     try {
       setIsCopying(true);
       setErrorMessage(null);
-      const copyName = course.journalTitle.trim().slice(0, 20);
-      if (!copyName) throw new Error("코스 이름이 비어 있습니다.");
-      const copiedCourse = await copyCourse(course.id, copyName);
-      navigate(`/course/${copiedCourse.courseId}/verify`);
+      navigate(`/course/${course.id}/verify?from=copy`);
     } catch (error) {
       setErrorMessage(
-        error instanceof Error ? error.message : "코스를 복제하지 못했습니다.",
+        error instanceof Error ? error.message : "코스를 불러오지 못했습니다.",
       );
     } finally {
       setIsCopying(false);

@@ -23,6 +23,7 @@ import { getDisplayedExploreLines } from "./utils/exploreLines";
 type SortOption = "인기순" | "최신순";
 export default function LineCoursesPage() {
   const navigate = useNavigate();
+  const pageRef = useRef<HTMLElement>(null);
   const [searchParams, setSearchParams] = useSearchParams();
   const requestedLineId = Number(searchParams.get("line"));
   const [station, setStation] = useState<ExploreStation | null>(null);
@@ -140,6 +141,7 @@ export default function LineCoursesPage() {
   }, [hasNext, inView, lineId, nextCursor, sortOption, station]);
 
   const handleLineChange = (nextLine: number) => {
+    pageRef.current?.scrollTo({ top: 0, behavior: "auto" });
     setStation(null);
     setNextCursor(null);
     setHasNext(false);
@@ -225,9 +227,12 @@ export default function LineCoursesPage() {
   }, [isStationMenuOpen]);
 
   return (
-    <main className="flex h-dvh flex-col bg-gray-10 text-gray-100 leading-[1.4] tracking-[-0.025em] pt-[calc(var(--safe-top)+12px)] text-gray-100 overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+    <main
+      ref={pageRef}
+      className="flex h-dvh flex-col bg-gray-10 text-gray-100 leading-[1.4] tracking-[-0.025em] pt-[calc(var(--safe-top)+12px)] text-gray-100 overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+    >
       <Header showBack />
-      <div className="px-[15px] pb-2.5">
+      <div className=" px-[15px]">
         <h1 className="text-title-01 font-semibold leading-[1.4] tracking-[-0.025em]">
           노선따라 둘러보기
         </h1>

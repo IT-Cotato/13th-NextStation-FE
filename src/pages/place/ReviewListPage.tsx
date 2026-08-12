@@ -162,7 +162,7 @@ export default function ReviewListPage() {
                 <span className="text-title-02 text-gray-70 font-semibold text-center leading-[1.4] tracking-[-0.45px]">
                   아직 등록된 리뷰가 없어요!
                 </span>
-                <p className="text-body-02 text-gray-60 text-center leading-[1.4] tracking-[-0.3px]">
+                <p className="text-body-02 text-gray-60 text-center leading-[1.4] tracking-[-0.025em]">
                   혹시 이 장소에 다녀오셨나요?
                   <br />
                   다녀오셨다면 여행 기록을 작성해보시면 어때요?
