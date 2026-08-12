@@ -13,7 +13,7 @@ export default function ExploreLineTabs({
 }: ExploreLineTabsProps) {
   return (
     <div
-      className="flex min-h-[72px] w-full shrink-0 touch-pan-x flex-nowrap items-center gap-2 overflow-x-auto overflow-y-hidden px-2 py-4 overscroll-x-contain [scrollbar-width:none] [-webkit-overflow-scrolling:touch] focus:outline-none"
+      className="flex min-h-[72px] w-full shrink-0 touch-pan-x flex-nowrap items-center gap-2 overflow-x-auto overflow-y-hidden px-[15px] py-4 overscroll-x-contain [scrollbar-width:none] [-webkit-overflow-scrolling:touch] focus:outline-none"
       role="tablist"
       aria-label="지하철 노선 선택"
       tabIndex={0}

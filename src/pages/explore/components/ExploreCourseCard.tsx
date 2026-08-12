@@ -5,7 +5,7 @@ import {
   type ExploreCourse,
 } from "@/api/explore";
 import Heart from "@/assets/heart.svg?react";
-import cardDefault from "@/assets/card-default.svg";
+import CardBG from "@/assets/card-default.svg?react";
 import HeartFilled from "@/assets/explore/heart-filled.svg?react";
 import LineBadge, { type SubwayLine } from "@/components/LineBadge";
 import CourseRankBadge from "./CourseRankBadge";
@@ -31,9 +31,10 @@ export default function ExploreCourseCard({
   const originalLiked = course.isLiked;
   const likeCount =
     course.likeCount + (liked === originalLiked ? 0 : liked ? 1 : -1);
-  const backgroundImage = course.imageUrl
+  const hasBackgroundImage = Boolean(course.imageUrl);
+  const backgroundImage = hasBackgroundImage
     ? `linear-gradient(to bottom, transparent 30%, rgb(255 255 255 / 60%) 66%, white), url(${course.imageUrl})`
-    : `url(${cardDefault})`;
+    : undefined;
   const subwayLine = course.line ? getSubwayLine(course.line.code) : null;
 
   const handleLike = async () => {
@@ -57,13 +58,16 @@ export default function ExploreCourseCard({
 
   return (
     <article
-      className="relative flex h-[200px] w-36 shrink-0 flex-col justify-between overflow-hidden rounded-lg px-4 pb-3 pt-[13px] shadow-[0_0_20px_rgb(118_118_118/20%)]"
-      style={{
-        backgroundImage,
-        backgroundPosition: "center",
-        backgroundRepeat: "no-repeat",
-        backgroundSize: "cover",
-      }}
+      className="relative flex h-[200px] w-36 shrink-0 flex-col justify-between overflow-hidden rounded-lg bg-secondary-20 px-4 pb-3 pt-[13px] shadow-[0_0_20px_rgb(118_118_118/20%)]"
+      style={
+        backgroundImage
+          ? {
+              backgroundImage,
+              backgroundPosition: "center",
+              backgroundSize: "cover",
+            }
+          : undefined
+      }
       onClick={onClick}
       onKeyDown={(event) => {
         if (event.target !== event.currentTarget) return;
@@ -75,6 +79,12 @@ export default function ExploreCourseCard({
       role={onClick ? "link" : undefined}
       tabIndex={onClick ? 0 : undefined}
     >
+      {!hasBackgroundImage && (
+        <CardBG
+          className="absolute inset-0 h-full w-full scale-110"
+          aria-hidden="true"
+        />
+      )}
       <CourseRankBadge className="relative z-10 self-end" rank={rank} />
       <div className="relative z-10 flex flex-col gap-2">
         <div className="inline-flex items-center gap-1 whitespace-nowrap text-body-02 text-gray-100">

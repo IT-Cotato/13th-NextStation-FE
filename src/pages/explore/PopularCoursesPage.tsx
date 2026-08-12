@@ -35,6 +35,7 @@ export default function PopularCoursesPage() {
           <ExploreCourseItem
             key={course.courseId}
             courseId={course.courseId}
+            thumbnailRadius="md"
             rank={index + 1}
             line={course.line}
             stationName={course.stationName}

@@ -19,6 +19,7 @@ interface ExploreCourseItemProps {
   rank?: number;
   stationName: string;
   tags?: string[];
+  thumbnailRadius?: "md" | "lg";
 }
 
 function getSubwayLine(code: string): SubwayLine | null {
@@ -37,6 +38,7 @@ export default function ExploreCourseItem({
   rank,
   stationName,
   tags = [],
+  thumbnailRadius = "lg",
 }: ExploreCourseItemProps) {
   const [liked, setLiked] = useState(isLiked);
   const [isLikePending, setIsLikePending] = useState(false);
@@ -77,7 +79,13 @@ export default function ExploreCourseItem({
         role={onClick ? "link" : undefined}
         tabIndex={onClick ? 0 : undefined}
       >
-      <div className="grid h-24 w-[90px] shrink-0 overflow-hidden rounded-lg bg-primary-30">
+      <div
+        className={`grid h-24 w-[90px] shrink-0 overflow-hidden ${
+          thumbnailRadius === "md" ? "rounded-md" : "rounded-lg"
+        } ${
+          imageUrl ? "bg-primary-30" : "bg-secondary-20"
+        }`}
+      >
         {imageUrl ? (
           <img
             className="col-start-1 row-start-1 size-full object-cover"
@@ -87,25 +95,28 @@ export default function ExploreCourseItem({
           />
         ) : (
           <CoursePhoto
-            className="col-start-1 row-start-1 size-full"
+            className="col-start-1 row-start-1 h-auto w-full max-w-none self-center justify-self-center"
             aria-hidden="true"
           />
         )}
         {rank && (
-          <CourseRankBadge className="col-start-1 row-start-1" rank={rank} />
+          <CourseRankBadge
+            className="col-start-1 row-start-1 m-0.5 mt-[0.3rem]"
+            rank={rank}
+          />
         )}
       </div>
       <div className="flex min-w-0 flex-1 flex-col justify-center gap-2.5">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-1">
+        <div className="flex min-w-0 items-center justify-between gap-2">
+          <div className="flex min-w-0 items-center gap-1">
             {subwayLine && <LineBadge line={subwayLine} />}
-            <span className="whitespace-nowrap text-body-02 leading-[1.4] tracking-[-0.025em] text-gray-100">
+            <span className="truncate text-body-02 leading-[1.4] tracking-[-0.025em] text-gray-100">
               {stationName}
             </span>
           </div>
           <button
             type="button"
-            className="inline-flex items-center gap-0.5 border-0 bg-transparent p-0 text-caption text-gray-70"
+            className="inline-flex shrink-0 items-center gap-0.5 border-0 bg-transparent p-0 text-caption text-gray-70"
             aria-label={liked ? "좋아요 완료" : "좋아요"}
             aria-pressed={liked}
             disabled={isLikePending}

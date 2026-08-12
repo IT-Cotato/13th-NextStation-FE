@@ -85,7 +85,7 @@ export default function ExplorePage() {
   );
 
   return (
-    <main className="flex h-dvh flex-col bg-gray-10 gap-3 pt-[calc(var(--safe-top)+12px)] text-gray-100 overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+    <main className="flex h-dvh flex-col gap-3 overflow-y-auto bg-gray-10 pt-[max(calc(var(--header-height)+12px),calc(var(--safe-top)+12px))] text-gray-100 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
       <header className="flex items-start justify-between px-[15px]">
         <h1 className="text-title-01 font-semibold leading-[1.4] tracking-[-0.025em]">
           오늘은 어떤 환승여행을
