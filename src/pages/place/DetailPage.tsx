@@ -143,7 +143,6 @@ export default function DetailPage() {
                   {place.description}
                 </span>
               </div>
-              
             </div>
           </div>
 
@@ -221,10 +220,10 @@ export default function DetailPage() {
               </div>
             </div>
             <div className="flex py-1 gap-2 items-center">
-                {contactNumber === null ? (
-                  ""
-                ) : (
-                  <>
+              {contactNumber === null ? (
+                ""
+              ) : (
+                <>
                   <Phone className="w-size-6" />
                   <div className="flex gap-1">
                     <span className="text-body-01 leading-[1.4] tracking-[-0.35px]">
@@ -237,8 +236,8 @@ export default function DetailPage() {
                       복사
                     </button>
                   </div>
-                 </>
-                )}
+                </>
+              )}
             </div>
           </div>
           <button
@@ -319,7 +318,6 @@ export default function DetailPage() {
                       name={placeCourse.courseName}
                       placeCount={placeCourse.placeCount}
                       travelDuration={placeCourse.travelDuration}
-                      tags={placeCourse.tags}
                       imageUrl={placeCourse.imageUrl}
                     />
                   </button>

@@ -1,8 +1,3 @@
-import {
-  TRAVEL_STYLE_LABELS,
-  type RecommendationTravelStyle,
-} from "@/api/recommendation";
-import TagChip from "./TagChip";
 import LineBadge, { type SubwayLine } from "@/components/LineBadge";
 import CardBG from "@/assets/card-default.svg?react";
 import type { TravelDuration } from "@/api/journal";
@@ -12,14 +7,13 @@ export default function CoursePreviewCard({
   name,
   placeCount,
   travelDuration,
-  tags,
+
   imageUrl,
 }: {
   line: number;
   name: string;
   placeCount: number;
   travelDuration: string;
-  tags: string[];
   imageUrl: string | null;
 }) {
   const isThumbnailEmpty = imageUrl === null;
@@ -54,7 +48,7 @@ export default function CoursePreviewCard({
           <LineBadge line={line as SubwayLine} />
 
           {/* course info */}
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-0.5">
             <p
               className={`${titleColorClass} text-subtitle font-semibold line-clamp-2 break-keep leading-[1.4] tracking-[-0.4px]`}
             >
@@ -66,16 +60,6 @@ export default function CoursePreviewCard({
               장소 {placeCount}곳 ∙{" "}
               {durationLabels[travelDuration as TravelDuration]}
             </span>
-            <div className="flex gap-1">
-              {tags.map((tag, index) => (
-                <TagChip
-                  key={`${index}`}
-                  content={
-                    TRAVEL_STYLE_LABELS[tag as RecommendationTravelStyle]
-                  }
-                />
-              ))}
-            </div>
           </div>
         </div>
       </div>
