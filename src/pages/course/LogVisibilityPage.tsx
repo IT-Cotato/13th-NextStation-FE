@@ -117,10 +117,9 @@ function LogVisibilityPage() {
           />
         </div>
 
-        <div className="flex items-center justify-center p-10">
+        <div className="flex items-center justify-center pt-10">
           <p className="text-body-02 text-gray-60 leading-[1.4] tracking-[-0.025em] text-center">
-            공유한 장소 후기와 사진은 {stationName} 코스와 장소 상세화면에서
-            다른 사용자에게
+            공유한 장소 후기와 사진은 {stationName} 코스와 장소 상세화면에서 다른 사용자에게
             <br />
             보여질 수 있어요. 공개 범위는 언제든 변경 가능해요.
           </p>
