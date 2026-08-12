@@ -218,22 +218,24 @@ export default function DetailPage() {
               </div>
             </div>
             <div className="flex py-1 gap-2 items-center">
-              <Phone className="w-size-6" />
-              <div className="flex gap-1">
-                <span className="text-body-01 leading-[1.4] tracking-[-0.35px]">
-                  {contactNumber}
-                </span>
                 {contactNumber === null ? (
                   ""
                 ) : (
-                  <button
-                    className="flex text-body-01 text-primary-70 leading-[1.4] tracking-[-0.35px]"
-                    onClick={() => handleCopy(contactNumber)}
-                  >
-                    복사
-                  </button>
+                  <>
+                  <Phone className="w-size-6" />
+                  <div className="flex gap-1">
+                    <span className="text-body-01 leading-[1.4] tracking-[-0.35px]">
+                      {contactNumber}
+                    </span>
+                    <button
+                      className="flex text-body-01 text-primary-70 leading-[1.4] tracking-[-0.35px]"
+                      onClick={() => handleCopy(contactNumber)}
+                    >
+                      복사
+                    </button>
+                  </div>
+                 </>
                 )}
-              </div>
             </div>
           </div>
           <button
