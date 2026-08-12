@@ -1,5 +1,15 @@
 import { getAccessToken } from "./auth";
 
+export class MemberApiError extends Error {
+  status: number;
+
+  constructor(status: number, message: string) {
+    super(message);
+    this.name = "MemberApiError";
+    this.status = status;
+  }
+}
+
 export interface MemberProfile {
   memberId: number;
   nickname: string;
@@ -180,7 +190,11 @@ export async function updateMyProfile(updates: {
   });
 
   if (!response.ok) {
-    throw new Error("내 프로필 수정 실패");
+    const json = await response.json().catch(() => null);
+    throw new MemberApiError(
+      response.status,
+      json?.message ?? "내 프로필 수정 실패",
+    );
   }
 
   const json = await response.json();
