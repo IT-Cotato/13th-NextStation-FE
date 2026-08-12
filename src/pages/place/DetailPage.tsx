@@ -132,6 +132,9 @@ export default function DetailPage() {
         <div className="flex flex-col gap-2.5 w-[360px]">
           <div className="flex flex-col gap-2">
             <div className="flex flex-col gap-1">
+              <div className="flex self-start px-3 py-1.5 bg-primary-50 text-gray-10 text-body-02 rounded-lg leading-none tracking-[-0.25px]">
+                {place.category}
+              </div>
               <span className="text-headline font-semibold leading-[1.4] tracking-[-0.5px]">
                 {place.placeName}
               </span>
