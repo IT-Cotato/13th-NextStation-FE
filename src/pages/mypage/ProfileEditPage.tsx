@@ -3,7 +3,11 @@ import { useNavigate } from "react-router-dom";
 import CTAButton from "@/components/CTAButton";
 import Header from "@/components/Header";
 import ProfileImageUploader from "./components/ProfileImageUploader";
-import { getMyProfile, updateMyProfile } from "@/api/member";
+import {
+  getMyProfile,
+  MemberApiError,
+  updateMyProfile,
+} from "@/api/member";
 import { deleteImage } from "@/api/image";
 import AuthInput from "../auth/components/AuthInput";
 
@@ -20,6 +24,14 @@ const validateNickname = (value: string) => {
 
   if (trimmedValue.length > 10) {
     return "닉네임은 최대 10자까지 입력할 수 있어요";
+  }
+
+  if (!/^[가-힣A-Za-z0-9]+$/.test(trimmedValue)) {
+    return "한글, 영문, 숫자만 사용할 수 있어요.";
+  }
+
+  if (/admin|관리자|운영자/i.test(trimmedValue)) {
+    return "사용할 수 없는 단어가 포함되어 있어요.";
   }
 
   return "";
@@ -59,6 +71,7 @@ export default function ProfileEditPage() {
     const value = e.target.value;
     setNickname(value);
     setNicknameError(validateNickname(value));
+    setProfileError(null);
   };
 
   const handleComplete = async () => {
@@ -93,6 +106,12 @@ export default function ProfileEditPage() {
       navigate("/mypage");
     } catch (e) {
       console.error(e);
+      if (e instanceof MemberApiError && e.status === 409) {
+        setNicknameError("이미 사용 중인 닉네임입니다.");
+        setProfileError(null);
+        return;
+      }
+
       setProfileError("프로필 수정에 실패했습니다.");
     }
   };
