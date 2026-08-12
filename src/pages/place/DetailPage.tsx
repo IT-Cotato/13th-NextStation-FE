@@ -203,8 +203,8 @@ export default function DetailPage() {
       <section className="flex justify-center pt-3">
         <div className="flex flex-col gap-3 w-[360px]">
           <div className="flex flex-col bg-white px-4 py-2 gap-1 rounded-lg">
-            <div className="flex gap-2">
-              <Marker className="w-6 h-6" />
+            <div className="flex py-1 gap-2 items-center">
+              <Marker className="size-6" />
               <div className="flex gap-1">
                 <span className="text-body-01 leading-[1.4] tracking-[-0.35px]">
                   {place.address}
@@ -217,8 +217,8 @@ export default function DetailPage() {
                 </button>
               </div>
             </div>
-            <div className="flex gap-2">
-              <Phone className="w-6 h-6" />
+            <div className="flex py-1 gap-2 items-center">
+              <Phone className="w-size-6" />
               <div className="flex gap-1">
                 <span className="text-body-01 leading-[1.4] tracking-[-0.35px]">
                   {contactNumber}
