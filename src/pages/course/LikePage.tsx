@@ -210,6 +210,7 @@ function LikePage() {
             <LikeCard
               key={course.courseId}
               courseId={course.courseId}
+              journalId={course.journalId}
               courseName={course.name}
               stationName={course.stationName}
               lineId={course.line.id as SubwayLine}
@@ -220,7 +221,13 @@ function LikePage() {
                   : selectedIds.includes(course.courseId)
               }
               onToggleSelect={() => handleToggleSelect(course.courseId)}
-              onClick={() => navigate(`/course/${course.courseId}`)}
+              onClick={() => {
+                console.log("[LikePage] navigate", {
+                  courseId: course.courseId,
+                  journalId: course.journalId,
+                });
+                navigate(`/course/${course.journalId}`);
+              }}
             />
           ))}
         </section>
