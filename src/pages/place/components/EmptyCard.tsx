@@ -16,7 +16,7 @@ export default function EmptyCard({
             ? "아직 등록된 리뷰가 없어요!"
             : "아직 코스가 없어요!"}
         </span>
-        <p className="text-gray-60 text-caption text-center leading-none tracking-[-0.25px]">
+        <p className="text-gray-60 text-caption text-center leading- tracking-[-0.25px]">
           {variant === "review" ? (
             <>
               혹시 이 장소에 다녀오셨나요? <br />
