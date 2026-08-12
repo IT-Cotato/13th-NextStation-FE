@@ -48,7 +48,7 @@ export default function JournalEditForm({
 
       {/* time */}
       <div className="flex items-center gap-2 px-[15px] py-2">
-        <span className="text-body-02 leading-[1.4] tracking-[-0.3px] text-gray-80">
+        <span className="w-12 text-body-02 leading-[1.4] tracking-[-0.3px] text-gray-80 text-start">
           코스 시간
         </span>
         <div className="flex gap-2">
@@ -65,7 +65,7 @@ export default function JournalEditForm({
 
       {/* tags */}
       <div className="flex items-center gap-2 px-[15px] py-2">
-        <span className="text-body-02 leading-[1.4] tracking-[-0.3px] text-gray-80">
+        <span className="w-12 text-body-02 leading-[1.4] tracking-[-0.3px] text-gray-80 text-start">
           태그
         </span>
         <div className="flex gap-2">
@@ -85,7 +85,7 @@ export default function JournalEditForm({
       {/* date */}
       <div className="flex flex-col justify-center gap-2 px-[15px] py-2">
         <div className="flex gap-2 items-center">
-          <span className="text-body-02 leading-[1.4] tracking-[-0.3px] text-gray-80 shrink-0">
+          <span className="w-12 text-body-02 leading-[1.4] tracking-[-0.3px] text-gray-80 shrink-0 text-start">
             방문 날짜
           </span>
           <button
@@ -115,7 +115,7 @@ export default function JournalEditForm({
 
       {/* public */}
       <div className="flex items-center gap-2 px-[15px] py-2">
-        <span className="text-body-02 leading-[1.4] tracking-[-0.3px] text-gray-80">
+        <span className="w-12 text-body-02 leading-[1.4] tracking-[-0.3px] text-gray-80 text-start">
           공개 범위
         </span>
         <div className="flex gap-2">
