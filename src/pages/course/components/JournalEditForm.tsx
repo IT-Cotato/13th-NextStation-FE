@@ -1,0 +1,134 @@
+import { useState } from "react";
+import JournalEditFormChip from "./JournalEditFormChip";
+import {
+  TRAVEL_STYLE_LABELS,
+  type RecommendationTravelStyle,
+} from "@/api/recommendation";
+import CalendarIcon from "@/assets/calendar.svg?react";
+import LogDatePickerModal from "./date-picker/LogDatePickerModal";
+
+export default function JournalEditForm({
+  title,
+  onTitleChange,
+  timeOptions,
+  selectedTime,
+  onTimeChange,
+  tags,
+  defaultDate,
+  selectedDate,
+  onDateChange,
+  publicOptions,
+  selectedPublic,
+  onPublicChange,
+}: {
+  title: string;
+  onTitleChange: (value: string) => void;
+  timeOptions: string[];
+  selectedTime: string | null;
+  onTimeChange: (value: string) => void;
+  tags: string[];
+  defaultDate: string;
+  selectedDate: string | null;
+  onDateChange: (value: string) => void;
+  publicOptions: string[];
+  selectedPublic: string | null;
+  onPublicChange: (value: string) => void;
+}) {
+  const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
+
+  return (
+    <div className="flex flex-col">
+      {/* title */}
+      <input
+        type="text"
+        value={title}
+        onChange={(e) => onTitleChange(e.target.value)}
+        className="text-title-01 font-semibold leading-[1.4] tracking-[-0.5px] text-gray-100 caret-primary-50 outline-none text-center px-[15px] py-2"
+      />
+
+      {/* time */}
+      <div className="flex items-center gap-2 px-[15px] py-2">
+        <span className="w-12 text-body-02 leading-[1.4] tracking-[-0.3px] text-gray-80 text-start">
+          코스 시간
+        </span>
+        <div className="flex gap-2">
+          {timeOptions.map((option) => (
+            <JournalEditFormChip
+              key={option}
+              label={option}
+              selected={selectedTime === option}
+              onClick={() => onTimeChange(option)}
+            />
+          ))}
+        </div>
+      </div>
+
+      {/* tags */}
+      <div className="flex items-center gap-2 px-[15px] py-2">
+        <span className="w-12 text-body-02 leading-[1.4] tracking-[-0.3px] text-gray-80 text-start">
+          태그
+        </span>
+        <div className="flex gap-2">
+          {tags.map((tag) => (
+            <div
+              key={tag}
+              className="flex px-3 py-2 items-center justify-center bg-gray-30 rounded-lg"
+            >
+              <span className="text-body-02 leading-[1.4] tracking-[-0.3px] text-gray-70">
+                #{TRAVEL_STYLE_LABELS[tag as RecommendationTravelStyle] ?? tag}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* date */}
+      <div className="flex flex-col justify-center gap-2 px-[15px] py-2">
+        <div className="flex gap-2 items-center">
+          <span className="w-12 text-body-02 leading-[1.4] tracking-[-0.3px] text-gray-80 shrink-0 text-start">
+            방문 날짜
+          </span>
+          <button
+            type="button"
+            onClick={() => setIsDatePickerOpen((prev) => !prev)}
+            className="flex w-full rounded-lg items-center justify-between px-[10px] py-2 outline-none border border-primary-50"
+          >
+            <span className="text-body-01 leading-[1.4] tracking-[-0.35px] text-gray-70">
+              {selectedDate}
+            </span>
+            <CalendarIcon className="size-6" />
+          </button>
+        </div>
+
+        {isDatePickerOpen && (
+          <LogDatePickerModal
+            defaultDate={defaultDate}
+            selectedDate={selectedDate}
+            onClose={() => setIsDatePickerOpen(false)}
+            onConfirm={(date) => {
+              onDateChange(date);
+              setIsDatePickerOpen(false);
+            }}
+          />
+        )}
+      </div>
+
+      {/* public */}
+      <div className="flex items-center gap-2 px-[15px] py-2">
+        <span className="w-12 text-body-02 leading-[1.4] tracking-[-0.3px] text-gray-80 text-start">
+          공개 범위
+        </span>
+        <div className="flex gap-2">
+          {publicOptions.map((option) => (
+            <JournalEditFormChip
+              key={option}
+              label={option}
+              selected={selectedPublic === option}
+              onClick={() => onPublicChange(option)}
+            />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
