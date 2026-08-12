@@ -54,7 +54,7 @@ export default function BottomNav({ mode, activeTab = 'save' }: BottomNavProps) 
         <div className="flex items-center gap-4">
 
           <button 
-            onClick={() => navigate(`/`)}
+            onClick={() => navigate(`/main`)}
             className="relative flex h-[64px] w-[64px] items-center justify-center rounded-[38px] border border-white/70 bg-linear-to-b from-white/30 to-white/10 shadow-[0_0_28px_rgba(118,118,118,0.14),inset_0_1px_0_rgba(255,255,255,0.9)] backdrop-blur-[22px]"
           >
             <div className="pointer-events-none absolute inset-x-2 top-1 h-[12px] rounded-full bg-white/25 blur-md" />
