@@ -93,8 +93,8 @@ export default function SearchResultsPage() {
     : courses.length > 0;
 
   return (
-    <main className="min-h-dvh bg-gray-10 text-gray-100">
-      <header className="flex items-center gap-4 px-[15px] pb-2.5 pt-[57px]">
+    <main className="flex flex-col h-dvh bg-gray-10 text-gray-100 pt-[calc(var(--safe-top)+12px)]">
+      <header className="flex h-[50px] items-center gap-4 px-3">
         <button
           type="button"
           className="size-6 shrink-0 border-0 bg-transparent p-0"
