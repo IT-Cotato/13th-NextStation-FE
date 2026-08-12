@@ -1,4 +1,4 @@
-import { getAccessToken } from "./auth";
+import { fetchWithRequiredAuth, getAccessToken } from "./auth";
 
 export interface Line {
   id: number;
@@ -28,17 +28,11 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 // 내 스탬프 목록 조회
 export async function getStamps(): Promise<Stamps> {
-  const accessToken = getAccessToken();
-
-  if (!accessToken) {
+  if (!getAccessToken()) {
     throw new Error("로그인 토큰이 없습니다");
   }
 
-  const response = await fetch(`${API_BASE_URL}/api/v1/stamps`, {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
-  });
+  const response = await fetchWithRequiredAuth(`${API_BASE_URL}/api/v1/stamps`);
 
   if (!response.ok) {
     throw new Error("스탬프 목록 조회 실패");
@@ -74,17 +68,13 @@ export interface StampDetail {
 
 // 내 스탬프 상세 조회
 export async function getStampsDetail(stationId: number): Promise<StampDetail> {
-  const accessToken = getAccessToken();
-
-  if (!accessToken) {
+  if (!getAccessToken()) {
     throw new Error("로그인 토큰이 없습니다");
   }
 
-  const response = await fetch(`${API_BASE_URL}/api/v1/stamps/${stationId}`, {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
-  });
+  const response = await fetchWithRequiredAuth(
+    `${API_BASE_URL}/api/v1/stamps/${stationId}`,
+  );
 
   if (!response.ok) {
     throw new Error("스탬프 상세 조회 실패");

@@ -1,4 +1,4 @@
-import { getAccessToken } from "@/api/auth";
+import { fetchWithRequiredAuth, getAccessToken } from "@/api/auth";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -35,16 +35,13 @@ interface ApiResponse<T> {
 export async function getPresignedUrl(
   body: GetPresignedUrlRequest,
 ): Promise<PresignedUrlItem> {
-  const accessToken = getAccessToken();
-
-  if (!accessToken) {
+  if (!getAccessToken()) {
     throw new Error("로그인 토큰이 없습니다.");
   }
 
-  const response = await fetch(`${API_BASE_URL}/api/v1/images/presigned-url`, {
+  const response = await fetchWithRequiredAuth(`${API_BASE_URL}/api/v1/images/presigned-url`, {
     method: "POST",
     headers: {
-      Authorization: `Bearer ${accessToken}`,
       "Content-Type": "application/json",
     },
     body: JSON.stringify(body),
@@ -63,18 +60,15 @@ export async function getPresignedUrl(
 export async function getPresignedUrlsBatch(
   body: GetPresignedUrlsBatchRequest,
 ): Promise<PresignedUrlItem[]> {
-  const accessToken = getAccessToken();
-
-  if (!accessToken) {
+  if (!getAccessToken()) {
     throw new Error("로그인 토큰이 없습니다.");
   }
 
-  const response = await fetch(
+  const response = await fetchWithRequiredAuth(
     `${API_BASE_URL}/api/v1/images/presigned-urls/batch`,
     {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${accessToken}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify(body),
@@ -111,19 +105,14 @@ export async function uploadFileToPresignedUrl(
 
 // 이미지 삭제
 export async function deleteImage(imageUrl: string): Promise<void> {
-  const accessToken = getAccessToken();
-
-  if (!accessToken) {
+  if (!getAccessToken()) {
     throw new Error("로그인 토큰이 없습니다.");
   }
 
-  const response = await fetch(
+  const response = await fetchWithRequiredAuth(
     `${API_BASE_URL}/api/v1/images?imageUrl=${encodeURIComponent(imageUrl)}`,
     {
       method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
     },
   );
 

@@ -134,6 +134,94 @@ export function clearAccessToken() {
   sessionStorage.removeItem(ACCESS_TOKEN_STORAGE_KEY);
 }
 
+let reissueAccessTokenPromise: Promise<string> | null = null;
+
+function createAuthHeaders(
+  headers: HeadersInit | undefined,
+  accessToken: string,
+) {
+  const nextHeaders = new Headers(headers);
+  nextHeaders.set("Authorization", `Bearer ${accessToken}`);
+  return nextHeaders;
+}
+
+async function requestAccessTokenReissue() {
+  if (!reissueAccessTokenPromise) {
+    reissueAccessTokenPromise = reissueAccessToken()
+      .then(({ accessToken }) => {
+        saveAccessToken(accessToken);
+        return accessToken;
+      })
+      .finally(() => {
+        reissueAccessTokenPromise = null;
+      });
+  }
+
+  return reissueAccessTokenPromise;
+}
+
+export async function fetchWithRequiredAuth(
+  input: RequestInfo | URL,
+  init: RequestInit = {},
+) {
+  const accessToken = getAccessToken();
+
+  if (!accessToken) {
+    throw new Error("로그인 토큰이 없습니다.");
+  }
+
+  const send = (token: string) =>
+    fetch(input, {
+      ...init,
+      headers: createAuthHeaders(init.headers, token),
+    });
+
+  const response = await send(accessToken);
+
+  if (response.status !== 401) {
+    return response;
+  }
+
+  try {
+    const nextAccessToken = await requestAccessTokenReissue();
+    return await send(nextAccessToken);
+  } catch {
+    clearAccessToken();
+    return response;
+  }
+}
+
+export async function fetchWithOptionalAuth(
+  input: RequestInfo | URL,
+  init: RequestInit = {},
+) {
+  const accessToken = getAccessToken();
+
+  if (!accessToken) {
+    return fetch(input, init);
+  }
+
+  const sendWithToken = (token: string) =>
+    fetch(input, {
+      ...init,
+      headers: createAuthHeaders(init.headers, token),
+    });
+
+  const response = await sendWithToken(accessToken);
+
+  if (response.status !== 401) {
+    return response;
+  }
+
+  try {
+    const nextAccessToken = await requestAccessTokenReissue();
+    return await sendWithToken(nextAccessToken);
+  } catch {
+    clearAccessToken();
+    return fetch(input, init);
+  }
+}
+
 export function getTerms() {
   return authRequest<AuthTerm[]>("/api/v1/auth/terms", { cache: "no-store" });
 }

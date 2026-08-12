@@ -1,4 +1,4 @@
-import { getAccessToken } from "@/api/auth";
+import { fetchWithRequiredAuth, getAccessToken } from "@/api/auth";
 import type { RecommendationTravelStyle } from "@/api/recommendation";
 export interface StationLine {
   id: number;
@@ -104,17 +104,14 @@ export async function createCourse(
   name: string,
   placeIds: number[],
 ): Promise<CreatedCourse> {
-  const accessToken = getAccessToken();
-
-  if (!accessToken) {
+  if (!getAccessToken()) {
     throw new Error("로그인 토큰이 없습니다");
   }
 
-  const response = await fetch(`${API_BASE_URL}/api/v1/courses`, {
+  const response = await fetchWithRequiredAuth(`${API_BASE_URL}/api/v1/courses`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${accessToken}`,
     },
     body: JSON.stringify({ stationId, name, placeIds }),
   });

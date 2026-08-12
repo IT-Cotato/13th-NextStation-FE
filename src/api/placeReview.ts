@@ -27,19 +27,13 @@ export interface PlaceReviewListResponse {
   hasNext: boolean;
 }
 
-import { getAccessToken } from "@/api/auth";
+import {
+  fetchWithOptionalAuth,
+  fetchWithRequiredAuth,
+  getAccessToken,
+} from "@/api/auth";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
-
-function createOptionalAuthHeaders() {
-  const accessToken = getAccessToken();
-
-  return accessToken
-    ? {
-        Authorization: `Bearer ${accessToken}`,
-      }
-    : undefined;
-}
 
 // 장소 리뷰 목록 조회
 export async function getReviews(
@@ -47,11 +41,8 @@ export async function getReviews(
   sort: "RECOMMEND" | "LATEST",
   cursor?: string,
 ): Promise<PlaceReviewListResponse> {
-  const response = await fetch(
+  const response = await fetchWithOptionalAuth(
     `${API_BASE_URL}/api/v1/places/${placeId}/reviews?sort=${sort}&size=10${cursor ? `&cursor=${cursor}` : ""}`,
-    {
-      headers: createOptionalAuthHeaders(),
-    },
   );
   if (!response.ok) {
     throw new Error("장소 리뷰 목록 조회 실패");
@@ -71,19 +62,14 @@ export async function getReviews(
 
 // 장소 리뷰 좋아요
 export async function createReviewLike(reviewId: number): Promise<void> {
-  const accessToken = getAccessToken();
-
-  if (!accessToken) {
+  if (!getAccessToken()) {
     throw new Error("로그인이 필요합니다");
   }
 
-  const response = await fetch(
+  const response = await fetchWithRequiredAuth(
     `${API_BASE_URL}/api/v1/places/reviews/${reviewId}/like`,
     {
       method: "POST",
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
     },
   );
 
@@ -94,19 +80,14 @@ export async function createReviewLike(reviewId: number): Promise<void> {
 
 // 장소 리뷰 좋아요 취소
 export async function deleteReviewLike(reviewId: number): Promise<void> {
-  const accessToken = getAccessToken();
-
-  if (!accessToken) {
+  if (!getAccessToken()) {
     throw new Error("로그인이 필요합니다");
   }
 
-  const response = await fetch(
+  const response = await fetchWithRequiredAuth(
     `${API_BASE_URL}/api/v1/places/reviews/${reviewId}/like`,
     {
       method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
     },
   );
 

@@ -28,7 +28,7 @@ export interface SavedCourse {
   hasNext: boolean;
 }
 
-import { getAccessToken } from "@/api/auth";
+import { fetchWithRequiredAuth, getAccessToken } from "@/api/auth";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -36,19 +36,13 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 export async function getSavedCourses(
   cursor?: string,
 ): Promise<SavedCourseResponseItem> {
-  const accessToken = getAccessToken();
-
-  if (!accessToken) {
+  if (!getAccessToken()) {
     throw new Error("로그인 토큰이 없습니다");
   }
 
-  const response = await fetch(
+  const response = await fetchWithRequiredAuth(
     `${API_BASE_URL}/api/v1/members/me/courses?size=10${cursor ? `&cursor=${encodeURIComponent(cursor)}` : ""}`,
-    {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    },
+    {},
   );
 
   if (!response.ok) {
@@ -69,16 +63,13 @@ export async function getSavedCourses(
 
 // 코스 삭제
 export async function deleteSavedCourses(courseIds: number[]): Promise<void> {
-  const accessToken = getAccessToken();
-
-  if (!accessToken) {
+  if (!getAccessToken()) {
     throw new Error("로그인 토큰이 없습니다");
   }
 
-  const response = await fetch(`${API_BASE_URL}/api/v1/members/me/courses`, {
+  const response = await fetchWithRequiredAuth(`${API_BASE_URL}/api/v1/members/me/courses`, {
     method: "DELETE",
     headers: {
-      Authorization: `Bearer ${accessToken}`,
       "Content-Type": "application/json",
     },
     body: JSON.stringify({ courseIds }),
@@ -100,19 +91,14 @@ export interface CourseCompletionResult {
 export async function completeCourse(
   courseId: number,
 ): Promise<CourseCompletionResult> {
-  const accessToken = getAccessToken();
-
-  if (!accessToken) {
+  if (!getAccessToken()) {
     throw new Error("로그인 토큰이 없습니다");
   }
 
-  const response = await fetch(
+  const response = await fetchWithRequiredAuth(
     `${API_BASE_URL}/api/v1/courses/${courseId}/complete`,
     {
       method: "POST",
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
     },
   );
 

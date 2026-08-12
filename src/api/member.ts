@@ -1,4 +1,8 @@
-import { getAccessToken } from "./auth";
+import {
+  fetchWithOptionalAuth,
+  fetchWithRequiredAuth,
+  getAccessToken,
+} from "./auth";
 
 export class MemberApiError extends Error {
   status: number;
@@ -54,12 +58,7 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const MEMBER_PROFILE_STORAGE_KEY = "member.profile";
 
 async function getPublicMemberData<T>(path: string): Promise<T> {
-  const accessToken = getAccessToken();
-  const response = await fetch(`${API_BASE_URL}${path}`, {
-    headers: accessToken
-      ? { Authorization: `Bearer ${accessToken}` }
-      : undefined,
-  });
+  const response = await fetchWithOptionalAuth(`${API_BASE_URL}${path}`);
   const json = await response.json().catch(() => null);
 
   if (!response.ok) {
@@ -140,17 +139,11 @@ export function clearCachedMyProfile() {
 }
 
 export async function getMyProfile(): Promise<MemberProfile> {
-  const accessToken = getAccessToken();
-
-  if (!accessToken) {
+  if (!getAccessToken()) {
     throw new Error("로그인 토큰이 없습니다.");
   }
 
-  const response = await fetch(`${API_BASE_URL}/api/v1/members/me`, {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
-  });
+  const response = await fetchWithRequiredAuth(`${API_BASE_URL}/api/v1/members/me`);
 
   if (!response.ok) {
     throw new Error("내 프로필 조회 실패");
@@ -174,16 +167,13 @@ export async function updateMyProfile(updates: {
   nickname?: string;
   profileImageUrl?: string;
 }): Promise<MemberProfile> {
-  const accessToken = getAccessToken();
-
-  if (!accessToken) {
+  if (!getAccessToken()) {
     throw new Error("로그인 토큰이 없습니다.");
   }
 
-  const response = await fetch(`${API_BASE_URL}/api/v1/members/me`, {
+  const response = await fetchWithRequiredAuth(`${API_BASE_URL}/api/v1/members/me`, {
     method: "PATCH",
     headers: {
-      Authorization: `Bearer ${accessToken}`,
       "Content-Type": "application/json; charset=utf-8",
     },
     body: JSON.stringify(updates),
@@ -213,17 +203,12 @@ export async function updateMyProfile(updates: {
 
 // 회원탈퇴
 export async function deleteMyProfile() {
-  const accessToken = getAccessToken();
-
-  if (!accessToken) {
+  if (!getAccessToken()) {
     throw new Error("로그인 토큰이 없습니다.");
   }
 
-  const response = await fetch(`${API_BASE_URL}/api/v1/members/me`, {
+  const response = await fetchWithRequiredAuth(`${API_BASE_URL}/api/v1/members/me`, {
     method: "DELETE",
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
   });
 
   if (!response.ok) {
@@ -250,9 +235,7 @@ export async function getLikedCourses(
   cursor?: string,
   size = 10,
 ): Promise<LikedCoursesResponseData> {
-  const accessToken = getAccessToken();
-
-  if (!accessToken) {
+  if (!getAccessToken()) {
     throw new Error("로그인 토큰이 없습니다.");
   }
 
@@ -264,13 +247,9 @@ export async function getLikedCourses(
 
   params.set("size", String(size));
 
-  const response = await fetch(
+  const response = await fetchWithRequiredAuth(
     `${API_BASE_URL}/api/v1/members/me/liked-courses?${params.toString()}`,
-    {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    },
+    {},
   );
 
   if (!response.ok) {
@@ -295,18 +274,15 @@ export async function getLikedCourses(
 }
 
 export async function deleteLikedCourses(courseIds: number[]): Promise<void> {
-  const accessToken = getAccessToken();
-
-  if (!accessToken) {
+  if (!getAccessToken()) {
     throw new Error("로그인 토큰이 없습니다.");
   }
 
-  const response = await fetch(
+  const response = await fetchWithRequiredAuth(
     `${API_BASE_URL}/api/v1/members/me/liked-courses`,
     {
       method: "DELETE",
       headers: {
-        Authorization: `Bearer ${accessToken}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ courseIds }),
@@ -321,18 +297,15 @@ export async function deleteLikedCourses(courseIds: number[]): Promise<void> {
 export async function deleteAllLikedCourses(
   exceptCourseIds: number[],
 ): Promise<void> {
-  const accessToken = getAccessToken();
-
-  if (!accessToken) {
+  if (!getAccessToken()) {
     throw new Error("로그인 토큰이 없습니다.");
   }
 
-  const response = await fetch(
+  const response = await fetchWithRequiredAuth(
     `${API_BASE_URL}/api/v1/members/me/liked-courses/all`,
     {
       method: "DELETE",
       headers: {
-        Authorization: `Bearer ${accessToken}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ exceptCourseIds }),
