@@ -214,6 +214,7 @@ function LikePage() {
               courseName={course.name}
               stationName={course.stationName}
               lineId={course.line.id as SubwayLine}
+              imageUrl={course.imageUrl}
               isSelectMode={isSelectMode}
               isSelected={
                 isAllSelectedMode

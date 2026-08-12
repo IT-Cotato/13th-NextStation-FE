@@ -223,6 +223,7 @@ export interface LikedCourse {
   stationId: number;
   stationName: string;
   line: LikedCourseLine;
+  imageUrl: string | null;
 }
 
 interface LikedCoursesResponseData {
@@ -267,6 +268,7 @@ export async function getLikedCourses(
       stationId: course.stationId,
       stationName: course.stationName,
       line: course.line,
+      imageUrl: course.imageUrl,
     })),
     nextCursor: data.nextCursor ?? null,
     hasNext: data.hasNext ?? false,

@@ -9,6 +9,7 @@ interface LikeCardProps {
   courseName: string;
   stationName: string;
   lineId: SubwayLine;
+  imageUrl: string | null;
   isSelectMode: boolean;
   isSelected: boolean;
   onToggleSelect: () => void;
@@ -19,11 +20,15 @@ export default function LikeCard({
   courseName,
   stationName,
   lineId,
+  imageUrl,
   isSelectMode,
   isSelected,
   onToggleSelect,
   onClick,
 }: LikeCardProps) {
+  const isImageEmpty = !imageUrl || imageUrl.length < 1;
+  const textColorClass = isImageEmpty ? "text-gray-100" : "text-white";
+
   return (
     <div
       role="button"
@@ -41,8 +46,18 @@ export default function LikeCard({
       }}
       className="relative h-40 w-full overflow-hidden rounded-lg text-left"
     >
-      <CardBG className="absolute inset-0 h-full w-full" />
-      {/* <div className="absolute inset-0 bg-linear-to-b from-white/0 via-white/10 to-white/80" /> */}
+      {isImageEmpty ? (
+        <CardBG className="absolute inset-0 h-full w-full" />
+      ) : (
+        <div
+          role="img"
+          aria-label={courseName}
+          className="absolute inset-0 h-full w-full rounded-lg"
+          style={{
+            background: `linear-gradient(180deg, rgba(255, 255, 255, 0.00) 50%, #555555 100%), url(${imageUrl}) lightgray 50% / cover no-repeat`,
+          }}
+        />
+      )}
 
       {isSelectMode ? (
         <button
@@ -65,11 +80,11 @@ export default function LikeCard({
       <div className="relative z-10 flex h-full flex-col items-start justify-end gap-2 px-3 pt-[54px] pb-4">
         <div className="flex items-center justify-center gap-1">
           <LineBadge line={lineId}/>
-          <p className="text-body-02 text-gray-100 leading-[1.4] tracking-[-0.025em]">
+          <p className={`text-body-02 ${textColorClass} leading-[1.4] tracking-[-0.025em]`}>
             {stationName}
           </p>
         </div>
-        <p className="text-body-01 font-semibold text-gray-100 leading-[1.4] tracking-[-0.025em]">
+        <p className={`text-body-01 font-semibold ${textColorClass} leading-[1.4] tracking-[-0.025em]`}>
           {courseName}
         </p>
       </div>
