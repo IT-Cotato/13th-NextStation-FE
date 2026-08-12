@@ -59,6 +59,18 @@ interface VerifyLocationState extends Partial<DraftCourseState> {
   synced?: VerifySyncedState;
 }
 
+function ensureCopyCourseName(name: string) {
+  const trimmedName = name.trim();
+
+  if (!trimmedName) {
+    return "(사본)";
+  }
+
+  return trimmedName.endsWith("(사본)")
+    ? trimmedName
+    : `${trimmedName} (사본)`;
+}
+
 function draftToPlaces(draft: DraftCourseState): Place[] {
   return draft.course.places.map((place, index) => ({
     placeId: place.placeId,
@@ -146,7 +158,11 @@ export default function VerifyPage() {
           stationName: data.stationName,
           lineId: data.lineId,
         });
-        setCourseName(data.courseName);
+        setCourseName(
+          from === "copy"
+            ? ensureCopyCourseName(data.courseName)
+            : data.courseName,
+        );
         setPlaces(data.places);
       } catch (e) {
         console.error(e);
@@ -192,15 +208,16 @@ export default function VerifyPage() {
       }
 
       if (course.sourceCourseId) {
+        const copiedCourseName = ensureCopyCourseName(courseName);
         const copied = await copyCourse(
           course.sourceCourseId,
-          courseName,
+          copiedCourseName,
           places.map((place) => place.placeId),
         );
         setCourse((prev) =>
           prev ? { ...prev, courseId: copied.courseId } : prev,
         );
-        setCourseName(copied.name);
+        setCourseName(ensureCopyCourseName(copied.name));
         setHasUnsavedChanges(false);
         return copied.courseId;
       }

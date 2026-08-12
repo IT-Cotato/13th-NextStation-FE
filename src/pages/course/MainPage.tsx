@@ -115,6 +115,7 @@ export default function MainPage() {
 
     return matchedLine && matchedStation;
   });
+  const isFilteredCoursesEmpty = filteredCourses.length < 1;
 
   const handleSelected = (targetId: number) => {
     setSelectedIds((prev) =>
@@ -197,13 +198,23 @@ export default function MainPage() {
       </section>
 
       <section className="flex justify-center pb-25">
-        {isCourseEmpty ? (
+        {isCourseEmpty || isFilteredCoursesEmpty ? (
           <div className="flex flex-col gap-5 items-center justify-center pt-20">
             <CourseEmpty />
             <p className="text-subtitle leading-[1.4] tracking-[-0.4px] text-gray-80 text-center">
-              아직 저장된 코스가 없어요!
-              <br />
-              나만의 환승여행 코스를 만들어보세요.
+              {isCourseEmpty ? (
+                <>
+                  아직 저장된 코스가 없어요!
+                  <br />
+                  나만의 환승여행 코스를 만들어보세요.
+                </>
+              ) : (
+                <>
+                  선택한 조건에 맞는 코스가 없어요!
+                  <br />
+                  다른 노선이나 역을 선택해보세요.
+                </>
+              )}
             </p>
           </div>
         ) : (
