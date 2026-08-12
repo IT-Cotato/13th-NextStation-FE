@@ -7,6 +7,7 @@ export const mockLikedCourses: LikedCourse[] = [
     name: "민성이랑 떠나는 신림 느좋투어 갈 이 떠날래?",
     stationId: 2,
     stationName: "신림역",
+    imageUrl: null,
     line: {
       id: 2,
       name: "2호선",
@@ -19,6 +20,7 @@ export const mockLikedCourses: LikedCourse[] = [
     name: "보문역 환승여행 코스",
     stationId: 6,
     stationName: "보문역",
+    imageUrl: null,
     line: {
       id: 6,
       name: "6호선",
@@ -31,6 +33,7 @@ export const mockLikedCourses: LikedCourse[] = [
     name: "친구랑 잠실나루 코스",
     stationId: 2,
     stationName: "잠실나루역",
+    imageUrl: null,
     line: {
       id: 2,
       name: "2호선",
@@ -43,6 +46,7 @@ export const mockLikedCourses: LikedCourse[] = [
     name: "혼자 걷는 신설동 코스",
     stationId: 1,
     stationName: "신설동역",
+    imageUrl: null,
     line: {
       id: 1,
       name: "1호선",
@@ -55,6 +59,7 @@ export const mockLikedCourses: LikedCourse[] = [
     name: "학교 끝나고 둘러보는 수유 코스",
     stationId: 4,
     stationName: "수유역",
+    imageUrl: null,
     line: {
       id: 4,
       name: "4호선",
@@ -67,6 +72,7 @@ export const mockLikedCourses: LikedCourse[] = [
     name: "아이랑 어린이대공원 코스",
     stationId: 7,
     stationName: "어린이대공원역",
+    imageUrl: null,
     line: {
       id: 7,
       name: "7호선",
