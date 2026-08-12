@@ -1,4 +1,8 @@
-import { getAccessToken } from "@/api/auth";
+import {
+  fetchWithOptionalAuth,
+  fetchWithRequiredAuth,
+  getAccessToken,
+} from "@/api/auth";
 export interface PlaceReview {
   // ReviewPreviewCard에서 사용됨
   reviewId: number;
@@ -70,21 +74,11 @@ export interface Course {
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-function createOptionalAuthHeaders() {
-  const accessToken = getAccessToken();
-
-  return accessToken
-    ? {
-        Authorization: `Bearer ${accessToken}`,
-      }
-    : undefined;
-}
-
 // 장소 상세 조회
 export async function getPlaceDetail(placeId: number): Promise<Place> {
-  const response = await fetch(`${API_BASE_URL}/api/v1/places/${placeId}`, {
-    headers: createOptionalAuthHeaders(),
-  });
+  const response = await fetchWithOptionalAuth(
+    `${API_BASE_URL}/api/v1/places/${placeId}`,
+  );
 
   if (!response.ok) {
     throw new Error("장소 상세 조회 실패");
@@ -110,19 +104,13 @@ export async function getPlaceDetail(placeId: number): Promise<Place> {
 
 // 장소를 포함한 코스 조회
 export async function getPlaceCourses(placeId: number): Promise<Course[]> {
-  const accessToken = getAccessToken();
-
-  if (!accessToken) {
+  if (!getAccessToken()) {
     throw new Error("로그인 토큰이 없습니다");
   }
 
-  const response = await fetch(
+  const response = await fetchWithRequiredAuth(
     `${API_BASE_URL}/api/v1/places/${placeId}/courses`,
-    {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    },
+    {},
   );
 
   if (!response.ok) {

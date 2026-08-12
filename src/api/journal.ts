@@ -1,4 +1,8 @@
-import { getAccessToken } from "@/api/auth";
+import {
+  fetchWithOptionalAuth,
+  fetchWithRequiredAuth,
+  getAccessToken,
+} from "@/api/auth";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -77,12 +81,9 @@ export interface JournalDetail {
 export async function getJournalDetail(
   journalId: number,
 ): Promise<JournalDetail> {
-  const accessToken = getAccessToken();
-  const response = await fetch(`${API_BASE_URL}/api/v1/journals/${journalId}`, {
-    headers: accessToken
-      ? { Authorization: `Bearer ${accessToken}` }
-      : undefined,
-  });
+  const response = await fetchWithOptionalAuth(
+    `${API_BASE_URL}/api/v1/journals/${journalId}`,
+  );
 
   if (!response.ok) {
     const errorJson = await response.json().catch(() => null);
@@ -98,16 +99,13 @@ export async function getJournalDetail(
 export async function createJournal(
   body: CreateJournalRequest,
 ): Promise<CreateJournalResponse> {
-  const accessToken = getAccessToken();
-
-  if (!accessToken) {
+  if (!getAccessToken()) {
     throw new Error("로그인 토큰이 없습니다.");
   }
 
-  const response = await fetch(`${API_BASE_URL}/api/v1/journals`, {
+  const response = await fetchWithRequiredAuth(`${API_BASE_URL}/api/v1/journals`, {
     method: "POST",
     headers: {
-      Authorization: `Bearer ${accessToken}`,
       "Content-Type": "application/json",
     },
     body: JSON.stringify(body),
@@ -126,19 +124,13 @@ export async function createJournal(
 export async function getJournalWriteInfo(
   memberStampId: number,
 ): Promise<JournalWriteInfo> {
-  const accessToken = getAccessToken();
-
-  if (!accessToken) {
+  if (!getAccessToken()) {
     throw new Error("로그인 토큰이 없습니다.");
   }
 
-  const response = await fetch(
+  const response = await fetchWithRequiredAuth(
     `${API_BASE_URL}/api/v1/journals/write-info?memberStampId=${memberStampId}`,
-    {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    },
+    {},
   );
 
   if (!response.ok) {
@@ -205,19 +197,13 @@ export interface UnwrittenJournals {
 
 // 내 여행일지 목록 조회
 export async function getJournals(cursor?: string): Promise<Journals> {
-  const accessToken = getAccessToken();
-
-  if (!accessToken) {
+  if (!getAccessToken()) {
     throw new Error("로그인 토큰이 없습니다");
   }
 
-  const response = await fetch(
+  const response = await fetchWithRequiredAuth(
     `${API_BASE_URL}/api/v1/members/me/journals?size=10${cursor ? `&cursor=${encodeURIComponent(cursor)}` : ""}`,
-    {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    },
+    {},
   );
 
   if (!response.ok) {
@@ -237,17 +223,13 @@ export async function getJournals(cursor?: string): Promise<Journals> {
 
 // 미작성 여행일지 목록 조회
 export async function getUnwrittenJournals(): Promise<UnwrittenJournals> {
-  const accessToken = getAccessToken();
-
-  if (!accessToken) {
+  if (!getAccessToken()) {
     throw new Error("로그인 토큰이 없습니다");
   }
 
-  const response = await fetch(`${API_BASE_URL}/api/v1/journals/uncompleted`, {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
-  });
+  const response = await fetchWithRequiredAuth(
+    `${API_BASE_URL}/api/v1/journals/uncompleted`,
+  );
 
   if (!response.ok) {
     throw new Error("미작성 여행일지 목록 조회 실패");
@@ -295,16 +277,13 @@ export async function patchJournal({
   journalId: number;
   body: PatchJournalRequest;
 }): Promise<void> {
-  const accessToken = getAccessToken();
-
-  if (!accessToken) {
+  if (!getAccessToken()) {
     throw new Error("로그인 토큰이 없습니다");
   }
 
-  const response = await fetch(`${API_BASE_URL}/api/v1/journals/${journalId}`, {
+  const response = await fetchWithRequiredAuth(`${API_BASE_URL}/api/v1/journals/${journalId}`, {
     method: "PATCH",
     headers: {
-      Authorization: `Bearer ${accessToken}`,
       "Content-Type": "application/json",
     },
     body: JSON.stringify(body),
@@ -318,17 +297,12 @@ export async function patchJournal({
 
 // 여행일지 삭제
 export async function deleteJournal(journalId: number): Promise<void> {
-  const accessToken = getAccessToken();
-
-  if (!accessToken) {
+  if (!getAccessToken()) {
     throw new Error("로그인 토큰이 없습니다");
   }
 
-  const response = await fetch(`${API_BASE_URL}/api/v1/journals/${journalId}`, {
+  const response = await fetchWithRequiredAuth(`${API_BASE_URL}/api/v1/journals/${journalId}`, {
     method: "DELETE",
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
   });
 
   if (!response.ok) {

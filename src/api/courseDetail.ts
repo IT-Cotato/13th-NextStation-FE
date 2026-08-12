@@ -54,7 +54,7 @@ export interface CopyPreviewCourse {
   places: Place[];
 }
 
-import { getAccessToken } from "@/api/auth";
+import { fetchWithRequiredAuth, getAccessToken } from "@/api/auth";
 import type { SubwayLine } from "@/types/subway";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
@@ -96,19 +96,13 @@ export interface CourseDetailData {
 
 // 내가 만든 코스 확인
 export async function getCourseDetail(courseId: number): Promise<CourseDetail> {
-  const accessToken = getAccessToken();
-
-  if (!accessToken) {
+  if (!getAccessToken()) {
     throw new Error("로그인 토큰이 없습니다.");
   }
 
-  const response = await fetch(
+  const response = await fetchWithRequiredAuth(
     `${API_BASE_URL}/api/v1/members/me/courses/${courseId}`,
-    {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    },
+    {},
   );
 
   if (!response.ok) {
@@ -132,19 +126,13 @@ export async function getCourseDetail(courseId: number): Promise<CourseDetail> {
 export async function getCopyPreviewCourse(
   courseId: number,
 ): Promise<CopyPreviewCourse> {
-  const accessToken = getAccessToken();
-
-  if (!accessToken) {
+  if (!getAccessToken()) {
     throw new Error("로그인이 필요합니다.");
   }
 
-  const response = await fetch(
+  const response = await fetchWithRequiredAuth(
     `${API_BASE_URL}/api/v1/courses/${courseId}/copy-preview`,
-    {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    },
+    {},
   );
 
   const json = await response.json().catch(() => null);
@@ -187,18 +175,15 @@ export async function copyCourse(
   name: string,
   placeIds?: number[],
 ): Promise<CopiedCourse> {
-  const accessToken = getAccessToken();
-
-  if (!accessToken) {
+  if (!getAccessToken()) {
     throw new Error("로그인이 필요합니다.");
   }
 
-  const response = await fetch(
+  const response = await fetchWithRequiredAuth(
     `${API_BASE_URL}/api/v1/courses/${courseId}/copy`,
     {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${accessToken}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
@@ -222,16 +207,13 @@ export async function patchCourseDetail(
   courseId: number,
   payload: PatchCourseDetailPayload,
 ): Promise<PatchCourseDetailResult> {
-  const accessToken = getAccessToken();
-
-  if (!accessToken) {
+  if (!getAccessToken()) {
     throw new Error("로그인 토큰이 없습니다");
   }
 
-  const response = await fetch(`${API_BASE_URL}/api/v1/courses/${courseId}`, {
+  const response = await fetchWithRequiredAuth(`${API_BASE_URL}/api/v1/courses/${courseId}`, {
     method: "PATCH",
     headers: {
-      Authorization: `Bearer ${accessToken}`,
       "Content-Type": "application/json",
     },
     body: JSON.stringify(payload),
