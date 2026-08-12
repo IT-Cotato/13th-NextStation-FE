@@ -1,4 +1,4 @@
-import { getAccessToken } from "@/api/auth";
+import { fetchWithAuth, getAccessToken } from "@/api/auth";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -78,7 +78,7 @@ export async function getJournalDetail(
   journalId: number,
 ): Promise<JournalDetail> {
   const accessToken = getAccessToken();
-  const response = await fetch(`${API_BASE_URL}/api/v1/journals/${journalId}`, {
+  const response = await fetchWithAuth(`${API_BASE_URL}/api/v1/journals/${journalId}`, {
     headers: accessToken
       ? { Authorization: `Bearer ${accessToken}` }
       : undefined,
@@ -104,7 +104,7 @@ export async function createJournal(
     throw new Error("로그인 토큰이 없습니다.");
   }
 
-  const response = await fetch(`${API_BASE_URL}/api/v1/journals`, {
+  const response = await fetchWithAuth(`${API_BASE_URL}/api/v1/journals`, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${accessToken}`,
@@ -132,7 +132,7 @@ export async function getJournalWriteInfo(
     throw new Error("로그인 토큰이 없습니다.");
   }
 
-  const response = await fetch(
+  const response = await fetchWithAuth(
     `${API_BASE_URL}/api/v1/journals/write-info?memberStampId=${memberStampId}`,
     {
       headers: {
@@ -211,7 +211,7 @@ export async function getJournals(cursor?: string): Promise<Journals> {
     throw new Error("로그인 토큰이 없습니다");
   }
 
-  const response = await fetch(
+  const response = await fetchWithAuth(
     `${API_BASE_URL}/api/v1/members/me/journals?size=10${cursor ? `&cursor=${encodeURIComponent(cursor)}` : ""}`,
     {
       headers: {
@@ -243,7 +243,7 @@ export async function getUnwrittenJournals(): Promise<UnwrittenJournals> {
     throw new Error("로그인 토큰이 없습니다");
   }
 
-  const response = await fetch(`${API_BASE_URL}/api/v1/journals/uncompleted`, {
+  const response = await fetchWithAuth(`${API_BASE_URL}/api/v1/journals/uncompleted`, {
     headers: {
       Authorization: `Bearer ${accessToken}`,
     },
@@ -301,7 +301,7 @@ export async function patchJournal({
     throw new Error("로그인 토큰이 없습니다");
   }
 
-  const response = await fetch(`${API_BASE_URL}/api/v1/journals/${journalId}`, {
+  const response = await fetchWithAuth(`${API_BASE_URL}/api/v1/journals/${journalId}`, {
     method: "PATCH",
     headers: {
       Authorization: `Bearer ${accessToken}`,
@@ -324,7 +324,7 @@ export async function deleteJournal(journalId: number): Promise<void> {
     throw new Error("로그인 토큰이 없습니다");
   }
 
-  const response = await fetch(`${API_BASE_URL}/api/v1/journals/${journalId}`, {
+  const response = await fetchWithAuth(`${API_BASE_URL}/api/v1/journals/${journalId}`, {
     method: "DELETE",
     headers: {
       Authorization: `Bearer ${accessToken}`,

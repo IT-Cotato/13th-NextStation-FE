@@ -1,4 +1,4 @@
-import { getAccessToken } from "@/api/auth";
+import { fetchWithAuth, getAccessToken } from "@/api/auth";
 import type { RecommendationTravelStyle } from "@/api/recommendation";
 export interface StationLine {
   id: number;
@@ -69,7 +69,7 @@ export async function getStationCourseRecommendation(
   stationId: number,
   travelStyles?: RecommendationTravelStyle[],
 ): Promise<StationCourseRecommendation> {
-  const response = await fetch(
+  const response = await fetchWithAuth(
     buildStationCourseRecommendationUrl(API_BASE_URL, stationId, travelStyles),
   );
   if (!response.ok) {
@@ -110,7 +110,7 @@ export async function createCourse(
     throw new Error("로그인 토큰이 없습니다");
   }
 
-  const response = await fetch(`${API_BASE_URL}/api/v1/courses`, {
+  const response = await fetchWithAuth(`${API_BASE_URL}/api/v1/courses`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

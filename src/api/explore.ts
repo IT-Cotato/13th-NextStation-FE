@@ -1,4 +1,4 @@
-import { getAccessToken } from "./auth";
+import { fetchWithAuth, getAccessToken } from "./auth";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -54,7 +54,7 @@ export function getExploreCourseDetailPath(course: ExploreCourse): string {
 
 async function request<T>(path: string): Promise<T> {
   const accessToken = getAccessToken();
-  const response = await fetch(`${API_BASE_URL}${path}`, {
+  const response = await fetchWithAuth(`${API_BASE_URL}${path}`, {
     headers: accessToken
       ? { Authorization: `Bearer ${accessToken}` }
       : undefined,
@@ -110,7 +110,7 @@ export async function likeExploreCourse(courseId: number): Promise<void> {
   const accessToken = getAccessToken();
   if (!accessToken) throw new Error("로그인이 필요합니다.");
 
-  const response = await fetch(
+  const response = await fetchWithAuth(
     `${API_BASE_URL}/api/v1/courses/${courseId}/likes`,
     {
       method: "POST",
@@ -127,7 +127,7 @@ export async function unlikeExploreCourse(courseId: number): Promise<void> {
   const accessToken = getAccessToken();
   if (!accessToken) throw new Error("로그인이 필요합니다.");
 
-  const response = await fetch(
+  const response = await fetchWithAuth(
     `${API_BASE_URL}/api/v1/courses/${courseId}/likes`,
     {
       method: "DELETE",

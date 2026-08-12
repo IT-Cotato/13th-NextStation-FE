@@ -300,6 +300,61 @@ export function reissueAccessToken() {
   });
 }
 
+let reissuePromise: Promise<string> | null = null;
+
+function getReissuedAccessToken(): Promise<string> {
+  if (!reissuePromise) {
+    reissuePromise = reissueAccessToken()
+      .then(({ accessToken }) => {
+        saveAccessToken(accessToken);
+        return accessToken;
+      })
+      .catch((error: unknown) => {
+        clearAccessToken();
+        throw error;
+      })
+      .finally(() => {
+        reissuePromise = null;
+      });
+  }
+
+  return reissuePromise;
+}
+
+function withAccessToken(init: RequestInit, accessToken: string) {
+  const headers = new Headers(init.headers);
+  headers.set("Authorization", `Bearer ${accessToken}`);
+
+  return {
+    ...init,
+    credentials: "include" as const,
+    headers,
+  };
+}
+
+export async function fetchWithAuth(
+  input: RequestInfo | URL,
+  init: RequestInit = {},
+): Promise<Response> {
+  const accessToken = getAccessToken();
+  const requestInit = accessToken ? withAccessToken(init, accessToken) : init;
+  const response = await fetch(input, {
+    ...requestInit,
+    credentials: "include",
+  });
+
+  if (response.status !== 401 || !accessToken || init.signal?.aborted) {
+    return response;
+  }
+
+  try {
+    const renewedAccessToken = await getReissuedAccessToken();
+    return fetch(input, withAccessToken(init, renewedAccessToken));
+  } catch {
+    return response;
+  }
+}
+
 export interface KakaoProfileDraft {
   nickname: string;
   profileImageUrl?: string;
@@ -403,6 +458,7 @@ export async function logout() {
 
   const response = await fetch(`${API_BASE_URL}/api/v1/auth/logout`, {
     method: "POST",
+    credentials: "include",
     headers: {
       Authorization: `Bearer ${accessToken}`,
     },

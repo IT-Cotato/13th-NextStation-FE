@@ -27,7 +27,7 @@ export interface PlaceReviewListResponse {
   hasNext: boolean;
 }
 
-import { getAccessToken } from "@/api/auth";
+import { fetchWithAuth, getAccessToken } from "@/api/auth";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -47,7 +47,7 @@ export async function getReviews(
   sort: "RECOMMEND" | "LATEST",
   cursor?: string,
 ): Promise<PlaceReviewListResponse> {
-  const response = await fetch(
+  const response = await fetchWithAuth(
     `${API_BASE_URL}/api/v1/places/${placeId}/reviews?sort=${sort}&size=10${cursor ? `&cursor=${cursor}` : ""}`,
     {
       headers: createOptionalAuthHeaders(),
@@ -77,7 +77,7 @@ export async function createReviewLike(reviewId: number): Promise<void> {
     throw new Error("로그인이 필요합니다");
   }
 
-  const response = await fetch(
+  const response = await fetchWithAuth(
     `${API_BASE_URL}/api/v1/places/reviews/${reviewId}/like`,
     {
       method: "POST",
@@ -100,7 +100,7 @@ export async function deleteReviewLike(reviewId: number): Promise<void> {
     throw new Error("로그인이 필요합니다");
   }
 
-  const response = await fetch(
+  const response = await fetchWithAuth(
     `${API_BASE_URL}/api/v1/places/reviews/${reviewId}/like`,
     {
       method: "DELETE",

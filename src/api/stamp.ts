@@ -1,4 +1,4 @@
-import { getAccessToken } from "./auth";
+import { fetchWithAuth, getAccessToken } from "./auth";
 
 export interface Line {
   id: number;
@@ -34,7 +34,7 @@ export async function getStamps(): Promise<Stamps> {
     throw new Error("로그인 토큰이 없습니다");
   }
 
-  const response = await fetch(`${API_BASE_URL}/api/v1/stamps`, {
+  const response = await fetchWithAuth(`${API_BASE_URL}/api/v1/stamps`, {
     headers: {
       Authorization: `Bearer ${accessToken}`,
     },
@@ -80,7 +80,7 @@ export async function getStampsDetail(stationId: number): Promise<StampDetail> {
     throw new Error("로그인 토큰이 없습니다");
   }
 
-  const response = await fetch(`${API_BASE_URL}/api/v1/stamps/${stationId}`, {
+  const response = await fetchWithAuth(`${API_BASE_URL}/api/v1/stamps/${stationId}`, {
     headers: {
       Authorization: `Bearer ${accessToken}`,
     },

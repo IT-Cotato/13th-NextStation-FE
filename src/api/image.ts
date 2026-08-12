@@ -1,4 +1,4 @@
-import { getAccessToken } from "@/api/auth";
+import { fetchWithAuth, getAccessToken } from "@/api/auth";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -41,7 +41,7 @@ export async function getPresignedUrl(
     throw new Error("로그인 토큰이 없습니다.");
   }
 
-  const response = await fetch(`${API_BASE_URL}/api/v1/images/presigned-url`, {
+  const response = await fetchWithAuth(`${API_BASE_URL}/api/v1/images/presigned-url`, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${accessToken}`,
@@ -69,7 +69,7 @@ export async function getPresignedUrlsBatch(
     throw new Error("로그인 토큰이 없습니다.");
   }
 
-  const response = await fetch(
+  const response = await fetchWithAuth(
     `${API_BASE_URL}/api/v1/images/presigned-urls/batch`,
     {
       method: "POST",
@@ -117,7 +117,7 @@ export async function deleteImage(imageUrl: string): Promise<void> {
     throw new Error("로그인 토큰이 없습니다.");
   }
 
-  const response = await fetch(
+  const response = await fetchWithAuth(
     `${API_BASE_URL}/api/v1/images?imageUrl=${encodeURIComponent(imageUrl)}`,
     {
       method: "DELETE",

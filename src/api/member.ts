@@ -1,4 +1,4 @@
-import { getAccessToken } from "./auth";
+import { fetchWithAuth, getAccessToken } from "./auth";
 
 export class MemberApiError extends Error {
   status: number;
@@ -55,7 +55,7 @@ const MEMBER_PROFILE_STORAGE_KEY = "member.profile";
 
 async function getPublicMemberData<T>(path: string): Promise<T> {
   const accessToken = getAccessToken();
-  const response = await fetch(`${API_BASE_URL}${path}`, {
+  const response = await fetchWithAuth(`${API_BASE_URL}${path}`, {
     headers: accessToken
       ? { Authorization: `Bearer ${accessToken}` }
       : undefined,
@@ -146,7 +146,7 @@ export async function getMyProfile(): Promise<MemberProfile> {
     throw new Error("로그인 토큰이 없습니다.");
   }
 
-  const response = await fetch(`${API_BASE_URL}/api/v1/members/me`, {
+  const response = await fetchWithAuth(`${API_BASE_URL}/api/v1/members/me`, {
     headers: {
       Authorization: `Bearer ${accessToken}`,
     },
@@ -180,7 +180,7 @@ export async function updateMyProfile(updates: {
     throw new Error("로그인 토큰이 없습니다.");
   }
 
-  const response = await fetch(`${API_BASE_URL}/api/v1/members/me`, {
+  const response = await fetchWithAuth(`${API_BASE_URL}/api/v1/members/me`, {
     method: "PATCH",
     headers: {
       Authorization: `Bearer ${accessToken}`,
@@ -219,7 +219,7 @@ export async function deleteMyProfile() {
     throw new Error("로그인 토큰이 없습니다.");
   }
 
-  const response = await fetch(`${API_BASE_URL}/api/v1/members/me`, {
+  const response = await fetchWithAuth(`${API_BASE_URL}/api/v1/members/me`, {
     method: "DELETE",
     headers: {
       Authorization: `Bearer ${accessToken}`,
@@ -264,7 +264,7 @@ export async function getLikedCourses(
 
   params.set("size", String(size));
 
-  const response = await fetch(
+  const response = await fetchWithAuth(
     `${API_BASE_URL}/api/v1/members/me/liked-courses?${params.toString()}`,
     {
       headers: {
@@ -301,7 +301,7 @@ export async function deleteLikedCourses(courseIds: number[]): Promise<void> {
     throw new Error("로그인 토큰이 없습니다.");
   }
 
-  const response = await fetch(
+  const response = await fetchWithAuth(
     `${API_BASE_URL}/api/v1/members/me/liked-courses`,
     {
       method: "DELETE",
@@ -327,7 +327,7 @@ export async function deleteAllLikedCourses(
     throw new Error("로그인 토큰이 없습니다.");
   }
 
-  const response = await fetch(
+  const response = await fetchWithAuth(
     `${API_BASE_URL}/api/v1/members/me/liked-courses/all`,
     {
       method: "DELETE",

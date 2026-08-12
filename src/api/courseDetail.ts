@@ -36,7 +36,7 @@ export interface CourseDetail {
   places: Place[];
 }
 
-import { getAccessToken } from "@/api/auth";
+import { fetchWithAuth, getAccessToken } from "@/api/auth";
 import type { SubwayLine } from "@/types/subway";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
@@ -84,7 +84,7 @@ export async function getCourseDetail(courseId: number): Promise<CourseDetail> {
     throw new Error("로그인 토큰이 없습니다.");
   }
 
-  const response = await fetch(
+  const response = await fetchWithAuth(
     `${API_BASE_URL}/api/v1/members/me/courses/${courseId}`,
     {
       headers: {
@@ -138,7 +138,7 @@ export async function copyCourse(
     throw new Error("로그인이 필요합니다.");
   }
 
-  const response = await fetch(
+  const response = await fetchWithAuth(
     `${API_BASE_URL}/api/v1/courses/${courseId}/copy`,
     {
       method: "POST",
@@ -170,7 +170,7 @@ export async function patchCourseDetail(
     throw new Error("로그인 토큰이 없습니다");
   }
 
-  const response = await fetch(`${API_BASE_URL}/api/v1/courses/${courseId}`, {
+  const response = await fetchWithAuth(`${API_BASE_URL}/api/v1/courses/${courseId}`, {
     method: "PATCH",
     headers: {
       Authorization: `Bearer ${accessToken}`,

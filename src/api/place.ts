@@ -1,4 +1,4 @@
-import { getAccessToken } from "@/api/auth";
+import { fetchWithAuth, getAccessToken } from "@/api/auth";
 export interface PlaceReview {
   // ReviewPreviewCard에서 사용됨
   reviewId: number;
@@ -82,7 +82,7 @@ function createOptionalAuthHeaders() {
 
 // 장소 상세 조회
 export async function getPlaceDetail(placeId: number): Promise<Place> {
-  const response = await fetch(`${API_BASE_URL}/api/v1/places/${placeId}`, {
+  const response = await fetchWithAuth(`${API_BASE_URL}/api/v1/places/${placeId}`, {
     headers: createOptionalAuthHeaders(),
   });
 
@@ -116,7 +116,7 @@ export async function getPlaceCourses(placeId: number): Promise<Course[]> {
     throw new Error("로그인 토큰이 없습니다");
   }
 
-  const response = await fetch(
+  const response = await fetchWithAuth(
     `${API_BASE_URL}/api/v1/places/${placeId}/courses`,
     {
       headers: {

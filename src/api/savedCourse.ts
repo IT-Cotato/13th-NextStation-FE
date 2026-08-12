@@ -28,7 +28,7 @@ export interface SavedCourse {
   hasNext: boolean;
 }
 
-import { getAccessToken } from "@/api/auth";
+import { fetchWithAuth, getAccessToken } from "@/api/auth";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -42,7 +42,7 @@ export async function getSavedCourses(
     throw new Error("로그인 토큰이 없습니다");
   }
 
-  const response = await fetch(
+  const response = await fetchWithAuth(
     `${API_BASE_URL}/api/v1/members/me/courses?size=10${cursor ? `&cursor=${encodeURIComponent(cursor)}` : ""}`,
     {
       headers: {
@@ -75,7 +75,7 @@ export async function deleteSavedCourses(courseIds: number[]): Promise<void> {
     throw new Error("로그인 토큰이 없습니다");
   }
 
-  const response = await fetch(`${API_BASE_URL}/api/v1/members/me/courses`, {
+  const response = await fetchWithAuth(`${API_BASE_URL}/api/v1/members/me/courses`, {
     method: "DELETE",
     headers: {
       Authorization: `Bearer ${accessToken}`,
@@ -106,7 +106,7 @@ export async function completeCourse(
     throw new Error("로그인 토큰이 없습니다");
   }
 
-  const response = await fetch(
+  const response = await fetchWithAuth(
     `${API_BASE_URL}/api/v1/courses/${courseId}/complete`,
     {
       method: "POST",
