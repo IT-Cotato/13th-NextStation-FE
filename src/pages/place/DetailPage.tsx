@@ -132,9 +132,6 @@ export default function DetailPage() {
         <div className="flex flex-col gap-2.5 w-[360px]">
           <div className="flex flex-col gap-2">
             <div className="flex flex-col gap-1">
-              <div className="flex self-start px-3 py-1.5 bg-primary-50 text-gray-10 text-body-02 rounded-lg leading-none tracking-[-0.25px]">
-                {place.category}
-              </div>
               <span className="text-headline font-semibold leading-[1.4] tracking-[-0.5px]">
                 {place.placeName}
               </span>
@@ -301,7 +298,7 @@ export default function DetailPage() {
             {isCourseEmpty ? (
               <EmptyCard variant="course" />
             ) : (
-              <div className="flex w-full overflow-x-auto overflow-y-hidden py-5 m-0 list-none font-semibold [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden gap-3">
+              <div className="flex w-full overflow-x-auto overflow-y-hidden list-none font-semibold [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden gap-3">
                 {placeCourses.map((placeCourse) => (
                   <button
                     key={placeCourse.courseId}
