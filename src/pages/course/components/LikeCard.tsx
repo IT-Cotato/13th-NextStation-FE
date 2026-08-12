@@ -5,6 +5,7 @@ import LikeSelectIcon from '@/assets/like/likeSelect.svg?react';
 
 interface LikeCardProps {
   courseId: number;
+  journalId: number;
   courseName: string;
   stationName: string;
   lineId: SubwayLine;

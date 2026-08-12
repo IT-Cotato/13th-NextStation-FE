@@ -233,6 +233,7 @@ export async function deleteMyProfile() {
 
 export interface LikedCourse {
   courseId: number;
+  journalId: number;
   name: string;
   stationId: number;
   stationName: string;
@@ -282,6 +283,7 @@ export async function getLikedCourses(
   return {
     courses: (data.courses ?? []).map((course: LikedCourse) => ({
       courseId: course.courseId,
+      journalId: course.journalId,
       name: course.name,
       stationId: course.stationId,
       stationName: course.stationName,
