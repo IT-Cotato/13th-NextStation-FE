@@ -18,6 +18,8 @@ import NameEditInput from "./components/NameEditInput";
 import ConfirmModal from "@/components/ConfirmModal";
 import LeadToLoginModal from "@/components/LeadToLoginModal";
 import {
+  copyCourse,
+  getCopyPreviewCourse,
   getCourseDetail,
   patchCourseDetail,
   type Place,
@@ -39,6 +41,7 @@ interface DraftCourseState {
 
 interface VerifyCourse {
   courseId: number | null; // null --> 아직 저장되지 않은 draft (랜덤 뽑기 결과)
+  sourceCourseId: number | null;
   stationId: number;
   stationName: string;
   lineId: number;
@@ -84,6 +87,7 @@ export default function VerifyPage() {
       ? {
           // 랜덤 뽑기 결과
           courseId: null,
+          sourceCourseId: null,
           stationId: draft.stationId,
           stationName: draft.stationName,
           lineId: draft.lineId,
@@ -116,6 +120,7 @@ export default function VerifyPage() {
   const isLoggedIn = Boolean(getAccessToken());
   const isRandomDraft = from === "draw" && course?.courseId === null;
   const isRecommendDraft = from === "recommend" && course?.courseId === null;
+  const isCopyPreviewDraft = from === "copy" && course?.courseId === null;
 
   const [loading, error] = useKakaoLoader({
     appkey: import.meta.env.VITE_KAKAO_API,
@@ -124,12 +129,19 @@ export default function VerifyPage() {
   useEffect(() => {
     if (!courseId || synced) return;
 
-    const fetchCourseDetail = async () => {
+    const fetchCourseData = async () => {
       try {
         setIsPlacesLoading(true);
-        const data = await getCourseDetail(Number(courseId));
+        setPlacesError(null);
+
+        const data =
+          from === "copy"
+            ? await getCopyPreviewCourse(Number(courseId))
+            : await getCourseDetail(Number(courseId));
+
         setCourse({
-          courseId: data.courseId,
+          courseId: from === "copy" ? null : data.courseId,
+          sourceCourseId: from === "copy" ? data.courseId : null,
           stationId: data.stationId,
           stationName: data.stationName,
           lineId: data.lineId,
@@ -138,14 +150,18 @@ export default function VerifyPage() {
         setPlaces(data.places);
       } catch (e) {
         console.error(e);
-        setPlacesError("코스 상세 정보를 불러오지 못했습니다.");
+        setPlacesError(
+          from === "copy"
+            ? "코스 미리보기를 불러오지 못했습니다."
+            : "코스 상세 정보를 불러오지 못했습니다.",
+        );
       } finally {
         setIsPlacesLoading(false);
       }
     };
-    fetchCourseDetail();
+    void fetchCourseData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [courseId]);
+  }, [courseId, from]);
 
   // 장소 상세 페이지로 이동했다가 돌아왔을 때 순서/이름이 유지되도록 현재 히스토리 항목에 최신 상태 동기화
   // isLeavingRef가 켜져 있으면 건너뜀
@@ -173,6 +189,20 @@ export default function VerifyPage() {
         setCourseName(updated.name);
         setHasUnsavedChanges(false);
         return course.courseId;
+      }
+
+      if (course.sourceCourseId) {
+        const copied = await copyCourse(
+          course.sourceCourseId,
+          courseName,
+          places.map((place) => place.placeId),
+        );
+        setCourse((prev) =>
+          prev ? { ...prev, courseId: copied.courseId } : prev,
+        );
+        setCourseName(copied.name);
+        setHasUnsavedChanges(false);
+        return copied.courseId;
       }
 
       const created = await createCourse(
@@ -302,7 +332,12 @@ export default function VerifyPage() {
   };
 
   const handleCloseClick = () => {
-    if (!isRandomDraft && !isRecommendDraft && !hasUnsavedChanges) {
+    if (
+      !isRandomDraft &&
+      !isRecommendDraft &&
+      !isCopyPreviewDraft &&
+      !hasUnsavedChanges
+    ) {
       // 내가 만든 코스 목록에서 진입하는 경우, close --> 대문 페이지로 이동
       navigate("/course");
       return;
@@ -462,6 +497,15 @@ export default function VerifyPage() {
             </Button>
           </div>
         ) : isRecommendDraft ? ( // 맞춤 추천으로부터 진입한 미저장 draft
+          <div className="flex w-[360px]">
+            <CTAButton
+              disabled={isSaving || isRerolling}
+              onClick={handleSaveAndGo}
+            >
+              코스 저장하기
+            </CTAButton>
+          </div>
+        ) : isCopyPreviewDraft ? (
           <div className="flex w-[360px]">
             <CTAButton
               disabled={isSaving || isRerolling}
