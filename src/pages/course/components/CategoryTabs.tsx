@@ -1,7 +1,7 @@
 // 장소/역 카테고리 (필터 탭)
 
 const categoryColorMap: Record<string, string> = {
-  active: "bg-primary-50 border border-white text-gray-10 font-semibold",
+  active: "bg-primary-50 border border-primary-50 text-white font-semibold",
   inactive: "border border-gray-50 text-gray-90",
 };
 
