@@ -107,6 +107,11 @@
   * {
     box-sizing: border-box;
   }
+
+  html,
+  body {
+    background-color: var(--color-gray-10);
+  }
   
   body {
     margin: 0;
