@@ -1,4 +1,5 @@
 import MapIcon from "@/assets/map-icon.svg?react";
+import MapCloseIcon from "@/assets/map-close.svg?react";
 import CourseCard from "@/pages/course/components/CourseCard";
 import CourseNumber from "@/pages/course/components/CourseNumber";
 import Header from "@/components/Header";
@@ -124,6 +125,7 @@ export default function VerifyPage() {
   const [pressedId, setPressedId] = useState<number | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [isMapOpen, setIsMapOpen] = useState(true);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(
     () => synced?.hasUnSavedChanged ?? false,
   ); // 순서/이름을 바꾸고 아직 저장 안 한 상태인지
@@ -418,33 +420,54 @@ export default function VerifyPage() {
             disabled={isRerolling}
           />
 
-          <div className="flex flex-col border h-[357px] border-gray-40 bg-white rounded-lg overflow-hidden">
-            <div className="flex items-center justify-between px-4 py-4">
+          {isMapOpen ? (
+            <div className="flex flex-col h-[357px] overflow-hidden rounded-lg border border-gray-40 bg-white">
+              <div className="flex items-center justify-between px-4 py-4">
+                <p className="text-title-02 font-semibold leading-[1.4] tracking-[-0.45px]">
+                  내 코스 지도
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setIsMapOpen(false)}
+                  aria-label="내 코스 지도 접기"
+                >
+                  <MapIcon className="h-6 w-6 cursor-pointer text-gray-70" />
+                </button>
+              </div>
+              <Map
+                center={
+                  places[0]
+                    ? { lat: places[0].yCoordinate, lng: places[0].xCoordinate }
+                    : { lat: 37.5665, lng: 126.978 }
+                }
+                level={6}
+                style={{ width: "100%", height: "300px" }}
+              >
+                {places.map((place, i) => (
+                  <CustomOverlayMap
+                    key={place.placeId}
+                    position={{ lat: place.yCoordinate, lng: place.xCoordinate }}
+                    yAnchor={1}
+                  >
+                    <MapMarker number={i + 1} />
+                  </CustomOverlayMap>
+                ))}
+              </Map>
+            </div>
+          ) : (
+            <div className="flex items-center justify-between rounded-lg border border-gray-40 bg-white p-4">
               <p className="text-title-02 font-semibold leading-[1.4] tracking-[-0.45px]">
                 내 코스 지도
               </p>
-              <MapIcon className="w-6 h-6 text-gray-70 cursor-pointer" />
+              <button
+                type="button"
+                onClick={() => setIsMapOpen(true)}
+                aria-label="내 코스 지도 펼치기"
+              >
+                <MapCloseIcon className="h-6 w-6 cursor-pointer text-gray-70" />
+              </button>
             </div>
-            <Map
-              center={
-                places[0]
-                  ? { lat: places[0].yCoordinate, lng: places[0].xCoordinate }
-                  : { lat: 37.5665, lng: 126.978 }
-              }
-              level={6}
-              style={{ width: "100%", height: "300px" }}
-            >
-              {places.map((place, i) => (
-                <CustomOverlayMap
-                  key={place.placeId}
-                  position={{ lat: place.yCoordinate, lng: place.xCoordinate }}
-                  yAnchor={1}
-                >
-                  <MapMarker number={i + 1} />
-                </CustomOverlayMap>
-              ))}
-            </Map>
-          </div>
+          )}
         </div>
       </section>
 
