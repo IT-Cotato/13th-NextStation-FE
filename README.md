@@ -42,7 +42,7 @@
         <strong>박다인</strong>
       </a>
       <br>
-      <small>13기 BE</small>
+      <small>13기 FE</small>
     </td>
    <td align="center" width="200dpx">
       <a href="https://github.com/Eunjin-n">
@@ -51,7 +51,7 @@
         <strong>박은진</strong>
       </a>
       <br>
-      <small>12기 BE</small>
+      <small>13기 FE</small>
     </td>
     <td align="center" width="200px">
       <a href="https://github.com/kdhye516">
