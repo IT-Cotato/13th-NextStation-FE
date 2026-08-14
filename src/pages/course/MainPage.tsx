@@ -1,4 +1,5 @@
 import Heart from "@/assets/heart.svg?react";
+import BaseLoading from "@/components/BaseLoading";
 import CourseEmpty from "@/assets/course-empty.svg?react";
 import SavedCourseCard from "./components/SavedCourseCard";
 import { useEffect, useState } from "react";
@@ -78,7 +79,7 @@ export default function MainPage() {
     },
   });
 
-  if (isCoursesLoading) return <p>로딩 중...</p>;
+  if (isCoursesLoading) return <BaseLoading />;
   if (initialLoadError) return <p>{initialLoadError}</p>;
   if (!courses) return null;
 
