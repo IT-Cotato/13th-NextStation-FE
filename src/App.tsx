@@ -7,6 +7,7 @@ import Toast from "@/pages/course/components/Toast";
 
 const SplashPage = lazy(() => import("@/pages/SplashPage"));
 const MainPage = lazy(() => import("@/pages/MainPage"));
+const ErrorPage = lazy(() => import("@/pages/ErrorPage"));
 
 // auth pages
 const FinishPage = lazy(() => import("@/pages/auth/FinishPage"));
@@ -97,25 +98,7 @@ class RouteErrorBoundary extends Component<
 
   render() {
     if (this.state.hasError) {
-      return (
-        <main className="flex h-dvh flex-col items-center justify-center gap-4 bg-gray-10 px-6 text-center">
-          <div className="flex flex-col gap-2">
-            <p className="text-title-02 font-semibold text-gray-100">
-              페이지를 불러오지 못했어요
-            </p>
-            <p className="text-body-02 text-gray-70">
-              네트워크 상태를 확인한 뒤 다시 시도해주세요.
-            </p>
-          </div>
-          <button
-            type="button"
-            onClick={() => window.location.reload()}
-            className="rounded-full bg-primary-50 px-5 py-3 text-body-01 text-white"
-          >
-            새로고침
-          </button>
-        </main>
-      );
+      return <ErrorPage />;
     }
 
     return this.props.children;
@@ -131,6 +114,7 @@ function App() {
             <Routes>
               <Route path="/" element={<SplashPage />} />
               <Route path="/main" element={<MainPage />} />
+              <Route path="/error" element={<ErrorPage />} />
 
               {/* auth */}
               <Route path="/auth" element={<WelcomePage />} />
