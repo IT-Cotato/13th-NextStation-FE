@@ -32,6 +32,40 @@
 ![Figma](https://img.shields.io/badge/-Figma-F24E1E?logo=figma&logoColor=white&labelColor=20232a)
 ![Vercel](https://img.shields.io/badge/-Vercel-000000?logo=vercel&logoColor=white&labelColor=20232a)
 
+## 팀원 소개
+<table align="center">
+  <tr>
+   <td align="center" width="200px">
+      <a href="https://github.com/canofmato">
+        <img src="https://github.com/canofmato.png" width="110px" style="border-radius: 50%;" alt="박다인 프로필"/><br />
+        <br />
+        <strong>박다인</strong>
+      </a>
+      <br>
+      <small>13기 BE</small>
+    </td>
+   <td align="center" width="200dpx">
+      <a href="https://github.com/Eunjin-n">
+        <img src="https://github.com/Eunjin-n.png" width="110px" style="border-radius: 50%;" alt="박은진 프로필"/><br />
+        <br />
+        <strong>박은진</strong>
+      </a>
+      <br>
+      <small>12기 BE</small>
+    </td>
+    <td align="center" width="200px">
+      <a href="https://github.com/kdhye516">
+        <img src="https://github.com/kdhye516.png" width="110px" style="border-radius: 50%;" alt="김다혜 프로필"/><br />
+        <br />
+        <strong>김다혜</strong>
+      </a>
+      <br>
+      <small>13기 FE</small>
+    </td>
+  </tr>
+</table>
+
+
 ## 프로젝트 구조
 ```bash
 src/
