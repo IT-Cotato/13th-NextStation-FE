@@ -105,7 +105,7 @@ export default function ExploreCourseItem({
           </div>
           <button
             type="button"
-            className="inline-flex items-center gap-0.5 border-0 bg-transparent p-0 text-caption text-gray-70"
+            className="inline-flex items-center gap-0.5 border-0 bg-transparent p-0 text-body-02 text-gray-70"
             aria-label={liked ? "좋아요 완료" : "좋아요"}
             aria-pressed={liked}
             disabled={isLikePending}
@@ -115,14 +115,14 @@ export default function ExploreCourseItem({
             }}
           >
             {liked ? (
-              <HeartFilled className="size-3" aria-hidden="true" />
+              <HeartFilled className="size-5" aria-hidden="true" />
             ) : (
-              <Heart className="size-3" aria-hidden="true" />
+              <Heart className="size-5" aria-hidden="true" />
             )}
             {displayedLikeCount}
           </button>
         </div>
-        <p className="text-body-01 font-semibold leading-[1.4] tracking-[-0.025em] text-gray-100">
+        <p className="text-body-0 font-semibold leading-[1.4] tracking-[-0.025em] text-gray-100">
           {name}
         </p>
         <div className="flex gap-1">
