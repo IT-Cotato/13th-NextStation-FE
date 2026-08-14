@@ -50,7 +50,7 @@ export interface CourseLine {
 
 export interface CourseResponseItem {
   // 백으로부터의 응답 형태
-  courseId: number;
+  journalId: number;
   name: string;
   stationId: number;
   stationName: string;
@@ -63,7 +63,7 @@ export interface CourseResponseItem {
 
 export interface Course {
   // 프론트에서의 변수 형태
-  courseId: number;
+  journalId: number;
   courseName: string;
   lineId: number;
   placeCount: number;
@@ -120,7 +120,7 @@ export async function getPlaceCourses(placeId: number): Promise<Course[]> {
   const json = await response.json();
 
   return (json.data ?? []).map((item: CourseResponseItem) => ({
-    courseId: item.courseId,
+    journalId: item.journalId,
     courseName: item.name,
     lineId: item.line.id,
     placeCount: item.placeCount,

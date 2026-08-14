@@ -219,26 +219,25 @@ export default function DetailPage() {
                 </button>
               </div>
             </div>
-            <div className="flex py-1 gap-2 items-center">
-              {contactNumber === null ? (
-                ""
-              ) : (
-                <>
-                  <Phone className="w-size-6" />
-                  <div className="flex gap-1">
-                    <span className="text-body-01 leading-[1.4] tracking-[-0.35px]">
-                      {contactNumber}
-                    </span>
-                    <button
-                      className="flex text-body-01 text-primary-70 leading-[1.4] tracking-[-0.35px]"
-                      onClick={() => handleCopy(contactNumber)}
-                    >
-                      복사
-                    </button>
-                  </div>
-                </>
-              )}
-            </div>
+
+            {contactNumber === null ? (
+              <></>
+            ) : (
+              <div className="flex py-1 gap-2 items-center">
+                <Phone className="w-size-6" />
+                <div className="flex gap-1">
+                  <span className="text-body-01 leading-[1.4] tracking-[-0.35px]">
+                    {contactNumber}
+                  </span>
+                  <button
+                    className="flex text-body-01 text-primary-70 leading-[1.4] tracking-[-0.35px]"
+                    onClick={() => handleCopy(contactNumber)}
+                  >
+                    복사
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
           <button
             className="flex items-center justify-end gap-0.5 text-body-02 font-semibold text-gray-60 leading-none tracking-[-0.3px]"
@@ -308,10 +307,10 @@ export default function DetailPage() {
               <div className="flex w-full overflow-x-auto overflow-y-hidden list-none font-semibold [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden gap-3">
                 {placeCourses.map((placeCourse) => (
                   <button
-                    key={placeCourse.courseId}
+                    key={placeCourse.journalId}
                     type="button"
                     className="flex shrink-0 border-0 bg-transparent p-0 text-left"
-                    onClick={() => navigate(`/explore/${placeCourse.courseId}`)}
+                    onClick={() => navigate(`/course/${placeCourse.journalId}`)}
                   >
                     <CoursePreviewCard
                       line={placeCourse.lineId}
