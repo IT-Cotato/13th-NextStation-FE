@@ -1,4 +1,5 @@
 import StampEmpty from "@/assets/stamp-empty.svg?react";
+import BaseLoading from "@/components/BaseLoading";
 import { STATION_STAMP_MAP } from "@/constants/stationStampMap";
 import {
   type Stamp,
@@ -110,7 +111,7 @@ export default function StampListView({
     navigate("/mypage");
   };
 
-  if (isStampsLoading) return <p>로딩 중...</p>;
+  if (isStampsLoading) return <BaseLoading />;
   if (stampsError) return <p>{stampsError}</p>;
   if (!stamps) return null;
 

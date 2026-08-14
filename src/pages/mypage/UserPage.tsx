@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useInView } from "react-intersection-observer";
 import { useNavigate, useParams } from "react-router-dom";
 import * as motion from "motion/react-client";
+import BaseLoading from "@/components/BaseLoading";
 import PublicJournalEmpty from "@/assets/public-journal-empty.svg?react";
 import ProfileDefault from "@/assets/profile-default.svg?react";
 import {
@@ -106,7 +107,7 @@ export default function UserPage() {
   if (!hasValidMemberId) {
     return <p>올바르지 않은 프로필입니다.</p>;
   }
-  if (isLoading) return <p>로딩 중...</p>;
+  if (isLoading) return <BaseLoading />;
   if (errorMessage) return <p>{errorMessage}</p>;
   if (!profile) return null;
 

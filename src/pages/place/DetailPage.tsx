@@ -1,4 +1,5 @@
 import Header from "@/components/Header";
+import BaseLoading from "@/components/BaseLoading";
 import Marker from "@/assets/marker.svg?react";
 import Phone from "@/assets/phone.svg?react";
 import Link from "@/assets/link.svg?react";
@@ -81,10 +82,10 @@ export default function DetailPage() {
     </main>
   );
 
-  if (isPlaceLoading) return fallback("로딩 중...");
+  if (isPlaceLoading) return <BaseLoading />;
   if (placeError) return fallback(placeError);
   if (!place) return null;
-  if (isLoggedIn && isCoursesLoading) return fallback("로딩 중...");
+  if (isLoggedIn && isCoursesLoading) return <BaseLoading />;
   if (isLoggedIn && coursesError) return fallback(coursesError);
 
   const slideImages = place.images;

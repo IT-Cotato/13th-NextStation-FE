@@ -1,4 +1,5 @@
 import Header from "@/components/Header";
+import BaseLoading from "@/components/BaseLoading";
 import ReviewCard from "./components/ReviewCard";
 import { useEffect, useState } from "react";
 import Empty from "@/assets/empty.svg?react";
@@ -97,7 +98,7 @@ export default function ReviewListPage() {
     },
   });
 
-  if (isReviewsLoading) return <p>로딩 중...</p>;
+  if (isReviewsLoading) return <BaseLoading />;
   if (reviewsError) return <p>{reviewsError}</p>;
   if (!reviews) return null;
 

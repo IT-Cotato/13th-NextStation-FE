@@ -1,5 +1,6 @@
 import MapIcon from "@/assets/map-icon.svg?react";
 import MapCloseIcon from "@/assets/map-close.svg?react";
+import BaseLoading from "@/components/BaseLoading";
 import CourseCard from "@/pages/course/components/CourseCard";
 import CourseNumber from "@/pages/course/components/CourseNumber";
 import Header from "@/components/Header";
@@ -320,20 +321,18 @@ export default function VerifyPage() {
   };
 
   if (loading || error) {
-    return (
-      <main className="flex h-dvh items-center justify-center bg-gray-10 text-body-01 text-gray-70">
-        {error ? "지도를 불러오지 못했어요." : "지도를 불러오는 중..."}
-      </main>
-    );
+    if (error) {
+      return (
+        <main className="flex h-dvh items-center justify-center bg-gray-10 text-body-01 text-gray-70">
+          지도를 불러오지 못했어요.
+        </main>
+      );
+    }
+
+    return <BaseLoading />;
   }
 
-  if (isPlacesLoading) {
-    return (
-      <main className="flex h-dvh items-center justify-center bg-gray-10 text-body-01 text-gray-70">
-        로딩 중...
-      </main>
-    );
-  }
+  if (isPlacesLoading) return <BaseLoading />;
   if (placesError) {
     return (
       <main className="flex h-dvh items-center justify-center bg-gray-10 text-body-01 text-gray-70">
