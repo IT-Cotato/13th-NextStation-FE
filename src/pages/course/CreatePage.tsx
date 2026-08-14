@@ -1,4 +1,5 @@
 import Header from "@/components/Header";
+import BaseLoading from "@/components/BaseLoading";
 import StationTitle from "@/components/StationTitle";
 import type { SubwayLine } from "@/types/subway";
 import SubwayLineChip from "@/components/SubwayLineChip";
@@ -94,13 +95,7 @@ export default function CreatePage() {
     stationId,
   ]);
 
-  if (isStationLoading) {
-    return (
-      <main className="flex h-dvh items-center justify-center bg-gray-10 text-body-01 text-gray-70">
-        로딩 중...
-      </main>
-    );
-  }
+  if (isStationLoading) return <BaseLoading />;
   if (stationError) {
     return (
       <main className="flex h-dvh items-center justify-center bg-gray-10 text-body-01 text-gray-70">

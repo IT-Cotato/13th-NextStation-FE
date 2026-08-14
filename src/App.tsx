@@ -1,5 +1,6 @@
 import { Component, lazy, Suspense, type ReactNode } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+import BaseLoading from "@/components/BaseLoading";
 import { LogDraftProvider } from "@/pages/course/contexts/LogDraftContext";
 import "react-toastify/dist/ReactToastify.css";
 import Toast from "@/pages/course/components/Toast";
@@ -63,11 +64,7 @@ const DetailPage = lazy(() => import("./pages/place/DetailPage"));
 const ReviewListPage = lazy(() => import("./pages/place/ReviewListPage"));
 
 function RouteFallback() {
-  return (
-    <main className="flex h-dvh items-center justify-center bg-gray-10 text-body-01 text-gray-70">
-      로딩 중...
-    </main>
-  );
+  return <BaseLoading />;
 }
 
 // mypage
