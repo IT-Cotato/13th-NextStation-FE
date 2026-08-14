@@ -5,7 +5,7 @@ export interface Review {
   writerNickname: string;
   writerProfileImageUrl: string;
   content: string;
-  imageUrls: string[];
+  imageUrl: string;
   likeCount: number;
   isLiked: boolean;
   createdAt: string;
