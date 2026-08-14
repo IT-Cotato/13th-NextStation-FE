@@ -138,7 +138,7 @@ export default function ReviewListPage() {
         <Header showBack title={`리뷰 ${totalCount}개`} />
       )}
 
-      <section>
+      <section className="flex flex-1 flex-col">
         {/* dropdown */}
         <section className="flex justify-center">
           <div className="flex justify-end w-[360px]">
@@ -154,7 +154,9 @@ export default function ReviewListPage() {
         </section>
 
         {/* list */}
-        <section className="flex flex-1 justify-center items-center pt-4">
+        <section
+          className={`flex flex-1 justify-center ${isEmpty ? "items-start pt-[200px]" : "pt-4"}`}
+        >
           {isEmpty ? (
             <div className="flex flex-col items-center gap-[34px]">
               <Empty />
