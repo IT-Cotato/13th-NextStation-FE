@@ -518,7 +518,7 @@ export default function VerifyPage() {
       </section>
 
       {/* 하단 버튼 */}
-      <section className="flex justify-center">
+      <section className="flex justify-center pb-[calc(var(--safe-bottom)+10px)]">
         {isRandomDraft ? ( // 랜덤 뽑기로부터 진입한 미저장 draft
           <div className="flex w-[360px] justify-between">
             <Button
