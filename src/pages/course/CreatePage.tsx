@@ -230,7 +230,7 @@ export default function CreatePage() {
       </section>
 
       {/* 하단 버튼 */}
-      <section className="flex flex-col px-[15px] justify-center items-center pt-3">
+      <section className="flex flex-col items-center justify-center px-[15px] pt-3 pb-[calc(var(--safe-bottom)+10px)]">
         <CTAButton
           disabled={isDisabled ? true : false}
           variant="primary"
