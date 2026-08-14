@@ -30,17 +30,13 @@ export default function CoursePreviewCard({
         {isThumbnailEmpty ? (
           <CardBG className="absolute inset-0 h-full w-full" />
         ) : (
-          <div
-            role="img"
-            aria-label={name}
-            className="absolute inset-0 h-full w-full rounded-lg text-gray-100"
-            style={{
-              background: `linear-gradient(180deg, rgba(255, 255, 255, 0.00) 50%, #555555 100%), url(${imageUrl}) lightgray 50% / cover no-repeat`,
-            }}
+          <img
+            src={imageUrl}
+            alt={name}
+            className="absolute inset-0 h-full w-full rounded-lg object-cover"
           />
         )}
-
-        <div className="absolute rounded-lg inset-0 bg-gradient-to-b from-transparent from-40% to-white to-100%" />
+        <div className="absolute inset-0 rounded-lg bg-gradient-to-b from-transparent from-40% to-[#555555]" />
 
         <div className="relative flex flex-col h-full pt-[15px] pl-[16px] pb-[18px] pr-[25px] justify-between">
           {/* 호선 뱃지 */}
