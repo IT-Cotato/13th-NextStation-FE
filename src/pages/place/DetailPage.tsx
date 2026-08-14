@@ -250,7 +250,9 @@ export default function DetailPage() {
       </section>
 
       {/* review */}
-      <section className="flex justify-center pt-7">
+      <section
+        className={`flex justify-center pt-7 ${!isLoggedIn ? "pb-[calc(var(--safe-bottom)+10px)]" : ""}`}
+      >
         <div className="flex flex-col w-[360px] gap-3">
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-0.5">
