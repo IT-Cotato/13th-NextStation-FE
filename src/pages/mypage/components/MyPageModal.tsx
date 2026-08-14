@@ -28,7 +28,7 @@ export default function MyPageModal({
         className="flex relative flex-col gap-8 w-[340px] items-center justify-center bg-white px-5 pt-10 pb-5 rounded-lg"
       >
         <div className="flex flex-col gap-2 justify-center">
-          <p className="text-center text-gray-100 text-headline font-semibold leading-[1.4] tracking-[-0.6px] whitespace-pre-line">
+          <p className="text-center text-gray-100 text-title-01 font-semibold leading-[1.4] tracking-[-0.6px] whitespace-pre-line">
             {content}
           </p>
           {subtitle && (

@@ -179,7 +179,7 @@ export default function ReviewListPage() {
                   writerNickname={review.writerNickname}
                   writerProfileImageUrl={review.writerProfileImageUrl}
                   content={review.content}
-                  imageUrl={review.imageUrls?.[0] ?? null}
+                  imageUrl={review.imageUrl}
                   likeCount={review.likeCount}
                   isLiked={review.isLiked}
                   onToggleLike={() => handleToggleLike(review)}

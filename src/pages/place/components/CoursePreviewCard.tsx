@@ -7,7 +7,6 @@ export default function CoursePreviewCard({
   name,
   placeCount,
   travelDuration,
-
   imageUrl,
 }: {
   line: number;

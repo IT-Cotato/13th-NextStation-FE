@@ -1,7 +1,7 @@
 // 장소/역 카테고리 (필터 탭)
 
 const categoryColorMap: Record<string, string> = {
-  active: "bg-primary-50 border border-white text-gray-10 font-semibold",
+  active: "bg-primary-50 border border-primary-50 text-white font-semibold",
   inactive: "border border-gray-50 text-gray-90",
 };
 
@@ -25,7 +25,7 @@ export default function CategoryTabs({
         return (
           <label
             key={cat}
-            className={`shrink-0 px-4 py-2 text-body-01 leading-[1.4] tracking-[-0.35px] rounded-lg whitespace-nowrap ${currentClass}`}
+            className={`items-center justify-center text-center shrink-0 px-4 py-2 text-body-01 leading-[1.4] tracking-[-0.35px] rounded-lg whitespace-nowrap ${currentClass}`}
           >
             {" "}
             <input
