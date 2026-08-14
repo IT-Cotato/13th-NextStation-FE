@@ -241,7 +241,7 @@ export default function DetailPage() {
             </div>
           </div>
           <button
-            className="flex justify-end gap-0.5 text-body-02 font-semibold text-gray-60 leading-none tracking-[-0.3px]"
+            className="flex items-center justify-end gap-0.5 text-body-02 font-semibold text-gray-60 leading-none tracking-[-0.3px]"
             onClick={handleNavigate}
           >
             카카오맵에서 확인하기
