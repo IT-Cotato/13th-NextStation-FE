@@ -393,58 +393,60 @@ export default function DetailPage() {
         />
       )}
 
-      <header className="flex items-end justify-between px-[15px] pb-[10px]">
-        <button
-          type="button"
-          onClick={handleBack}
-          aria-label="이전"
-          className="grid size-6 place-items-center"
-        >
-          <BackIcon className="size-6" aria-hidden="true" />
-        </button>
-        {!course.isMine ? (
+      <header className="flex shrink-0 h-[50px] items-center px-[15px]">
+        <div className="flex w-full items-center justify-between">
           <button
             type="button"
-            onClick={handleToggleSave}
-            aria-label={saved ? "저장 취소" : "저장"}
-            aria-pressed={saved}
-            disabled={isSaving}
-            className="grid size-6 place-items-center disabled:opacity-50"
+            onClick={handleBack}
+            aria-label="이전"
+            className="grid size-6 place-items-center"
           >
-            {saved ? (
-              <HeartFilledIcon className="size-6" aria-hidden="true" />
-            ) : (
-              <HeartIcon className="size-6" aria-hidden="true" />
-            )}
+            <BackIcon className="size-6" aria-hidden="true" />
           </button>
-        ) : isEditMode ? (
-          <button
-            className="text-subtitle font-semibold leading-[1.4] tracking-[-0.4px] text-gray-90 disabled:opacity-50"
-            onClick={handleJournalSave}
-            disabled={isSavingJournal}
-          >
-            완료
-          </button>
-        ) : (
-          <div className="relative">
+          {!course.isMine ? (
             <button
               type="button"
-              onClick={() => setIsJournalSettingOpen((prev) => !prev)}
-              aria-label="더보기"
-              className="flex items-center"
+              onClick={handleToggleSave}
+              aria-label={saved ? "저장 취소" : "저장"}
+              aria-pressed={saved}
+              disabled={isSaving}
+              className="grid size-6 place-items-center disabled:opacity-50"
             >
-              <More className="size-6" />
+              {saved ? (
+                <HeartFilledIcon className="size-6" aria-hidden="true" />
+              ) : (
+                <HeartIcon className="size-6" aria-hidden="true" />
+              )}
             </button>
-            {isJournalSettingOpen && (
-              <div className="absolute right-0 top-full z-10 mt-2">
-                <JournalSetting
-                  handleEdit={handleEdit}
-                  handleDelete={handleDelete}
-                />
-              </div>
-            )}
-          </div>
-        )}
+          ) : isEditMode ? (
+            <button
+              className="text-subtitle font-semibold leading-[1.4] tracking-[-0.4px] text-gray-90 disabled:opacity-50"
+              onClick={handleJournalSave}
+              disabled={isSavingJournal}
+            >
+              완료
+            </button>
+          ) : (
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => setIsJournalSettingOpen((prev) => !prev)}
+                aria-label="더보기"
+                className="flex items-center"
+              >
+                <More className="size-6" />
+              </button>
+              {isJournalSettingOpen && (
+                <div className="absolute right-0 top-full z-10 mt-2">
+                  <JournalSetting
+                    handleEdit={handleEdit}
+                    handleDelete={handleDelete}
+                  />
+                </div>
+              )}
+            </div>
+          )}
+        </div>
       </header>
 
       <section className="flex flex-col gap-2 px-[15px] text-center">
