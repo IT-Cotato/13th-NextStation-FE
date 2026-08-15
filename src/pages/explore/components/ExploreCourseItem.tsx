@@ -77,7 +77,7 @@ export default function ExploreCourseItem({
         role={onClick ? "link" : undefined}
         tabIndex={onClick ? 0 : undefined}
       >
-      <div className="grid h-24 w-[90px] shrink-0 overflow-hidden rounded-lg bg-primary-30">
+      <div className="grid h-24 w-[90px] shrink-0 overflow-hidden rounded-md bg-primary-30">
         {imageUrl ? (
           <img
             className="col-start-1 row-start-1 size-full object-cover"
