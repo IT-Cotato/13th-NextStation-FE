@@ -58,7 +58,7 @@ export default function ExploreCourseCard({
 
   return (
     <article
-      className="relative flex h-[200px] w-36 shrink-0 flex-col justify-between overflow-hidden rounded-lg px-4 pb-3 pt-[13px] shadow-[0_0_20px_rgb(118_118_118/20%)]"
+      className="relative flex h-[200px] w-36 shrink-0 flex-col justify-between overflow-hidden rounded-lg px-4 pb-3 pt-[13px] bg-secondary-20 shadow-[0_0_20px_rgb(118_118_118/20%)]"
       style={
         backgroundImage
           ? {
