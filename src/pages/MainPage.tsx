@@ -15,8 +15,6 @@ function MainPage() {
 
   return (
     <main className="relative flex flex-col h-dvh overflow-hidden bg-gray-10 gap-8 pt-[calc(var(--safe-top)+12px)]">
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-[var(--safe-top)] bg-gray-10" />
-
       {/* 프로필 아이콘 */}
       <div className='relative flex justify-end px-5'>
         <ProfileIcon isLoggedIn={isLoggedIn} />
