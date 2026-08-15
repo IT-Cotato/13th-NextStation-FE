@@ -26,7 +26,7 @@ export default function CoursePreviewCard({
 
   return (
     <div className="flex justify-center">
-      <div className="relative w-[144px] h-[200px] rounded-lg overflow-hidden shadow-[0_0_20px_0_rgba(118,118,118,0.2)]">
+      <div className="relative w-[144px] h-[200px] rounded-lg overflow-hidden">
         {isThumbnailEmpty ? (
           <CardBG className="absolute inset-0 h-full w-full" />
         ) : (
