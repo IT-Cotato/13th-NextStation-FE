@@ -27,7 +27,9 @@ import {
 } from "@/api/recommendation";
 import JournalSetting from "./components/JournalSetting";
 import ConfirmModal from "@/components/ConfirmModal";
-import JournalEditForm from "./components/JournalEditForm";
+import JournalEditForm, {
+  type JournalEditPlaceValue,
+} from "./components/JournalEditForm";
 
 const isSubwayLine = (value: number): value is SubwayLine =>
   Number.isInteger(value) && value >= 1 && value <= 9;
@@ -127,6 +129,9 @@ export default function DetailPage() {
   const [editTime, setEditTime] = useState<string | null>(null);
   const [editDate, setEditDate] = useState<string | null>(null);
   const [editPublic, setEditPublic] = useState<string | null>(null);
+  const [editPhotos, setEditPhotos] = useState<string[]>([]);
+  const [editReview, setEditReview] = useState("");
+  const [editPlaces, setEditPlaces] = useState<JournalEditPlaceValue[]>([]);
   const [isSavingJournal, setIsSavingJournal] = useState(false);
   const [isLeaveConfirmModalOpen, setIsLeaveConfirmModalOpen] = useState(false);
 
@@ -245,6 +250,16 @@ export default function DetailPage() {
     setEditTime(course.duration);
     setEditDate(course.visitedAt);
     setEditPublic(course.isPublic ? "전체 공개" : "나만 보기");
+    setEditPhotos(course.images.map((image) => image.src));
+    setEditReview(course.review);
+    setEditPlaces(
+      course.places.map((place) => ({
+        id: place.id,
+        name: place.name,
+        description: place.description,
+        imageUrl: place.imageUrl ?? null,
+      })),
+    );
     setIsJournalSettingOpen(false);
     setIsEditMode(true);
   };
@@ -267,7 +282,7 @@ export default function DetailPage() {
   };
 
   const handleJournalSave = async () => {
-    if (isSavingJournal) return;
+    if (isSavingJournal || !editPublic) return;
 
     const travelDuration = editTime
       ? travelDurationByLabel[editTime]
@@ -282,14 +297,20 @@ export default function DetailPage() {
         journalId,
         body: {
           title: editTitle,
-          overallReview: course.review,
+          overallReview: editReview,
           traveledAt: toApiDate(traveledDate),
           travelDuration,
           isPublic,
-          placeReviews: course.places.map((place) => ({
+          journalPhotos: editPhotos.map((image, index) => ({
+            imageAction: "UPDATE",
+            image,
+            isRepresentative: index === 0,
+          })),
+          placeReviews: editPlaces.map((place) => ({
             placeId: place.id,
             review: place.description,
-            imageAction: "KEEP",
+            imageAction: place.imageUrl ? "UPDATE" : "DELETE",
+            ...(place.imageUrl ? { image: place.imageUrl } : {}),
           })),
         },
       });
@@ -301,6 +322,24 @@ export default function DetailPage() {
               journalTitle: editTitle,
               duration: editTime ?? current.duration,
               visitedAt: traveledDate,
+              review: editReview,
+              isPublic,
+              images: editPhotos.map((src, index) => ({
+                id: index + 1,
+                src,
+                alt: `${editTitle} 여행 사진 ${index + 1}`,
+              })),
+              places: current.places.map((place, index) => {
+                const nextPlace = editPlaces.find((item) => item.id === place.id);
+                return nextPlace
+                  ? {
+                      ...place,
+                      description: nextPlace.description,
+                      imageUrl: nextPlace.imageUrl,
+                      imagePosition: index % 2 === 0 ? "left" : "right",
+                    }
+                  : place;
+              }),
             }
           : current,
       );
@@ -322,7 +361,17 @@ export default function DetailPage() {
     (editTitle !== course.journalTitle ||
       editTime !== course.duration ||
       editDate !== course.visitedAt ||
-      editPublic !== (course.isPublic ? "전체 공개" : "나만 보기"));
+      editPublic !== (course.isPublic ? "전체 공개" : "나만 보기") ||
+      editReview !== course.review ||
+      editPhotos.length !== course.images.length ||
+      editPhotos.some((photo, index) => photo !== course.images[index]?.src) ||
+      editPlaces.some((place) => {
+        const currentPlace = course.places.find((item) => item.id === place.id);
+        return (
+          currentPlace?.description !== place.description ||
+          (currentPlace?.imageUrl ?? null) !== place.imageUrl
+        );
+      }));
 
   // 여행일지 목록에서 들어온 경우에 뒤로 가면 여행일지 탭이 보이도록 설정
   const navigateBack = () => {
@@ -469,6 +518,18 @@ export default function DetailPage() {
             publicOptions={publicOptions}
             selectedPublic={editPublic}
             onPublicChange={setEditPublic}
+            photos={editPhotos}
+            onPhotosChange={setEditPhotos}
+            review={editReview}
+            onReviewChange={setEditReview}
+            places={editPlaces}
+            onPlaceChange={(placeId, updates) =>
+              setEditPlaces((current) =>
+                current.map((place) =>
+                  place.id === placeId ? { ...place, ...updates } : place,
+                ),
+              )
+            }
           />
         ) : (
           <div className="flex flex-col">
@@ -501,7 +562,7 @@ export default function DetailPage() {
         )}
       </section>
 
-      {!isImageEmpty && (
+      {!isEditMode && !isImageEmpty && (
         <section
           className="h-[292px] w-full shrink-0 touch-pan-x overflow-x-auto overflow-y-hidden overscroll-x-contain [scrollbar-width:none]"
           aria-label="코스 사진"
@@ -530,14 +591,17 @@ export default function DetailPage() {
         </section>
       )}
 
-      <section className="flex items-start px-[15px] pb-7 pt-0">
+      {!isEditMode && (
+        <section className="flex items-start px-[15px] pb-7 pt-0">
         <StarOne className="size-[68px] shrink-0" aria-hidden="true" />
         <p className="-ml-[47px] mt-12 whitespace-pre-line px-[21px] text-body-01 leading-[1.8] tracking-[-0.025em] break-keep z-10">
           {course.review}
         </p>
-      </section>
+        </section>
+      )}
 
-      <section className="relative isolate border-b-[6px] border-gray-20 pb-9">
+      {!isEditMode && (
+        <section className="relative isolate border-b-[6px] border-gray-20 pb-9">
         <h2 className="px-8 py-2 text-title-02 font-semibold leading-[1.4] tracking-[-0.025em]">
           다녀온 곳
         </h2>
@@ -558,9 +622,11 @@ export default function DetailPage() {
         >
           <StarThree className="absolute left-[3.69%] top-[2.59%] h-[90.46%] w-[92.62%]" />
         </div>
-      </section>
+        </section>
+      )}
 
-      <div className="flex min-h-[97px] flex-wrap gap-2 px-[15px] py-8">
+      {!isEditMode && (
+        <div className="flex min-h-[97px] flex-wrap gap-2 px-[15px] py-8">
         <span className="whitespace-nowrap rounded-lg bg-gray-30 px-3 py-2 text-body-02 leading-[1.4] tracking-[-0.3px] text-gray-70">
           여행시간 {course.duration}
         </span>
@@ -572,7 +638,8 @@ export default function DetailPage() {
             #{TRAVEL_STYLE_LABELS[tag as RecommendationTravelStyle] ?? tag}
           </span>
         ))}
-      </div>
+        </div>
+      )}
 
       {!course.isMine && (
         <footer className="h-[125px] px-[15px] pb-[50px] pt-[15px]">
