@@ -248,7 +248,7 @@ export async function getUnwrittenJournals(): Promise<UnwrittenJournals> {
 export interface PatchJournalPhotoRequest {
   photoId?: number; // KEEP/DELETE는 필수, UPDATE(신규 사진)는 없음
   imageAction: "KEEP" | "DELETE" | "UPDATE";
-  image?: string; // UPDATE일 때만 필요
+  imageUrl?: string; // UPDATE일 때만 필요
   isRepresentative?: boolean;
 }
 
@@ -256,7 +256,7 @@ export interface PatchJournalPlaceReviewRequest {
   placeId: number;
   review: string;
   imageAction: "KEEP" | "DELETE" | "UPDATE";
-  image?: string; // UPDATE일 때만 필요, KEEP/DELETE는 불필요
+  imageUrl?: string; // UPDATE일 때만 필요, KEEP/DELETE는 불필요
 }
 
 export interface PatchJournalRequest {

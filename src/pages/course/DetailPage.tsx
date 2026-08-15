@@ -301,16 +301,16 @@ export default function DetailPage() {
           traveledAt: toApiDate(traveledDate),
           travelDuration,
           isPublic,
-          journalPhotos: editPhotos.map((image, index) => ({
+          journalPhotos: editPhotos.map((imageUrl, index) => ({
             imageAction: "UPDATE",
-            image,
+            imageUrl,
             isRepresentative: index === 0,
           })),
           placeReviews: editPlaces.map((place) => ({
             placeId: place.id,
             review: place.description,
             imageAction: place.imageUrl ? "UPDATE" : "DELETE",
-            ...(place.imageUrl ? { image: place.imageUrl } : {}),
+            ...(place.imageUrl ? { imageUrl: place.imageUrl } : {}),
           })),
         },
       });
