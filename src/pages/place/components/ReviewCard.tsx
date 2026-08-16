@@ -80,7 +80,7 @@ export default function ReviewCard({
           </p>
           {/* image */}
           {!isImageEmpty && (
-            <div className="flex w-[90px] h-[67px] rounded-md overflow-hidden">
+            <div className="flex w-[150px] h-[112px] rounded-md overflow-hidden">
               <img src={imageUrl} className="w-full h-full object-cover" />
             </div>
           )}
