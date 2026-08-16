@@ -87,7 +87,7 @@ export default function LikeCard({
           </p>
         </div>
         <p
-          className={`text-body-01 font-semibold ${textColorClass} leading-[1.4] tracking-[-0.025em]`}
+          className={`text-body-01 font-semibold ${textColorClass} leading-[1.4] tracking-[-0.025em] break-keep`}
         >
           {courseName}
         </p>
