@@ -1,7 +1,7 @@
 import CardBG from "@/assets/card-default.svg?react";
 import LineBadge from "@/components/LineBadge";
 import Heart from "@/assets/heart-active.svg?react";
-import WhiteHeart from '@/assets/white-heart-filled.svg?react';
+import WhiteHeart from "@/assets/white-heart-filled.svg?react";
 import type { SubwayLine } from "@/types/subway";
 
 export default function JournalPreviewCard({
@@ -40,14 +40,18 @@ export default function JournalPreviewCard({
         {/* station info */}
         <div className="flex gap-1 z-10 items-center">
           {lineId !== undefined && <LineBadge line={lineId as SubwayLine} />}
-          <span className={`text-body-02 justify-center ${textColorClass} leading-[1.4] tracking-[-0.3px]`}>
+          <span
+            className={`text-body-02 justify-center ${textColorClass} leading-[1.4] tracking-[-0.3px] break-keep`}
+          >
             {stationName}
           </span>
         </div>
 
         {/* journalName */}
         <div className="flex z-10">
-          <p className={`flex text-start text-body-01 font-semibold ${textColorClass} leading-[1.4] tracking-[-0.35px] line-clamp-2 break-keep`}>
+          <p
+            className={`flex text-start text-body-01 font-semibold ${textColorClass} leading-[1.4] tracking-[-0.35px] line-clamp-2 break-keep`}
+          >
             {journalTitle}
           </p>
         </div>
@@ -55,8 +59,10 @@ export default function JournalPreviewCard({
         {/* heart */}
         {likeCount !== undefined && (
           <div className="flex z-10 items-center">
-            <HeartIcon className="size-3"/>
-            <span className={`text-caption ${textColorClass} leading-none tracking-[-0.25px]`}>
+            <HeartIcon className="size-3" />
+            <span
+              className={`text-caption ${textColorClass} leading-none tracking-[-0.25px]`}
+            >
               {likeCount}
             </span>
           </div>
