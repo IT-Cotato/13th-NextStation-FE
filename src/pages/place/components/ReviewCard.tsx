@@ -75,7 +75,7 @@ export default function ReviewCard({
       {/* place info */}
       <section className="flex w-full">
         <div className="flex flex-col gap-4">
-          <p className="flex text-body-01 text-gray-70 leading-[1.4] tracking-[-0.35px]">
+          <p className="flex text-body-01 text-gray-70 leading-[1.4] tracking-[-0.35px] break-keep">
             {content}
           </p>
           {/* image */}
