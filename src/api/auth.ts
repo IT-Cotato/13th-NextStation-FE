@@ -296,6 +296,7 @@ interface ProfileResponse {
   memberId: number;
   nickname: string;
   status: "ACTIVE";
+  accessToken: string;
 }
 
 interface PresignedImageResponse {
@@ -363,6 +364,7 @@ export function setupProfile(
 ) {
   return authRequest<ProfileResponse>("/api/v1/auth/profile", {
     method: "POST",
+    credentials: "include",
     headers: {
       Authorization: `Bearer ${signupToken}`,
     },
