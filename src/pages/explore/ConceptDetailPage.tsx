@@ -14,7 +14,7 @@ import Header from "@/components/Header";
 import ErrorPage from "@/pages/ErrorPage";
 import ExploreCourseItem from "./components/ExploreCourseItem";
 import ExploreDropdown from "./components/ExploreDropdown";
-import { getConceptTourDesign } from "./data/conceptTours";
+import { getConceptTourDesignByData } from "./data/conceptTours";
 
 type ExploreSortOption = "인기순" | "최신순";
 
@@ -120,7 +120,7 @@ export default function ConceptDetailPage() {
       });
   }, [hasNext, inView, nextCursor, sort, tour]);
 
-  const design = tour ? getConceptTourDesign(tour.conceptTourId) : null;
+  const design = tour ? getConceptTourDesignByData(tour) : null;
 
   if ((isLoading && !tour) || (tour && courses === null)) {
     return <BaseLoading />;
@@ -170,7 +170,7 @@ export default function ConceptDetailPage() {
           </div>
 
           <section
-            className="flex flex-col gap-3 px-[15px] pb-4 pt-4"
+            className="flex flex-col gap-3 px-[15px] pb-5 pt-4"
             aria-label={`${tour.name} ${sort}`}
           >
             {courses !== null && courses.length === 0 && (
