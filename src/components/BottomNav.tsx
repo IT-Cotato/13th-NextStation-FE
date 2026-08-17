@@ -26,7 +26,7 @@ export default function BottomNav({ mode, activeTab = 'save' }: BottomNavProps) 
 
   return (
     <>
-      <nav className="absolute left-1/2 bottom-[calc(var(--safe-bottom)+10px)] z-50 -translate-x-1/2">
+      <nav className="absolute left-1/2 bottom-[calc(var(--safe-bottom)+0px)] z-50 -translate-x-1/2">
         {mode === 'main' ? (
         <div className={`${glassPillClassName} gap-1 p-1`}>
           <div className="pointer-events-none absolute inset-x-3 top-1 h-[16px] rounded-full bg-white/25 blur-md" />

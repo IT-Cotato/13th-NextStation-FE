@@ -1,3 +1,4 @@
+import type { ConceptTour } from "@/api/explore";
 import AfterWorkArtwork from "@/assets/explore/concept-after-work.svg?react";
 import BooksArtwork from "@/assets/explore/concept-books.svg?react";
 import CultureArtwork from "@/assets/explore/concept-culture.svg?react";
@@ -11,6 +12,18 @@ import FeaturedStationeryArtwork from "@/assets/explore/featured-concept-station
 import FeaturedValueArtwork from "@/assets/explore/featured-concept-value.svg?react";
 
 const DEFAULT_COURSE_COUNT = 0;
+
+export interface ConceptTourDesign {
+  conceptTourId: number;
+  slug: string;
+  title: string;
+  description: string;
+  detailDescription: string;
+  Artwork: typeof StationeryArtwork;
+  artworkClassName: string;
+  detailArtworkClassName: string;
+  courseCount: number;
+}
 
 export const conceptTours = [
   {
@@ -102,7 +115,7 @@ export const conceptTours = [
     detailArtworkClassName: "h-[126px] w-[124px]",
     courseCount: DEFAULT_COURSE_COUNT,
   },
-] as const;
+] as const satisfies readonly ConceptTourDesign[];
 
 export const featuredConceptTours = [
   {
@@ -123,10 +136,98 @@ export const featuredConceptTours = [
     Artwork: FeaturedCultureArtwork,
     artworkClassName: "h-20 w-[97px]",
   },
-] as const;
+] as const satisfies readonly ConceptTourDesign[];
 
 export function getConceptTourDesign(conceptTourId: number) {
   return (
     conceptTours.find((tour) => tour.conceptTourId === conceptTourId) ?? null
   );
+}
+
+function normalizeConceptText(value: string) {
+  return value.replace(/\s+/g, "").trim().toLowerCase();
+}
+
+function findMatchingConceptTour(
+  design: ConceptTourDesign,
+  tours: ConceptTour[],
+  usedIds: Set<number>,
+) {
+  const byId = tours.find(
+    (tour) => !usedIds.has(tour.conceptTourId) && tour.conceptTourId === design.conceptTourId,
+  );
+  if (byId) return byId;
+
+  const designNames = new Set([
+    normalizeConceptText(design.title),
+    normalizeConceptText(design.description),
+    normalizeConceptText(design.detailDescription),
+  ]);
+
+  return (
+    tours.find((tour) => {
+      if (usedIds.has(tour.conceptTourId)) return false;
+
+      const tourTexts = [
+        normalizeConceptText(tour.name),
+        normalizeConceptText(tour.description),
+      ];
+
+      return tourTexts.some((text) => designNames.has(text));
+    }) ?? null
+  );
+}
+
+export function getConceptTourDesignByData(
+  tour: Pick<ConceptTour, "conceptTourId" | "name" | "description">,
+  fallbackIndex = 0,
+) {
+  const matchedById = getConceptTourDesign(tour.conceptTourId);
+  if (matchedById) return matchedById;
+
+  const matchedByName =
+    conceptTours.find((design) => {
+      const designTexts = [
+        normalizeConceptText(design.title),
+        normalizeConceptText(design.description),
+        normalizeConceptText(design.detailDescription),
+      ];
+      const tourTexts = [
+        normalizeConceptText(tour.name),
+        normalizeConceptText(tour.description),
+      ];
+
+      return tourTexts.some((text) => designTexts.includes(text));
+    }) ?? null;
+
+  return matchedByName ?? conceptTours[fallbackIndex % conceptTours.length];
+}
+
+export function getDisplayedConceptTours(tours: ConceptTour[] = []) {
+  const usedIds = new Set<number>();
+
+  return tours.map((tour, index) => {
+    const matchedById =
+      conceptTours.find(
+        (design) =>
+          !usedIds.has(design.conceptTourId) &&
+          design.conceptTourId === tour.conceptTourId,
+      ) ?? null;
+
+    const matchedDesign =
+      matchedById ??
+      conceptTours.find((design) => {
+        if (usedIds.has(design.conceptTourId)) return false;
+
+        return !!findMatchingConceptTour(design, [tour], new Set());
+      }) ??
+      conceptTours.find(
+        (design) => !usedIds.has(design.conceptTourId),
+      ) ??
+      conceptTours[index % conceptTours.length];
+
+    usedIds.add(matchedDesign.conceptTourId);
+
+    return { tour, design: matchedDesign };
+  });
 }

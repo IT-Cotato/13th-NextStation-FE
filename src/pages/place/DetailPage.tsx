@@ -140,7 +140,7 @@ export default function DetailPage() {
                 <span className="text-headline font-semibold leading-[1.4] tracking-[-0.5px]">
                   {place.placeName}
                 </span>
-                <span className="text-body-01 text-gray-70 leading-[1.4] tracking-[-0.3px]">
+                <span className="text-body-01 text-gray-70 leading-[1.4] tracking-[-0.3px] break-keep">
                   {place.description}
                 </span>
               </div>
