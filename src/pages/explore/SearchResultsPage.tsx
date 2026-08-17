@@ -13,7 +13,7 @@ import {
 import ConceptTourCard from "./components/ConceptTourCard";
 import ExploreCourseItem from "./components/ExploreCourseItem";
 import ExploreSearchBar from "./components/ExploreSearchBar";
-import { getConceptTourDesign } from "./data/conceptTours";
+import { getDisplayedConceptTours } from "./data/conceptTours";
 
 export default function SearchResultsPage() {
   const navigate = useNavigate();
@@ -83,7 +83,7 @@ export default function SearchResultsPage() {
 
   const conceptResults = useMemo(() => {
     const keyword = query.trim().toLowerCase();
-    return tours.filter((tour) =>
+    return getDisplayedConceptTours(tours).filter(({ tour }) =>
       `${tour.name} ${tour.description}`.toLowerCase().includes(keyword),
     );
   }, [query, tours]);
@@ -126,26 +126,21 @@ export default function SearchResultsPage() {
       {hasResults ? (
         isConceptSearch ? (
           <section className="grid grid-cols-2 gap-3 px-[15px] pt-4">
-            {conceptResults.map((tour) => {
-              const design = getConceptTourDesign(tour.conceptTourId);
-              if (!design) return null;
-
-              return (
-                <ConceptTourCard
-                  key={tour.conceptTourId}
-                  Artwork={design.Artwork}
-                  artworkClassName={design.artworkClassName}
-                  name={tour.name}
-                  description={tour.description}
-                  courseCount={tour.courseCount}
-                  onClick={() =>
-                    navigate(`/explore/concepts/${tour.conceptTourId}`, {
-                      state: { conceptTour: tour },
-                    })
-                  }
-                />
-              );
-            })}
+            {conceptResults.map(({ tour, design }) => (
+              <ConceptTourCard
+                key={tour.conceptTourId}
+                Artwork={design.Artwork}
+                artworkClassName={design.artworkClassName}
+                name={tour.name}
+                description={tour.description}
+                courseCount={tour.courseCount}
+                onClick={() =>
+                  navigate(`/explore/concepts/${tour.conceptTourId}`, {
+                    state: { conceptTour: tour },
+                  })
+                }
+              />
+            ))}
           </section>
         ) : (
           <section className="flex flex-col gap-3 px-[15px] py-4">
