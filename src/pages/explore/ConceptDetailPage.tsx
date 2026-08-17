@@ -9,7 +9,9 @@ import {
   type ExploreCourse,
   type ExploreSort,
 } from "@/api/explore";
+import BaseLoading from "@/components/BaseLoading";
 import Header from "@/components/Header";
+import ErrorPage from "@/pages/ErrorPage";
 import ExploreCourseItem from "./components/ExploreCourseItem";
 import ExploreDropdown from "./components/ExploreDropdown";
 import { getConceptTourDesign } from "./data/conceptTours";
@@ -78,12 +80,14 @@ export default function ConceptDetailPage() {
       .then((response) => {
         if (!isActive) return;
         setCourses(response.courses);
+        setHasError(false);
         setNextCursor(response.nextCursor);
         setHasNext(response.hasNext);
       })
       .catch(() => {
         if (!isActive) return;
         setCourses([]);
+        setHasError(true);
         setNextCursor(null);
         setHasNext(false);
       });
@@ -118,20 +122,17 @@ export default function ConceptDetailPage() {
 
   const design = tour ? getConceptTourDesign(tour.conceptTourId) : null;
 
+  if ((isLoading && !tour) || (tour && courses === null)) {
+    return <BaseLoading />;
+  }
+
+  if (hasError) {
+    return <ErrorPage />;
+  }
+
   return (
     <main className="flex h-dvh flex-col bg-gray-10 text-gray-100 pt-[calc(var(--safe-top)+12px)] text-gray-100 overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
       <Header showBack />
-
-      {isLoading && !tour && (
-        <p className="px-[15px] pt-20 text-center text-body-01 text-gray-70">
-          컨셉을 불러오는 중...
-        </p>
-      )}
-      {hasError && (
-        <p className="px-[15px] pt-20 text-center text-body-01 text-gray-70">
-          컨셉 정보를 불러오지 못했습니다.
-        </p>
-      )}
 
       {!hasError && tour && (
         <>
@@ -172,11 +173,6 @@ export default function ConceptDetailPage() {
             className="flex flex-col gap-3 px-[15px] pb-4 pt-4"
             aria-label={`${tour.name} ${sort}`}
           >
-            {courses === null && (
-              <p className="py-16 text-center text-body-01 text-gray-60">
-                코스를 불러오는 중...
-              </p>
-            )}
             {courses !== null && courses.length === 0 && (
               <p className="py-16 text-center text-body-01 text-gray-60">
                 이 컨셉의 코스가 아직 없어요.

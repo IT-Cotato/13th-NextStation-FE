@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getConceptTours, type ConceptTour } from "@/api/explore";
+import BaseLoading from "@/components/BaseLoading";
 import Header from "@/components/Header";
+import ErrorPage from "@/pages/ErrorPage";
 import ConceptTourCard from "./components/ConceptTourCard";
 import ExploreSearchBar from "./components/ExploreSearchBar";
 import { getConceptTourDesign } from "./data/conceptTours";
@@ -34,6 +36,14 @@ export default function ConceptToursPage() {
       })
       .finally(() => setIsLoading(false));
   }, []);
+
+  if (isLoading) {
+    return <BaseLoading />;
+  }
+
+  if (hasError) {
+    return <ErrorPage />;
+  }
 
   return (
     <main className="flex h-dvh flex-col bg-gray-10 text-gray-100 pt-[calc(var(--safe-top)+12px)] text-gray-100 overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
@@ -78,17 +88,7 @@ export default function ConceptToursPage() {
           ) : null,
         )}
       </section>
-      {isLoading && (
-        <p className="px-[15px] py-16 text-center text-body-01 text-gray-60">
-          컨셉을 불러오는 중...
-        </p>
-      )}
-      {!isLoading && hasError && (
-        <p className="px-[15px] py-16 text-center text-body-01 text-gray-60">
-          컨셉 목록을 불러오지 못했습니다.
-        </p>
-      )}
-      {!isLoading && !hasError && displayedTours.length === 0 && (
+      {displayedTours.length === 0 && (
         <p className="px-[15px] py-16 text-center text-body-01 text-gray-60">
           일치하는 컨셉이 없어요.
         </p>
