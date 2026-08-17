@@ -6,7 +6,7 @@ import Header from "@/components/Header";
 import ErrorPage from "@/pages/ErrorPage";
 import ConceptTourCard from "./components/ConceptTourCard";
 import ExploreSearchBar from "./components/ExploreSearchBar";
-import { getConceptTourDesign } from "./data/conceptTours";
+import { getDisplayedConceptTours } from "./data/conceptTours";
 
 export default function ConceptToursPage() {
   const navigate = useNavigate();
@@ -15,14 +15,10 @@ export default function ConceptToursPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
   const normalizedQuery = query.trim().toLowerCase();
-  const displayedTours = conceptTours
-    .filter((tour) =>
+  const displayedTours = getDisplayedConceptTours(conceptTours).filter(
+    ({ tour }) =>
       `${tour.name} ${tour.description}`.toLowerCase().includes(normalizedQuery),
-    )
-    .map((tour) => ({
-      tour,
-      design: getConceptTourDesign(tour.conceptTourId),
-    }));
+  );
 
   useEffect(() => {
     void getConceptTours()
@@ -70,23 +66,21 @@ export default function ConceptToursPage() {
         className="grid grid-cols-2 gap-3 px-[15px] pb-5"
         aria-label="컨셉별 투어 목록"
       >
-        {displayedTours.map(({ tour, design }) =>
-          design ? (
-            <ConceptTourCard
-              key={tour.conceptTourId}
-              Artwork={design.Artwork}
-              artworkClassName={design.artworkClassName}
-              name={tour.name}
-              description={tour.description}
-              courseCount={tour.courseCount}
-              onClick={() =>
-                navigate(`/explore/concepts/${tour.conceptTourId}`, {
-                  state: { conceptTour: tour },
-                })
-              }
-            />
-          ) : null,
-        )}
+        {displayedTours.map(({ tour, design }) => (
+          <ConceptTourCard
+            key={tour.conceptTourId}
+            Artwork={design.Artwork}
+            artworkClassName={design.artworkClassName}
+            name={tour.name}
+            description={tour.description}
+            courseCount={tour.courseCount}
+            onClick={() =>
+              navigate(`/explore/concepts/${tour.conceptTourId}`, {
+                state: { conceptTour: tour },
+              })
+            }
+          />
+        ))}
       </section>
       {displayedTours.length === 0 && (
         <p className="px-[15px] py-16 text-center text-body-01 text-gray-60">
