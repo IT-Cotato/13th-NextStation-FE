@@ -1,7 +1,7 @@
-import LineBadge, { type SubwayLine} from "@/components/LineBadge";
-import CardBG from '@/assets/card-default.svg?react';
-import LikeCheckIcon from '@/assets/like/likeCheck.svg?react';
-import LikeSelectIcon from '@/assets/like/likeSelect.svg?react';
+import LineBadge, { type SubwayLine } from "@/components/LineBadge";
+import CardBG from "@/assets/card-default.svg?react";
+import LikeCheckIcon from "@/assets/like/likeCheck.svg?react";
+import LikeSelectIcon from "@/assets/like/likeSelect.svg?react";
 
 interface LikeCardProps {
   courseId: number;
@@ -66,7 +66,7 @@ export default function LikeCard({
             event.stopPropagation();
             onToggleSelect();
           }}
-          aria-label={isSelected ? '선택 해제' : '선택'}
+          aria-label={isSelected ? "선택 해제" : "선택"}
           className="absolute top-3 right-3 z-20 flex size-8 items-center justify-center outline-none"
         >
           {isSelected ? (
@@ -79,15 +79,19 @@ export default function LikeCard({
 
       <div className="relative z-10 flex h-full flex-col items-start justify-end gap-2 px-3 pt-[54px] pb-4">
         <div className="flex items-center justify-center gap-1">
-          <LineBadge line={lineId}/>
-          <p className={`text-body-02 ${textColorClass} leading-[1.4] tracking-[-0.025em]`}>
+          <LineBadge line={lineId} />
+          <p
+            className={`text-body-02 ${textColorClass} leading-[1.4] tracking-[-0.025em] break-keep`}
+          >
             {stationName}
           </p>
         </div>
-        <p className={`text-body-01 font-semibold ${textColorClass} leading-[1.4] tracking-[-0.025em]`}>
+        <p
+          className={`text-body-01 font-semibold ${textColorClass} leading-[1.4] tracking-[-0.025em] break-keep`}
+        >
           {courseName}
         </p>
       </div>
     </div>
-  )
+  );
 }
