@@ -179,7 +179,7 @@ export default function ProfileSetupPage() {
       });
       saveAccessToken(accessToken);
       clearSignupFlow();
-      navigate('/', { replace: true });
+      navigate('/auth/finish', { replace: true });
     } catch (error) {
       if (error instanceof AuthApiError && error.status === 401) {
         clearSignupFlow();
