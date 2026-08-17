@@ -9,7 +9,9 @@ import {
   type ExploreCourse,
   type ExploreSort,
 } from "@/api/explore";
+import BaseLoading from "@/components/BaseLoading";
 import Header from "@/components/Header";
+import ErrorPage from "@/pages/ErrorPage";
 import ExploreCourseItem from "./components/ExploreCourseItem";
 import ExploreDropdown from "./components/ExploreDropdown";
 import { getConceptTourDesign } from "./data/conceptTours";
@@ -29,7 +31,7 @@ export default function ConceptDetailPage() {
     navigatedTour?.conceptTourId === numericConceptId ? navigatedTour : null;
   const [sort, setSort] = useState<ExploreSortOption>("인기순");
   const [tour, setTour] = useState<ConceptTour | null>(initialTour);
-  const [courses, setCourses] = useState<ExploreCourse[]>([]);
+  const [courses, setCourses] = useState<ExploreCourse[] | null>(null);
   const [isLoading, setIsLoading] = useState(!initialTour);
   const [hasError, setHasError] = useState(false);
   const [nextCursor, setNextCursor] = useState<string | null>(null);
@@ -46,7 +48,7 @@ export default function ConceptDetailPage() {
         const matchingTour = items.find(
           (item) => item.conceptTourId === numericConceptId,
         );
-        if (!matchingTour || !getConceptTourDesign(matchingTour.conceptTourId))
+        if (!matchingTour)
           throw new Error("Concept tour data is unavailable");
         if (!isActive) return;
 
@@ -73,17 +75,26 @@ export default function ConceptDetailPage() {
     if (!tour) return;
 
     const apiSort: ExploreSort = sort === "인기순" ? "POPULAR" : "LATEST";
+    let isActive = true;
     void getConceptTourCourses(tour.conceptTourId, apiSort)
       .then((response) => {
+        if (!isActive) return;
         setCourses(response.courses);
+        setHasError(false);
         setNextCursor(response.nextCursor);
         setHasNext(response.hasNext);
       })
       .catch(() => {
+        if (!isActive) return;
         setCourses([]);
+        setHasError(true);
         setNextCursor(null);
         setHasNext(false);
       });
+
+    return () => {
+      isActive = false;
+    };
   }, [sort, tour]);
 
   useEffect(() => {
@@ -96,10 +107,10 @@ export default function ConceptDetailPage() {
       tour.conceptTourId,
       apiSort,
       nextCursor,
-      50,
+      10,
     )
       .then((response) => {
-        setCourses((current) => [...current, ...response.courses]);
+        setCourses((current) => [...(current ?? []), ...response.courses]);
         setNextCursor(response.nextCursor);
         setHasNext(response.hasNext);
       })
@@ -111,22 +122,19 @@ export default function ConceptDetailPage() {
 
   const design = tour ? getConceptTourDesign(tour.conceptTourId) : null;
 
+  if ((isLoading && !tour) || (tour && courses === null)) {
+    return <BaseLoading />;
+  }
+
+  if (hasError) {
+    return <ErrorPage />;
+  }
+
   return (
     <main className="flex h-dvh flex-col bg-gray-10 text-gray-100 pt-[calc(var(--safe-top)+12px)] text-gray-100 overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
       <Header showBack />
 
-      {isLoading && !tour && (
-        <p className="px-[15px] pt-20 text-center text-body-01 text-gray-70">
-          컨셉을 불러오는 중...
-        </p>
-      )}
-      {hasError && (
-        <p className="px-[15px] pt-20 text-center text-body-01 text-gray-70">
-          컨셉 정보를 불러오지 못했습니다.
-        </p>
-      )}
-
-      {!hasError && tour && design && (
+      {!hasError && tour && (
         <>
           <header className="flex h-[122px] items-start justify-between pl-[15px] pr-6">
             <div className="min-w-0 pt-[26px]">
@@ -134,15 +142,17 @@ export default function ConceptDetailPage() {
                 {tour.name}
               </h1>
               <p className="whitespace-pre-line text-body-01 leading-[1.4] tracking-[-0.025em] text-gray-70">
-                {design.detailDescription}
+                {tour.description}
               </p>
             </div>
-            <div className="-mt-9 flex size-[134px] w-[140px] shrink-0 items-center justify-center">
-              <design.Artwork
-                className={`shrink-0 object-contain ${design.detailArtworkClassName}`}
-                aria-hidden="true"
-              />
-            </div>
+            {design && (
+              <div className="-mt-9 flex size-[134px] w-[140px] shrink-0 items-center justify-center">
+                <design.Artwork
+                  className={`shrink-0 object-contain ${design.detailArtworkClassName}`}
+                  aria-hidden="true"
+                />
+              </div>
+            )}
           </header>
 
           <div className="mx-[15px] flex h-9 justify-end">
@@ -151,6 +161,7 @@ export default function ConceptDetailPage() {
               options={["인기순", "최신순"] as const}
               value={sort}
               onChange={(nextSort) => {
+                setCourses(null);
                 setNextCursor(null);
                 setHasNext(false);
                 setSort(nextSort);
@@ -162,12 +173,12 @@ export default function ConceptDetailPage() {
             className="flex flex-col gap-3 px-[15px] pb-4 pt-4"
             aria-label={`${tour.name} ${sort}`}
           >
-            {courses.length === 0 && (
+            {courses !== null && courses.length === 0 && (
               <p className="py-16 text-center text-body-01 text-gray-60">
                 이 컨셉의 코스가 아직 없어요.
               </p>
             )}
-            {courses.map((course) => (
+            {courses?.map((course) => (
               <ExploreCourseItem
                 key={course.courseId}
                 courseId={course.courseId}
