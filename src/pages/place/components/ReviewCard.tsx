@@ -75,12 +75,12 @@ export default function ReviewCard({
       {/* place info */}
       <section className="flex w-full">
         <div className="flex flex-col gap-4">
-          <p className="flex text-body-01 text-gray-70 leading-[1.4] tracking-[-0.35px]">
+          <p className="flex text-body-01 text-gray-70 leading-[1.4] tracking-[-0.35px] break-keep">
             {content}
           </p>
           {/* image */}
           {!isImageEmpty && (
-            <div className="flex w-[90px] h-[67px] rounded-md overflow-hidden">
+            <div className="flex w-[150px] h-[112px] rounded-md overflow-hidden">
               <img src={imageUrl} className="w-full h-full object-cover" />
             </div>
           )}

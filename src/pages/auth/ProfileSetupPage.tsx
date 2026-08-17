@@ -10,6 +10,7 @@ import {
   getProfileImagePresignedUrl,
   getSignupToken,
   ProfileImageUploadError,
+  saveAccessToken,
   setupProfile,
   uploadProfileImage,
 } from '@/api/auth';
@@ -170,14 +171,15 @@ export default function ProfileSetupPage() {
         profileImageUrl = uploadInfo.imageUrl;
       }
 
-      await setupProfile(signupToken, {
+      const { accessToken } = await setupProfile(signupToken, {
         nickname: nickname.trim(),
         ...(profileImageUrl ? { profileImageUrl } : {}),
         gender: genderByApi[gender],
         birthDate: birthday,
       });
+      saveAccessToken(accessToken);
       clearSignupFlow();
-      navigate('/auth/finish');
+      navigate('/auth/finish', { replace: true });
     } catch (error) {
       if (error instanceof AuthApiError && error.status === 401) {
         clearSignupFlow();
