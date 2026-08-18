@@ -345,6 +345,7 @@ export default function VerifyPage() {
   const handleShareClick = async () => {
     await share({
       title: `${courseName}를 확인해보세요!`,
+      text: courseName,
       url: `https://next-station-git-develop-canofmatos-projects.vercel.app/course/${course.courseId}/verify`,
     });
   };

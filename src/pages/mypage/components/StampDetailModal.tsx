@@ -2,7 +2,7 @@ import Close from "@/assets/close.svg?react";
 import StationTitle from "@/components/StationTitle";
 import Download from "@/assets/download.svg?react";
 import CTAButton from "@/components/CTAButton";
-import { STATION_STAMP_MAP } from "@/constants/stationStampMap";
+import { STATION_STAMP_MAP } from "@/data/stampMaps";
 import type { StampDetail } from "@/api/stamp";
 import type { SubwayLine } from "@/types/subway";
 import { useRef } from "react";

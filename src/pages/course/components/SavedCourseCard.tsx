@@ -2,8 +2,10 @@ import CardActionButton from "./CardActionButton";
 import { useNavigate } from "react-router-dom";
 import Selected from "@/assets/selected.svg?react";
 import Unselected from "@/assets/unselected.svg?react";
-import { STATION_STAMP_MAP } from "@/constants/stationStampMap";
-import { DISABLED_LINE_STAMP_MAP } from "@/constants/disabledLineStampMap";
+import {
+  DISABLED_LINE_STAMP_MAP,
+  STATION_STAMP_MAP,
+} from "@/data/stampMaps";
 
 export default function SavedCourseCard({
   courseId,

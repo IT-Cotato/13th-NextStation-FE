@@ -21,6 +21,7 @@ export default function SavedPage() {
 
     const result = await share({
       title: `${courseInfo.courseName}를 확인해보세요!`,
+      text: courseInfo.courseName,
       url: `https://next-station-git-develop-canofmatos-projects.vercel.app/course/${courseInfo.courseId}/verify`,
     });
 

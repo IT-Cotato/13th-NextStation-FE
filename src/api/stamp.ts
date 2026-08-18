@@ -24,7 +24,7 @@ export interface Stamps {
   stamps: Stamp[];
 }
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+const API_BASE_URL = "";
 
 // 내 스탬프 목록 조회
 export async function getStamps(): Promise<Stamps> {

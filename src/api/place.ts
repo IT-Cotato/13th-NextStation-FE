@@ -72,7 +72,7 @@ export interface Course {
   imageUrl: string | null;
 }
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+const API_BASE_URL = "";
 
 // 장소 상세 조회
 export async function getPlaceDetail(placeId: number): Promise<Place> {

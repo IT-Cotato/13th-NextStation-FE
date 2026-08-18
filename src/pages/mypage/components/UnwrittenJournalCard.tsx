@@ -1,5 +1,5 @@
 import TagChip from "@/pages/place/components/TagChip";
-import { STATION_STAMP_MAP } from "@/constants/stationStampMap";
+import { STATION_STAMP_MAP } from "@/data/stampMaps";
 import type { Course } from "@/api/journal";
 import { formatAcquiredAtToDisplayDate } from "@/utils/logDate";
 import LineBadge from "@/components/LineBadge";

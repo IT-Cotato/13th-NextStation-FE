@@ -3,21 +3,21 @@ import ArrowLeft from '@/assets/title-L.svg?react';
 import ArrowRight from '@/assets/title-R.svg?react';
 import DoorLeft from '@/assets/door_L.svg?react';
 import DoorRight from '@/assets/door_R.svg?react';
-import { getAccessToken } from '@/api/auth';
 import ProfileIcon from '@/components/ProfileIcon';
+import { useAuth } from '@/contexts/useAuth';
 import { useNavigate } from 'react-router-dom';
 import Button from '@/components/Button';
 import BottomNav from '@/components/BottomNav';
 
 function MainPage() {
   const navigate = useNavigate();
-  const isLoggedIn = Boolean(getAccessToken());
+  const { isChecking, isLoggedIn } = useAuth();
 
   return (
     <main className="relative flex flex-col h-dvh overflow-hidden bg-gray-10 gap-8 pt-[calc(var(--safe-top)+12px)]">
       {/* 프로필 아이콘 */}
       <div className='relative flex justify-end px-5'>
-        <ProfileIcon isLoggedIn={isLoggedIn} />
+        <ProfileIcon isLoggedIn={isLoggedIn} disabled={isChecking} />
       </div>
 
       {/* title */}

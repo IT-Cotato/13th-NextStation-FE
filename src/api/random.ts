@@ -39,7 +39,7 @@ export interface RandomCourseRerollResponseData {
   places: RandomCoursePlaceResponse[];
 }
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+const API_BASE_URL = "";
 
 export class RandomDrawNotFoundError extends Error {
   constructor(message = "뽑기 대상 역이 없음") {

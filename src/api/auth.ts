@@ -1,7 +1,4 @@
-const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL ?? "").replace(
-  /\/+$/,
-  "",
-);
+const API_BASE_URL = "";
 
 const AGREED_TERMS_STORAGE_KEY = "auth.agreedTermsIds";
 const REQUIRED_TERMS_AGREED_STORAGE_KEY = "auth.requiredTermsAgreed";
@@ -10,6 +7,7 @@ const ACCESS_TOKEN_STORAGE_KEY = "auth.accessToken";
 const KAKAO_SIGNUP_TOKEN_STORAGE_KEY = "auth.kakaoSignupToken";
 const KAKAO_PROFILE_STORAGE_KEY = "auth.kakaoProfile";
 const KAKAO_OAUTH_STATE_STORAGE_KEY = "auth.kakaoOAuthState";
+const ACCESS_TOKEN_CHANGED_EVENT = "auth:access-token-changed";
 
 export type AuthTermType = "SERVICE" | "PRIVACY" | "MARKETING";
 
@@ -124,6 +122,7 @@ export function clearSignupFlow() {
 
 export function saveAccessToken(token: string) {
   sessionStorage.setItem(ACCESS_TOKEN_STORAGE_KEY, token);
+  notifyAccessTokenChanged(token);
 }
 
 export function getAccessToken() {
@@ -132,9 +131,22 @@ export function getAccessToken() {
 
 export function clearAccessToken() {
   sessionStorage.removeItem(ACCESS_TOKEN_STORAGE_KEY);
+  notifyAccessTokenChanged(null);
 }
 
 let reissueAccessTokenPromise: Promise<string> | null = null;
+
+function notifyAccessTokenChanged(token: string | null) {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  window.dispatchEvent(
+    new CustomEvent<string | null>(ACCESS_TOKEN_CHANGED_EVENT, {
+      detail: token,
+    }),
+  );
+}
 
 function createAuthHeaders(
   headers: HeadersInit | undefined,
@@ -160,11 +172,50 @@ async function requestAccessTokenReissue() {
   return reissueAccessTokenPromise;
 }
 
+export async function restoreAccessToken() {
+  const accessToken = getAccessToken();
+
+  if (accessToken) {
+    return accessToken;
+  }
+
+  try {
+    return await requestAccessTokenReissue();
+  } catch {
+    clearAccessToken();
+    return null;
+  }
+}
+
+export function subscribeToAccessTokenChange(
+  listener: (token: string | null) => void,
+) {
+  if (typeof window === "undefined") {
+    return () => undefined;
+  }
+
+  const handleAccessTokenChanged = (event: Event) => {
+    listener((event as CustomEvent<string | null>).detail);
+  };
+
+  window.addEventListener(
+    ACCESS_TOKEN_CHANGED_EVENT,
+    handleAccessTokenChanged,
+  );
+
+  return () => {
+    window.removeEventListener(
+      ACCESS_TOKEN_CHANGED_EVENT,
+      handleAccessTokenChanged,
+    );
+  };
+}
+
 export async function fetchWithRequiredAuth(
   input: RequestInfo | URL,
   init: RequestInit = {},
 ) {
-  const accessToken = getAccessToken();
+  const accessToken = await restoreAccessToken();
 
   if (!accessToken) {
     throw new Error("로그인 토큰이 없습니다.");
