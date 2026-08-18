@@ -1,12 +1,10 @@
 import LineBadge, { type SubwayLine } from "@/components/LineBadge";
 import CardBG from "@/assets/card-default.svg?react";
-import type { TravelDuration } from "@/api/journal";
 
 export default function CoursePreviewCard({
   line,
   name,
-  placeCount,
-  travelDuration,
+
   imageUrl,
 }: {
   line: number;
@@ -17,12 +15,6 @@ export default function CoursePreviewCard({
 }) {
   const isThumbnailEmpty = imageUrl === null;
   const titleColorClass = isThumbnailEmpty ? "text-gray-100" : "text-white";
-  const textColorClass = isThumbnailEmpty ? "text-gray-80" : "text-white";
-  const durationLabels: Record<TravelDuration, string> = {
-    SHORT: "3~4시간",
-    HALF_DAY: "반나절",
-    FULL_DAY: "하루종일",
-  };
 
   return (
     <div className="flex justify-center">
@@ -30,32 +22,26 @@ export default function CoursePreviewCard({
         {isThumbnailEmpty ? (
           <CardBG className="absolute inset-0 h-full w-full" />
         ) : (
-          <img
-            src={imageUrl}
-            alt={name}
+          <div
+            role="img"
+            aria-label={name}
             className="absolute inset-0 h-full w-full rounded-lg object-cover"
+            style={{
+              background: `linear-gradient(180deg, rgba(255, 255, 255, 0.25) 0%, #000 100%), url(${imageUrl}) lightgray 50% / cover no-repeat`,
+            }}
           />
         )}
-        <div className="absolute inset-0 rounded-lg bg-gradient-to-b from-transparent from-40% to-[#555555]" />
 
-        <div className="relative flex flex-col h-full pt-[15px] pl-[16px] pb-[18px] pr-[25px] justify-between">
+        <div className="relative flex flex-col h-full pt-[15px] pl-[16px] pb-[16px] pr-[25px] justify-between">
           {/* 호선 뱃지 */}
           <LineBadge line={line as SubwayLine} />
 
           {/* course info */}
-          <div className="flex flex-col gap-0.5">
-            <p
-              className={`${titleColorClass} text-subtitle font-semibold line-clamp-2 break-keep leading-[1.4] tracking-[-0.4px]`}
-            >
-              {name}
-            </p>
-            <span
-              className={`text-caption ${textColorClass} leading-none tracking-[-0.25px]`}
-            >
-              장소 {placeCount}곳 ∙{" "}
-              {durationLabels[travelDuration as TravelDuration]}
-            </span>
-          </div>
+          <p
+            className={`min-h-[39.2px] ${titleColorClass} text-body-01 font-semibold line-clamp-2 break-keep leading-[1.4] tracking-[-0.35px]`}
+          >
+            {name}
+          </p>
         </div>
       </div>
     </div>
