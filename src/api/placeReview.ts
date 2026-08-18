@@ -33,7 +33,7 @@ import {
   getAccessToken,
 } from "@/api/auth";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+const API_BASE_URL = "";
 
 // 장소 리뷰 목록 조회
 export async function getReviews(

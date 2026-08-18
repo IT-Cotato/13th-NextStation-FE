@@ -57,7 +57,7 @@ export interface CopyPreviewCourse {
 import { fetchWithRequiredAuth, getAccessToken } from "@/api/auth";
 import type { SubwayLine } from "@/types/subway";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+const API_BASE_URL = "";
 
 export interface CourseDetailImage {
   id: number;

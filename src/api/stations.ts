@@ -10,7 +10,7 @@ export interface Station {
   lines: StationLine[];
 }
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+const API_BASE_URL = "";
 
 // 출발역 검색
 export async function searchStations(
