@@ -1,4 +1,6 @@
 import {
+  createContext,
+  useContext,
   useEffect,
   useMemo,
   useState,
@@ -9,7 +11,16 @@ import {
   restoreAccessToken,
   subscribeToAccessTokenChange,
 } from "@/api/auth";
-import { AuthContext, type AuthContextValue, type AuthStatus } from "@/contexts/auth-context";
+
+export type AuthStatus = "checking" | "authenticated" | "guest";
+
+export interface AuthContextValue {
+  status: AuthStatus;
+  isLoggedIn: boolean;
+  isChecking: boolean;
+}
+
+const AuthContext = createContext<AuthContextValue | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [status, setStatus] = useState<AuthStatus>(() =>
@@ -47,4 +58,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+}
+
+export function useAuth() {
+  const context = useContext(AuthContext);
+
+  if (!context) {
+    throw new Error("useAuth must be used within an AuthProvider.");
+  }
+
+  return context;
 }

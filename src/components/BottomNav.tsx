@@ -10,7 +10,7 @@ import SelectedExploreIcon from '@/assets/bottomNav/selectedExplore.svg?react';
 import MypageIcon from '@/assets/bottomNav/mypage.svg?react';
 import SelectedMypageIcon from '@/assets/bottomNav/selectedMypage.svg?react';
 import LeadToLoginModal from "@/components/LeadToLoginModal";
-import { useAuth } from "@/contexts/useAuth";
+import { useAuth } from "@/contexts/auth";
 
 type BottomNavProps = {
   mode: 'main' | 'course'

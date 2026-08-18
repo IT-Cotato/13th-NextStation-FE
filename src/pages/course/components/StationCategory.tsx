@@ -1,4 +1,4 @@
-import { LINES, stationsByLine } from "@/mocks/StationByLine";
+import { LINES, stationsByLine } from "@/data/stationsByLine";
 import * as motion from "motion/react-client";
 import type { Dispatch, SetStateAction } from "react";
 import CategoryTabs from "./CategoryTabs";
