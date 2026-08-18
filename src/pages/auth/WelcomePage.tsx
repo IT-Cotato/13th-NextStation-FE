@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import titleImage from '@/assets/auth/welcome-title.png';
+import titleImage from '@/assets/splash.svg';
 import archesImage from '@/assets/auth/welcome-arches.png';
 import trainCarImage from '@/assets/auth/welcome-train-car.png';
 import cloudFront from '@/assets/auth/welcome-cloud-front.svg';
@@ -53,7 +53,7 @@ export default function WelcomePage() {
         <img
           src={titleImage}
           alt="환승여행"
-          className="absolute left-1/2 top-[calc(var(--welcome-track-top)-37.44dvh)] z-10 aspect-[172/51] w-[min(44.1%,20.38dvh)] max-w-none -translate-x-1/2"
+          className="absolute left-1/2 top-[calc(var(--welcome-track-top)-37.44dvh)] z-10 aspect-[234/72] w-[min(44.1%,20.38dvh)] max-w-none -translate-x-1/2"
         />
 
         <img
