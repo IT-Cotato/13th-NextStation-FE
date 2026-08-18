@@ -4,7 +4,7 @@ import ArrowRight from '@/assets/title-R.svg?react';
 import DoorLeft from '@/assets/door_L.svg?react';
 import DoorRight from '@/assets/door_R.svg?react';
 import ProfileIcon from '@/components/ProfileIcon';
-import { useAuth } from '@/contexts/useAuth';
+import { useAuth } from '@/contexts/auth';
 import { useNavigate } from 'react-router-dom';
 import Button from '@/components/Button';
 import BottomNav from '@/components/BottomNav';

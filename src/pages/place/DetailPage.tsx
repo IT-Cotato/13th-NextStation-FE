@@ -14,7 +14,7 @@ import { useEffect, useRef, useState } from "react";
 import ReviewPreviewCard from "./components/ReviewPreviewCard";
 import CoursePreviewCard from "./components/CoursePreviewCard";
 import { showToast } from "../course/components/ShowToast";
-import copyToClipboard from "@/utils/copyToClipBoard";
+import copyToClipboard from "@/utils/clipboard";
 import {
   getPlaceCourses,
   getPlaceDetail,

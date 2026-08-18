@@ -49,76 +49,80 @@ import StampYangcheonGuOffice from "@/assets/stamp/stamp-yangcheon-gu-office.svg
 import StampYangcheonHyanggyo from "@/assets/stamp/stamp-yangcheon-hyanggyo.svg?react";
 import StampYeongdeungpoMarket from "@/assets/stamp/stamp-yeongdeungpo-market.svg?react";
 import StampYongmasan from "@/assets/stamp/stamp-yongmasan.svg?react";
+import StampDisabledLine1 from "@/assets/stamp-disabled/stamp-disabled-line-1.svg?react";
+import StampDisabledLine2 from "@/assets/stamp-disabled/stamp-disabled-line-2.svg?react";
+import StampDisabledLine3 from "@/assets/stamp-disabled/stamp-disabled-line-3.svg?react";
+import StampDisabledLine4 from "@/assets/stamp-disabled/stamp-disabled-line-4.svg?react";
+import StampDisabledLine5 from "@/assets/stamp-disabled/stamp-disabled-line-5.svg?react";
+import StampDisabledLine6 from "@/assets/stamp-disabled/stamp-disabled-line-6.svg?react";
+import StampDisabledLine7 from "@/assets/stamp-disabled/stamp-disabled-line-7.svg?react";
+import StampDisabledLine8 from "@/assets/stamp-disabled/stamp-disabled-line-8.svg?react";
+import StampDisabledLine9 from "@/assets/stamp-disabled/stamp-disabled-line-9.svg?react";
 
 export type StampIconComponent = ComponentType<SVGProps<SVGSVGElement>>;
+export type DisabledIconComponent = ComponentType<SVGProps<SVGSVGElement>>;
 
 export const STATION_STAMP_MAP: Record<string, StampIconComponent> = {
-
-  // 1호선
   제기동역: StampJegiDong,
   동묘앞역: StampDongmyo,
   신설동역: StampSinseolDong,
   외대앞역: StampHufs,
   남영역: StampNamyeong,
-
-  // 2호선
   문래역: StampMullae,
   아현역: StampAhyeon,
   한양대역: StampHanyangUniv,
   잠실나루역: StampJamsillaru,
   양천구청역: StampYangcheonGuOffice,
   신정네거리역: StampSinjeongnegeori,
-
-  // 3호선
   독립문역: StampDongnimmun,
   무악재역: StampMuakjae,
   금호역: StampGeumho,
   옥수역: StampOksu,
   잠원역: StampJamwon,
-
-  // 4호선
   한성대입구역: StampHansungUniv,
   성신여대입구역: StampSungshinWomensUniv,
   수유역: StampSuyu,
   이촌역: StampIchon,
   동작역: StampDongjak,
-
-  // 5호선
   마장역: StampMajang,
   애오개역: StampAeogae,
   신금호역: StampSingeumho,
   아차산역: StampAchasan,
   영등포시장역: StampYeongdeungpoMarket,
   방이역: StampBangi,
-
-  // 6호선
   보문역: StampBomun,
   창신역: StampChangsin,
   효창공원앞역: StampHyochangPark,
   고려대역: StampKoreaUniv,
   광흥창역: StampGwangheungchang,
   월드컵경기장역: StampWorldCupStadium,
-
-  // 7호선
   공릉역: StampGongneung,
   어린이대공원역: StampChildrensGrandPark,
   용마산역: StampYongmasan,
   자양역: StampJayang,
   하계역: StampHagye,
   남성역: StampNamseong,
-
-  // 8호선
   암사역: StampAmsa,
   몽촌토성역: StampMongchontoseong,
   강동구청역: StampGangdongGuOffice,
   송파역: StampSongpa,
   석촌역: StampSeokchon,
-
-  // 9호선
   노들역: StampNodeul,
   선유도역: StampSeonyudo,
   한성백제역: StampHanseongBaekje,
   양천향교역: StampYangcheonHyanggyo,
   흑석역: StampHeukseok,
   공항시장역: StampAirportMarket,
+};
+
+export const DISABLED_LINE_STAMP_MAP: Record<string, DisabledIconComponent> = {
+  "1호선": StampDisabledLine1,
+  "2호선": StampDisabledLine2,
+  "3호선": StampDisabledLine3,
+  "4호선": StampDisabledLine4,
+  "5호선": StampDisabledLine5,
+  "6호선": StampDisabledLine6,
+  "7호선": StampDisabledLine7,
+  "8호선": StampDisabledLine8,
+  "9호선": StampDisabledLine9,
 };

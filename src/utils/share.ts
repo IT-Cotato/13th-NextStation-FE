@@ -1,4 +1,4 @@
-import copyToClipboard from "./copyToClipBoard";
+import copyToClipboard from "./clipboard";
 
 export const isShareSupported = () => typeof navigator.share === "function";
 

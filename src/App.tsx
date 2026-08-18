@@ -1,7 +1,7 @@
 import { Component, lazy, Suspense, type ReactNode } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import BaseLoading from "@/components/BaseLoading";
-import { AuthProvider } from "@/contexts/AuthContext";
+import { AuthProvider } from "@/contexts/auth";
 import { LogDraftProvider } from "@/pages/course/contexts/LogDraftContext";
 import "react-toastify/dist/ReactToastify.css";
 import Toast from "@/pages/course/components/Toast";
