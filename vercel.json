@@ -1,7 +1,11 @@
 {
   "rewrites": [
     {
-      "source": "/((?!.*\\.).*)",
+      "source": "/api/:path*",
+      "destination": "https://3.37.77.188.nip.io/api/:path*"
+    },
+    {
+      "source": "/((?!api/)(?!.*\\.).*)",
       "destination": "/index.html"
     }
   ]

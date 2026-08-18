@@ -2,13 +2,22 @@ import { useNavigate } from "react-router-dom";
 
 type ProfileIconProps = {
   isLoggedIn: boolean;
+  disabled?: boolean;
   profileImageUrl?: string;
 };
 
-function ProfileIcon ({ isLoggedIn, profileImageUrl }: ProfileIconProps) {
+function ProfileIcon ({
+  isLoggedIn,
+  disabled = false,
+  profileImageUrl,
+}: ProfileIconProps) {
   const navigate = useNavigate();
 
   const handleClick = () => {
+    if (disabled) {
+      return;
+    }
+
     navigate(isLoggedIn ? '/mypage' : '/auth');
   };
 
@@ -16,6 +25,7 @@ function ProfileIcon ({ isLoggedIn, profileImageUrl }: ProfileIconProps) {
     <button
       type="button"
       onClick={handleClick}
+      disabled={disabled}
       className="
         relative flex size-[45px] items-center justify-center overflow-hidden rounded-full p-0
         border border-white/70 bg-linear-to-b from-white/30 to-white/10
