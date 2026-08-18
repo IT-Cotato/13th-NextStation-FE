@@ -1,6 +1,6 @@
 import StampEmpty from "@/assets/stamp-empty.svg?react";
 import BaseLoading from "@/components/BaseLoading";
-import { STATION_STAMP_MAP } from "@/constants/stationStampMap";
+import { STATION_STAMP_MAP } from "@/data/stampMaps";
 import {
   type Stamp,
   type StampDetail,

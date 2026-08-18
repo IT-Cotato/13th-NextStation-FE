@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "@/contexts/useAuth";
+import { useAuth } from "@/contexts/auth";
 import SplashIcon from '@/assets/splash.svg?react';
 
 function SplashPage() {

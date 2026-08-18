@@ -3,7 +3,7 @@ import LottieModule, { type LottieRefCurrentProps } from "lottie-react";
 import { motion } from "motion/react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useLogDraft } from "./contexts/LogDraftContext";
-import { STATION_STAMP_MAP } from "@/constants/stationStampMap";
+import { STATION_STAMP_MAP } from "@/data/stampMaps";
 import type { CourseCompletionResult } from "@/api/savedCourse";
 import confetti from "@/assets/lottie/confetti.json";
 

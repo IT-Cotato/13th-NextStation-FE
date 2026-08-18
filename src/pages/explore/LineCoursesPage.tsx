@@ -16,7 +16,7 @@ import {
   type ExploreStation,
 } from "@/api/explore";
 import ExploreLineTabs from "./components/ExploreLineTabs";
-import { stationsByLine } from "@/mocks/StationByLine";
+import { stationsByLine } from "@/data/stationsByLine";
 import { searchStations } from "@/api/stations";
 import { getDisplayedExploreLines } from "./utils/exploreLines";
 
