@@ -1,6 +1,7 @@
 import { Component, lazy, Suspense, type ReactNode } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import BaseLoading from "@/components/BaseLoading";
+import { AuthProvider } from "@/contexts/AuthContext";
 import { LogDraftProvider } from "@/pages/course/contexts/LogDraftContext";
 import "react-toastify/dist/ReactToastify.css";
 import Toast from "@/pages/course/components/Toast";
@@ -108,10 +109,11 @@ class RouteErrorBoundary extends Component<
 function App() {
   return (
     <LogDraftProvider>
-      <BrowserRouter>
-        <RouteErrorBoundary>
-          <Suspense fallback={<RouteFallback />}>
-            <Routes>
+      <AuthProvider>
+        <BrowserRouter>
+          <RouteErrorBoundary>
+            <Suspense fallback={<RouteFallback />}>
+              <Routes>
               <Route path="/" element={<SplashPage />} />
               <Route path="/main" element={<MainPage />} />
               <Route path="/error" element={<ErrorPage />} />
@@ -200,12 +202,13 @@ function App() {
                 path="/mypage/journal/unwritten"
                 element={<UnwrittenJournalListPage />}
               />
-            </Routes>
-          </Suspense>
-        </RouteErrorBoundary>
+              </Routes>
+            </Suspense>
+          </RouteErrorBoundary>
 
-        <Toast />
-      </BrowserRouter>
+          <Toast />
+        </BrowserRouter>
+      </AuthProvider>
     </LogDraftProvider>
   );
 }

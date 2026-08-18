@@ -54,7 +54,7 @@ export interface PublicMemberCourses {
   hasNext: boolean;
 }
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+const API_BASE_URL = "";
 const MEMBER_PROFILE_STORAGE_KEY = "member.profile";
 
 async function getPublicMemberData<T>(path: string): Promise<T> {
