@@ -28,6 +28,7 @@ import {
 import JournalSetting from "./components/JournalSetting";
 import ConfirmModal from "@/components/ConfirmModal";
 import JournalEditForm, {
+  type EditPhoto,
   type JournalEditPlaceValue,
 } from "./components/JournalEditForm";
 
@@ -88,10 +89,10 @@ function mapJournalToCourse(journal: JournalDetail): CourseDetailData {
     review: journal.overallReview,
     duration: durationLabels[journal.travelDuration],
     tags: journal.tags,
-    images: (journal.imageUrls ?? []).map((src, index) => ({
-      id: index + 1,
-      src,
-      alt: `${journal.courseName} 여행 사진 ${index + 1}`,
+    images: (journal.photos ?? []).map((photo) => ({
+      id: photo.photoId,
+      src: photo.imageUrl,
+      alt: `${journal.courseName} 여행 사진`,
     })),
     places: [...journal.visitedPlaces]
       .sort((a, b) => a.orderNum - b.orderNum)
@@ -129,7 +130,7 @@ export default function DetailPage() {
   const [editTime, setEditTime] = useState<string | null>(null);
   const [editDate, setEditDate] = useState<string | null>(null);
   const [editPublic, setEditPublic] = useState<string | null>(null);
-  const [editPhotos, setEditPhotos] = useState<string[]>([]);
+  const [editPhotos, setEditPhotos] = useState<EditPhoto[]>([]);
   const [editReview, setEditReview] = useState("");
   const [editPlaces, setEditPlaces] = useState<JournalEditPlaceValue[]>([]);
   const [isSavingJournal, setIsSavingJournal] = useState(false);
@@ -250,7 +251,12 @@ export default function DetailPage() {
     setEditTime(course.duration);
     setEditDate(course.visitedAt);
     setEditPublic(course.isPublic ? "전체 공개" : "나만 보기");
-    setEditPhotos(course.images.map((image) => image.src));
+    setEditPhotos(
+      course.images.map((image) => ({
+        photoId: image.id,
+        imageUrl: image.src,
+      })),
+    );
     setEditReview(course.review);
     setEditPlaces(
       course.places.map((place) => ({
@@ -290,6 +296,31 @@ export default function DetailPage() {
     const traveledDate = editDate ?? course.visitedAt;
     const isPublic = editPublic !== "나만 보기";
 
+    const originalPhotoIds = course.images.map((image) => image.id);
+    const currentPhotoIds = editPhotos
+      .filter((photo) => photo.photoId)
+      .map((photo) => photo.photoId);
+
+    const journalPhotos = [
+      // KEEP
+      ...originalPhotoIds
+        .filter((id) => currentPhotoIds.includes(id))
+        .map((photoId) => ({ photoId, imageAction: "KEEP" as const })),
+
+      //DELETE
+      ...originalPhotoIds
+        .filter((id) => !currentPhotoIds.includes(id))
+        .map((photoId) => ({ photoId, imageAction: "DELETE" as const })),
+
+      // UPDATE
+      ...editPhotos
+        .filter((photo) => !photo.photoId)
+        .map((photo) => ({
+          imageAction: "UPDATE" as const,
+          imageUrl: photo.imageUrl,
+        })),
+    ];
+
     setIsSavingJournal(true);
 
     try {
@@ -301,11 +332,7 @@ export default function DetailPage() {
           traveledAt: toApiDate(traveledDate),
           travelDuration,
           isPublic,
-          journalPhotos: editPhotos.map((imageUrl, index) => ({
-            imageAction: "UPDATE",
-            imageUrl,
-            isRepresentative: index === 0,
-          })),
+          journalPhotos,
           placeReviews: editPlaces.map((place) => ({
             placeId: place.id,
             review: place.description,
@@ -324,13 +351,15 @@ export default function DetailPage() {
               visitedAt: traveledDate,
               review: editReview,
               isPublic,
-              images: editPhotos.map((src, index) => ({
-                id: index + 1,
-                src,
-                alt: `${editTitle} 여행 사진 ${index + 1}`,
+              images: editPhotos.map((photo, index) => ({
+                id: photo.photoId ?? -(index + 1),
+                src: photo.imageUrl,
+                alt: `${editTitle} 여행 사진`,
               })),
               places: current.places.map((place, index) => {
-                const nextPlace = editPlaces.find((item) => item.id === place.id);
+                const nextPlace = editPlaces.find(
+                  (item) => item.id === place.id,
+                );
                 return nextPlace
                   ? {
                       ...place,
@@ -364,7 +393,9 @@ export default function DetailPage() {
       editPublic !== (course.isPublic ? "전체 공개" : "나만 보기") ||
       editReview !== course.review ||
       editPhotos.length !== course.images.length ||
-      editPhotos.some((photo, index) => photo !== course.images[index]?.src) ||
+      editPhotos.some(
+        (photo, index) => photo.imageUrl !== course.images[index]?.src,
+      ) ||
       editPlaces.some((place) => {
         const currentPlace = course.places.find((item) => item.id === place.id);
         return (
@@ -395,7 +426,6 @@ export default function DetailPage() {
     navigateBack();
   };
 
-  // TODO : 경로 오류?
   const authorProfileContent = (
     <>
       <div className="flex gap-[14px] justify-center items-center">
@@ -593,51 +623,51 @@ export default function DetailPage() {
 
       {!isEditMode && (
         <section className="flex items-start px-[15px] pb-7 pt-0">
-        <StarOne className="size-[68px] shrink-0" aria-hidden="true" />
-        <p className="-ml-[47px] mt-12 whitespace-pre-line px-[21px] text-body-01 leading-[1.8] tracking-[-0.025em] break-keep z-10">
-          {course.review}
-        </p>
+          <StarOne className="size-[68px] shrink-0" aria-hidden="true" />
+          <p className="-ml-[47px] mt-12 whitespace-pre-line px-[21px] text-body-01 leading-[1.8] tracking-[-0.025em] break-keep z-10">
+            {course.review}
+          </p>
         </section>
       )}
 
       {!isEditMode && (
         <section className="relative isolate border-b-[6px] border-gray-20 pb-9">
-        <h2 className="px-8 py-2 text-title-02 font-semibold leading-[1.4] tracking-[-0.025em]">
-          다녀온 곳
-        </h2>
-        <div
-          className="pointer-events-none absolute top-[42px] right-[13px] -z-10 flex size-[136px] items-center justify-center"
-          aria-hidden="true"
-        >
-          <div className="relative size-[100px] rotate-[30deg]">
-            <StarTwo className="absolute left-[7.6%] top-[1.35%] h-[97.3%] w-[84.8%]" />
+          <h2 className="px-8 py-2 text-title-02 font-semibold leading-[1.4] tracking-[-0.025em]">
+            다녀온 곳
+          </h2>
+          <div
+            className="pointer-events-none absolute top-[42px] right-[13px] -z-10 flex size-[136px] items-center justify-center"
+            aria-hidden="true"
+          >
+            <div className="relative size-[100px] rotate-[30deg]">
+              <StarTwo className="absolute left-[7.6%] top-[1.35%] h-[97.3%] w-[84.8%]" />
+            </div>
           </div>
-        </div>
-        {course.places.map((place) => (
-          <CourseDetailPlace key={place.id} place={place} />
-        ))}
-        <div
-          className="pointer-events-none absolute bottom-[56px] left-[5px] -z-10 size-[60px]"
-          aria-hidden="true"
-        >
-          <StarThree className="absolute left-[3.69%] top-[2.59%] h-[90.46%] w-[92.62%]" />
-        </div>
+          {course.places.map((place) => (
+            <CourseDetailPlace key={place.id} place={place} />
+          ))}
+          <div
+            className="pointer-events-none absolute bottom-[56px] left-[5px] -z-10 size-[60px]"
+            aria-hidden="true"
+          >
+            <StarThree className="absolute left-[3.69%] top-[2.59%] h-[90.46%] w-[92.62%]" />
+          </div>
         </section>
       )}
 
       {!isEditMode && (
         <div className="flex min-h-[97px] flex-wrap gap-2 px-[15px] py-8">
-        <span className="whitespace-nowrap rounded-lg bg-gray-30 px-3 py-2 text-body-02 leading-[1.4] tracking-[-0.3px] text-gray-70">
-          여행시간 {course.duration}
-        </span>
-        {course.tags.map((tag) => (
-          <span
-            className="whitespace-nowrap rounded-lg bg-gray-30 px-3 py-2 text-body-02 leading-[1.4] tracking-[-0.3px] text-gray-70"
-            key={tag}
-          >
-            #{TRAVEL_STYLE_LABELS[tag as RecommendationTravelStyle] ?? tag}
+          <span className="whitespace-nowrap rounded-lg bg-gray-30 px-3 py-2 text-body-02 leading-[1.4] tracking-[-0.3px] text-gray-70">
+            여행시간 {course.duration}
           </span>
-        ))}
+          {course.tags.map((tag) => (
+            <span
+              className="whitespace-nowrap rounded-lg bg-gray-30 px-3 py-2 text-body-02 leading-[1.4] tracking-[-0.3px] text-gray-70"
+              key={tag}
+            >
+              #{TRAVEL_STYLE_LABELS[tag as RecommendationTravelStyle] ?? tag}
+            </span>
+          ))}
         </div>
       )}
 

@@ -48,6 +48,11 @@ export interface JournalDetailLine {
   code: string;
 }
 
+export interface JournalPhotos {
+  photoId: number;
+  imageUrl: string;
+}
+
 export interface JournalDetailVisitedPlace {
   orderNum: number;
   placeId: number;
@@ -72,7 +77,7 @@ export interface JournalDetail {
   travelDuration: TravelDuration;
   viewCount: number;
   likeCount: number;
-  imageUrls: string[] | null;
+  photos: JournalPhotos[];
   overallReview: string;
   visitedPlaces: JournalDetailVisitedPlace[];
   isPublic: boolean;
@@ -103,13 +108,16 @@ export async function createJournal(
     throw new Error("로그인 토큰이 없습니다.");
   }
 
-  const response = await fetchWithRequiredAuth(`${API_BASE_URL}/api/v1/journals`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
+  const response = await fetchWithRequiredAuth(
+    `${API_BASE_URL}/api/v1/journals`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body),
     },
-    body: JSON.stringify(body),
-  });
+  );
 
   if (!response.ok) {
     const errorJson = await response.json().catch(() => null);
@@ -281,13 +289,16 @@ export async function patchJournal({
     throw new Error("로그인 토큰이 없습니다");
   }
 
-  const response = await fetchWithRequiredAuth(`${API_BASE_URL}/api/v1/journals/${journalId}`, {
-    method: "PATCH",
-    headers: {
-      "Content-Type": "application/json",
+  const response = await fetchWithRequiredAuth(
+    `${API_BASE_URL}/api/v1/journals/${journalId}`,
+    {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body),
     },
-    body: JSON.stringify(body),
-  });
+  );
 
   if (!response.ok) {
     const errorJson = await response.json().catch(() => null);
@@ -301,9 +312,12 @@ export async function deleteJournal(journalId: number): Promise<void> {
     throw new Error("로그인 토큰이 없습니다");
   }
 
-  const response = await fetchWithRequiredAuth(`${API_BASE_URL}/api/v1/journals/${journalId}`, {
-    method: "DELETE",
-  });
+  const response = await fetchWithRequiredAuth(
+    `${API_BASE_URL}/api/v1/journals/${journalId}`,
+    {
+      method: "DELETE",
+    },
+  );
 
   if (!response.ok) {
     const errorJson = await response.json().catch(() => null);

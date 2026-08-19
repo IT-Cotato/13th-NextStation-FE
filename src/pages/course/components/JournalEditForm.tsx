@@ -16,6 +16,11 @@ export interface JournalEditPlaceValue {
   imageUrl: string | null;
 }
 
+export interface EditPhoto {
+  photoId?: number; // 있으면 기존 사진, 없으면 새로 업로드한 사진
+  imageUrl: string;
+}
+
 export default function JournalEditForm({
   title,
   onTitleChange,
@@ -48,8 +53,8 @@ export default function JournalEditForm({
   publicOptions: string[];
   selectedPublic: string | null;
   onPublicChange: (value: string) => void;
-  photos: string[];
-  onPhotosChange: (photos: string[]) => void;
+  photos: EditPhoto[];
+  onPhotosChange: (photos: EditPhoto[]) => void;
   review: string;
   onReviewChange: (value: string) => void;
   places: JournalEditPlaceValue[];
