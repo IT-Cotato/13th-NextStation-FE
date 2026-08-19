@@ -33,7 +33,7 @@ export default function ExploreCourseCard({
     course.likeCount + (liked === originalLiked ? 0 : liked ? 1 : -1);
   const hasBackgroundImage = Boolean(course.imageUrl);
   const backgroundImage = hasBackgroundImage
-    ? `linear-gradient(to bottom, transparent 30%, rgb(255 255 255 / 60%) 66%, white), url(${course.imageUrl})`
+    ? `url(${course.imageUrl})`
     : undefined;
   const subwayLine = course.line ? getSubwayLine(course.line.code) : null;
 
@@ -82,6 +82,14 @@ export default function ExploreCourseCard({
       {!hasBackgroundImage && (
         <CardBG className="absolute inset-0 h-full w-full" aria-hidden="true" />
       )}
+      <div
+        className="pointer-events-none absolute inset-0"
+        style={{
+          backgroundImage:
+            "linear-gradient(to bottom, transparent 30%, rgb(255 255 255 / 60%) 66%, white)",
+        }}
+        aria-hidden="true"
+      />
       <CourseRankBadge className="relative z-10 self-end" rank={rank} />
       <div className="relative z-10 flex flex-col gap-2">
         <div className="inline-flex items-center gap-1 whitespace-nowrap text-body-02 text-gray-100">
