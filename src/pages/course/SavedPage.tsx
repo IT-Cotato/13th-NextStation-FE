@@ -3,11 +3,16 @@ import Header from "@/components/Header";
 import CourseSaved from "@/assets/course-saved.svg?react";
 import { useLocation, useNavigate } from "react-router-dom";
 import share from "@/utils/share";
+import {
+  buildSharedCourseMessage,
+  buildSharedCourseUrl,
+} from "@/utils/courseShare";
 import { showToast } from "./components/ShowToast";
 
 interface SavedCourseState {
   courseName: string;
   courseId: number | null;
+  shareToken: string | null;
 }
 
 export default function SavedPage() {
@@ -18,11 +23,19 @@ export default function SavedPage() {
 
   const handleShareClick = async () => {
     if (!courseInfo) return;
+    if (!courseInfo.shareToken) {
+      showToast({ message: "공유 링크를 만들지 못했습니다." });
+      return;
+    }
+
+    const shareUrl = buildSharedCourseUrl(courseInfo.shareToken);
+    const shareMessage = buildSharedCourseMessage(
+      courseInfo.courseName,
+      shareUrl,
+    );
 
     const result = await share({
-      title: `${courseInfo.courseName}를 확인해보세요!`,
-      text: courseInfo.courseName,
-      url: `https://next-station-git-develop-canofmatos-projects.vercel.app/course/${courseInfo.courseId}/verify`,
+      text: shareMessage,
     });
 
     if (result === "copiedToClipboard") {

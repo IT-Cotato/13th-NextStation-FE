@@ -23,6 +23,7 @@ import {
   copyCourse,
   getCopyPreviewCourse,
   getCourseDetail,
+  getSharedCourseDetail,
   patchCourseDetail,
   type Place,
 } from "@/api/courseDetail";
@@ -30,6 +31,10 @@ import { createCourse } from "@/api/courseRecommendation";
 import { rerollRandomCourse, type RandomCourseResponse } from "@/api/random";
 import Button from "@/components/Button";
 import CTAButton from "@/components/CTAButton";
+import {
+  buildSharedCourseMessage,
+  buildSharedCourseUrl,
+} from "@/utils/courseShare";
 import share from "@/utils/share";
 import { showToast } from "./components/ShowToast";
 import { getAccessToken } from "@/api/auth";
@@ -44,6 +49,7 @@ interface DraftCourseState {
 interface VerifyCourse {
   courseId: number | null; // null --> 아직 저장되지 않은 draft (랜덤 뽑기 결과)
   sourceCourseId: number | null;
+  shareToken: string | null;
   stationId: number;
   stationName: string;
   lineId: number;
@@ -88,20 +94,22 @@ function draftToPlaces(draft: DraftCourseState): Place[] {
 }
 
 export default function VerifyPage() {
-  const { courseId } = useParams();
+  const { courseId, shareToken } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
   const locationState = location.state as VerifyLocationState | null;
   const synced = locationState?.synced; // 장소 상세 등을 다녀온 뒤 복원할 최신 스냅샷
   const draft = !synced ? (locationState as DraftCourseState | null) : null; // Result Page에서 넘겨주는 랜덤 뽑기 결과
+  const isSharedView = Boolean(shareToken);
   const [course, setCourse] = useState<VerifyCourse | null>(() => {
     if (synced) return synced.course;
 
-    return !courseId && draft
+    return !courseId && !shareToken && draft
       ? {
           // 랜덤 뽑기 결과
           courseId: null,
           sourceCourseId: null,
+          shareToken: null,
           stationId: draft.stationId,
           stationName: draft.stationName,
           lineId: draft.lineId,
@@ -111,16 +119,20 @@ export default function VerifyPage() {
   const [places, setPlaces] = useState<Place[]>(() => {
     if (synced) return synced.places;
 
-    return !courseId && draft ? draftToPlaces(draft) : [];
+    return !courseId && !shareToken && draft ? draftToPlaces(draft) : [];
   });
-  const [isPlacesLoading, setIsPlacesLoading] = useState(!synced && !!courseId);
+  const [isPlacesLoading, setIsPlacesLoading] = useState(
+    !synced && (!!courseId || isSharedView),
+  );
   const [placesError, setPlacesError] = useState<string | null>(() =>
-    !synced && !courseId && !draft ? "코스 정보를 찾을 수 없습니다." : null,
+    !synced && !courseId && !shareToken && !draft
+      ? "코스 정보를 찾을 수 없습니다."
+      : null,
   );
   const [courseName, setCourseName] = useState(() => {
     if (synced) return synced.courseName;
 
-    return !courseId && draft ? draft.course.name : "";
+    return !courseId && !shareToken && draft ? draft.course.name : "";
   });
   const courseListRef = useRef<HTMLUListElement>(null);
   const [pressedId, setPressedId] = useState<number | null>(null);
@@ -135,42 +147,68 @@ export default function VerifyPage() {
   const isLoggedIn = Boolean(getAccessToken());
   const isRandomDraft = from === "draw" && course?.courseId === null;
   const isRecommendDraft = from === "recommend" && course?.courseId === null;
-  const isCopyPreviewDraft = from === "copy" && course?.courseId === null;
+  const isCopyPreviewDraft =
+    from === "copy" && course?.courseId === null && !isSharedView;
 
   const [loading, error] = useKakaoLoader({
     appkey: import.meta.env.VITE_KAKAO_API,
   });
 
   useEffect(() => {
-    if (!courseId || synced) return;
+    if ((!courseId && !shareToken) || synced) return;
 
     const fetchCourseData = async () => {
       try {
         setIsPlacesLoading(true);
         setPlacesError(null);
 
-        const data =
-          from === "copy"
-            ? await getCopyPreviewCourse(Number(courseId))
-            : await getCourseDetail(Number(courseId));
+        if (isSharedView && shareToken) {
+          const data = await getSharedCourseDetail(shareToken);
+          setCourse({
+            courseId: null,
+            sourceCourseId: null,
+            shareToken: data.shareToken,
+            stationId: data.stationId,
+            stationName: data.stationName,
+            lineId: data.lineId,
+          });
+          setCourseName(data.courseName);
+          setPlaces(data.places);
+          return;
+        }
 
+        if (from === "copy") {
+          const data = await getCopyPreviewCourse(Number(courseId));
+          setCourse({
+            courseId: null,
+            sourceCourseId: data.courseId,
+            shareToken: null,
+            stationId: data.stationId,
+            stationName: data.stationName,
+            lineId: data.lineId,
+          });
+          setCourseName(ensureCopyCourseName(data.courseName));
+          setPlaces(data.places);
+          return;
+        }
+
+        const data = await getCourseDetail(Number(courseId));
         setCourse({
-          courseId: from === "copy" ? null : data.courseId,
-          sourceCourseId: from === "copy" ? data.courseId : null,
+          courseId: data.courseId,
+          sourceCourseId: null,
+          shareToken: data.shareToken,
           stationId: data.stationId,
           stationName: data.stationName,
           lineId: data.lineId,
         });
-        setCourseName(
-          from === "copy"
-            ? ensureCopyCourseName(data.courseName)
-            : data.courseName,
-        );
+        setCourseName(data.courseName);
         setPlaces(data.places);
       } catch (e) {
         console.error(e);
         setPlacesError(
-          from === "copy"
+          isSharedView
+            ? "공유 코스 정보를 불러오지 못했습니다."
+            : from === "copy"
             ? "코스 미리보기를 불러오지 못했습니다."
             : "코스 상세 정보를 불러오지 못했습니다.",
         );
@@ -180,7 +218,7 @@ export default function VerifyPage() {
     };
     void fetchCourseData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [courseId, from]);
+  }, [courseId, from, isSharedView, shareToken]);
 
   // 장소 상세 페이지로 이동했다가 돌아왔을 때 순서/이름이 유지되도록 현재 히스토리 항목에 최신 상태 동기화
   // isLeavingRef가 켜져 있으면 건너뜀
@@ -196,7 +234,10 @@ export default function VerifyPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [course, places, courseName, hasUnsavedChanges]);
 
-  const handleSave = async (): Promise<number | null> => {
+  const handleSave = async (): Promise<{
+    courseId: number;
+    shareToken: string | null;
+  } | null> => {
     if (!course) return null;
 
     try {
@@ -207,7 +248,7 @@ export default function VerifyPage() {
         });
         setCourseName(updated.name);
         setHasUnsavedChanges(false);
-        return course.courseId;
+        return { courseId: course.courseId, shareToken: course.shareToken };
       }
 
       if (course.sourceCourseId) {
@@ -217,12 +258,22 @@ export default function VerifyPage() {
           copiedCourseName,
           places.map((place) => place.placeId),
         );
+        const copiedDetail = await getCourseDetail(copied.courseId);
         setCourse((prev) =>
-          prev ? { ...prev, courseId: copied.courseId } : prev,
+          prev
+            ? {
+                ...prev,
+                courseId: copied.courseId,
+                shareToken: copiedDetail.shareToken,
+              }
+            : prev,
         );
         setCourseName(ensureCopyCourseName(copied.name));
         setHasUnsavedChanges(false);
-        return copied.courseId;
+        return {
+          courseId: copied.courseId,
+          shareToken: copiedDetail.shareToken,
+        };
       }
 
       const created = await createCourse(
@@ -231,10 +282,19 @@ export default function VerifyPage() {
         places.map((place) => place.placeId),
       );
       setCourse((prev) =>
-        prev ? { ...prev, courseId: created.courseId } : prev,
+        prev
+          ? {
+              ...prev,
+              courseId: created.courseId,
+              shareToken: created.shareToken,
+            }
+          : prev,
       );
       setHasUnsavedChanges(false);
-      return created.courseId;
+      return {
+        courseId: created.courseId,
+        shareToken: created.shareToken,
+      };
     } catch (e) {
       console.error(e);
       return null;
@@ -253,17 +313,21 @@ export default function VerifyPage() {
     if (isSaving || isRerolling) return;
 
     setIsSaving(true);
-    const savedCourseId = await handleSave();
+    const savedCourse = await handleSave();
     setIsSaving(false);
 
-    if (savedCourseId === null) {
+    if (savedCourse === null) {
       showToast({ message: "코스 저장에 실패했습니다." });
       return;
     }
 
     isLeavingRef.current = true;
     navigate("/course/saved", {
-      state: { courseName, courseId: savedCourseId },
+      state: {
+        courseName,
+        courseId: savedCourse.courseId,
+        shareToken: savedCourse.shareToken,
+      },
     });
   };
 
@@ -276,12 +340,12 @@ export default function VerifyPage() {
     if (isSaving || isRerolling) return;
 
     setIsSaving(true);
-    const savedCourseId = await handleSave();
+    const savedCourse = await handleSave();
     setIsSaving(false);
 
     navigate("/course");
 
-    if (savedCourseId === null) {
+    if (savedCourse === null) {
       showToast({ message: "코스 저장에 실패했습니다." });
     }
   };
@@ -343,14 +407,27 @@ export default function VerifyPage() {
   if (!course) return null;
 
   const handleShareClick = async () => {
+    const currentShareToken = course.shareToken ?? shareToken ?? null;
+
+    if (!currentShareToken) {
+      showToast({ message: "공유 링크를 만들지 못했습니다." });
+      return;
+    }
+
+    const shareUrl = buildSharedCourseUrl(currentShareToken);
+    const shareMessage = buildSharedCourseMessage(courseName, shareUrl);
+
     await share({
-      title: `${courseName}를 확인해보세요!`,
-      text: courseName,
-      url: `https://next-station-git-develop-canofmatos-projects.vercel.app/course/${course.courseId}/verify`,
+      text: shareMessage,
     });
   };
 
   const handleCloseClick = () => {
+    if (isSharedView) {
+      navigate("/");
+      return;
+    }
+
     if (
       !isRandomDraft &&
       !isRecommendDraft &&
@@ -370,12 +447,13 @@ export default function VerifyPage() {
   };
 
   const handleCourseNameChange = (value: string) => {
+    if (isSharedView) return;
     setCourseName(value);
     setHasUnsavedChanges(true);
   };
 
   const handleReorder = (newPlaces: Place[]) => {
-    if (isRerolling) return;
+    if (isRerolling || isSharedView) return;
 
     setPlaces(newPlaces);
     setHasUnsavedChanges(true);
@@ -417,7 +495,7 @@ export default function VerifyPage() {
           <NameEditInput
             value={courseName}
             onChange={handleCourseNameChange}
-            disabled={isRerolling}
+            disabled={isRerolling || isSharedView}
           />
 
           {isMapOpen ? (
@@ -478,7 +556,9 @@ export default function VerifyPage() {
             내 코스 순서
           </p>
           <p className="text-body-02 text-gray-70 leading-[1.4] tracking-[-0.3px]">
-            장소를 길게 누르면 순서를 변경할 수 있어요!
+            {isSharedView
+              ? "공유받은 코스를 순서대로 확인해 보세요!"
+              : "장소를 길게 누르면 순서를 변경할 수 있어요!"}
           </p>
         </div>
 
@@ -495,11 +575,13 @@ export default function VerifyPage() {
             <Reorder.Item
               key={place.placeId}
               value={place}
-              drag={!isRerolling}
+              drag={!isRerolling && !isSharedView}
               dragConstraints={courseListRef}
               dragElastic={0.05}
               className="flex items-center gap-[13px]"
-              onPointerDown={() => !isRerolling && setPressedId(place.placeId)}
+              onPointerDown={() =>
+                !isRerolling && !isSharedView && setPressedId(place.placeId)
+              }
               onPointerUp={() => setPressedId(null)}
               onPointerLeave={() => setPressedId(null)}
             >
@@ -519,7 +601,11 @@ export default function VerifyPage() {
 
       {/* 하단 버튼 */}
       <section className="flex justify-center pb-[calc(var(--safe-bottom)+10px)]">
-        {isRandomDraft ? ( // 랜덤 뽑기로부터 진입한 미저장 draft
+        {isSharedView ? (
+          <div className="flex w-[360px]">
+            <CTAButton onClick={handleShareClick}>공유하기</CTAButton>
+          </div>
+        ) : isRandomDraft ? ( // 랜덤 뽑기로부터 진입한 미저장 draft
           <div className="flex w-[360px] justify-between">
             <Button
               direction="left"
