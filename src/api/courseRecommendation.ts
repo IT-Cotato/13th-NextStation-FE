@@ -1,4 +1,8 @@
-import { fetchWithRequiredAuth, getAccessToken } from "@/api/auth";
+import {
+  fetchWithOptionalAuth,
+  fetchWithRequiredAuth,
+  getAccessToken,
+} from "@/api/auth";
 import type { RecommendationTravelStyle } from "@/api/recommendation";
 export interface StationLine {
   id: number;
@@ -69,7 +73,7 @@ export async function getStationCourseRecommendation(
   stationId: number,
   travelStyles?: RecommendationTravelStyle[],
 ): Promise<StationCourseRecommendation> {
-  const response = await fetch(
+  const response = await fetchWithOptionalAuth(
     buildStationCourseRecommendationUrl(API_BASE_URL, stationId, travelStyles),
   );
   if (!response.ok) {
@@ -95,6 +99,7 @@ export async function getStationCourseRecommendation(
 export interface CreatedCourse {
   courseId: number;
   name: string;
+  shareToken: string;
   createdAt: string;
 }
 

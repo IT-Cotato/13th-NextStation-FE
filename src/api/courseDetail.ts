@@ -20,6 +20,7 @@ export interface CourseDetailResponseItem {
   // 백으로부터의 응답 형태
   courseId: number;
   name: string;
+  shareToken: string;
   stationId: number;
   stationName: string;
   line: Line;
@@ -30,6 +31,7 @@ export interface CourseDetail {
   // 프론트에서의 변수 형태
   courseId: number;
   courseName: string;
+  shareToken: string;
   stationId: number;
   stationName: string;
   lineId: number;
@@ -94,6 +96,18 @@ export interface CourseDetailData {
   isPublic: boolean;
 }
 
+function mapCourseDetail(item: CourseDetailResponseItem): CourseDetail {
+  return {
+    courseId: item.courseId,
+    courseName: item.name,
+    shareToken: item.shareToken,
+    stationId: item.stationId,
+    stationName: item.stationName,
+    lineId: item.line.id,
+    places: item.places,
+  };
+}
+
 // 내가 만든 코스 확인
 export async function getCourseDetail(courseId: number): Promise<CourseDetail> {
   if (!getAccessToken()) {
@@ -113,14 +127,25 @@ export async function getCourseDetail(courseId: number): Promise<CourseDetail> {
 
   const item: CourseDetailResponseItem = json.data;
 
-  return {
-    courseId: item.courseId,
-    courseName: item.name,
-    stationId: item.stationId,
-    stationName: item.stationName,
-    lineId: item.line.id,
-    places: item.places,
-  };
+  return mapCourseDetail(item);
+}
+
+export async function getSharedCourseDetail(
+  shareToken: string,
+): Promise<CourseDetail> {
+  const response = await fetch(
+    `${API_BASE_URL}/api/v1/courses/share/${encodeURIComponent(shareToken)}`,
+  );
+
+  if (!response.ok) {
+    throw new Error("공유 코스 정보를 불러오지 못했습니다.");
+  }
+
+  const json = await response.json();
+
+  const item: CourseDetailResponseItem = json.data;
+
+  return mapCourseDetail(item);
 }
 
 export async function getCopyPreviewCourse(

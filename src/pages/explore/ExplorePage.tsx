@@ -13,7 +13,10 @@ import ExploreCourseCard from "./components/ExploreCourseCard";
 import ExploreCourseItem from "./components/ExploreCourseItem";
 import ExploreLineTabs from "./components/ExploreLineTabs";
 import ExploreSearchBar from "./components/ExploreSearchBar";
-import { featuredConceptTours } from "./data/conceptTours";
+import {
+  featuredConceptTours,
+  getDisplayedConceptTours,
+} from "./data/conceptTours";
 import { getDisplayedExploreLines } from "./utils/exploreLines";
 
 export default function ExplorePage() {
@@ -21,16 +24,12 @@ export default function ExplorePage() {
   const [line, setLine] = useState<number | null>(null);
   const [query, setQuery] = useState("");
   const [data, setData] = useState<ExploreMainResponse | null>(null);
+  const matchedConceptTours = getDisplayedConceptTours(data?.conceptTours);
   const displayedConceptTours = featuredConceptTours.map((design) => ({
     design,
-    tour: data?.conceptTours.find(
-      (tour) => tour.conceptTourId === design.conceptTourId,
-    ) ?? {
-      conceptTourId: design.conceptTourId,
-      name: design.title,
-      description: design.description,
-      courseCount: 0,
-    },
+    tour: matchedConceptTours.find(
+      ({ design: matchedDesign }) => matchedDesign.slug === design.slug,
+    )?.tour,
   }));
   const displayedLines = getDisplayedExploreLines(data?.lines);
 
@@ -162,19 +161,21 @@ export default function ExplorePage() {
           {displayedConceptTours.map(({ tour, design }) => (
             <button
               className="flex h-20 w-full items-center justify-between overflow-hidden rounded-lg border-0 bg-gray-20 p-5 text-left outline-none focus-visible:ring-2 focus-visible:ring-primary-50"
-              key={tour.conceptTourId}
-              onClick={() =>
+              key={design.slug}
+              disabled={!tour}
+              onClick={() => {
+                if (!tour) return;
                 navigate(`/explore/concepts/${tour.conceptTourId}`, {
                   state: { conceptTour: tour },
-                })
-              }
+                });
+              }}
             >
               <span className="flex min-w-0 flex-col gap-1">
                 <span className="text-subtitle font-semibold leading-[1.4] tracking-[-0.025em]">
-                  {tour.name}
+                  {tour?.name ?? design.title}
                 </span>
                 <p className="text-body-02 tracking-[-0.025em] text-gray-70">
-                  {tour.description}
+                  {tour?.description ?? design.description}
                 </p>
               </span>
               <design.Artwork

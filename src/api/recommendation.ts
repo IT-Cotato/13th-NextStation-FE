@@ -1,3 +1,4 @@
+import { fetchWithOptionalAuth } from "@/api/auth";
 import type { SubwayLine } from "@/types/subway";
 
 const API_BASE_URL = "";
@@ -60,7 +61,7 @@ export async function getCustomRecommendation(
 ): Promise<CustomRecommendationResponseData> {
   console.log("[recommendation] request body", body);
 
-  const response = await fetch(`${API_BASE_URL}/api/v1/recommendations/custom`, {
+  const response = await fetchWithOptionalAuth(`${API_BASE_URL}/api/v1/recommendations/custom`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
