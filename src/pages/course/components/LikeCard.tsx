@@ -54,7 +54,7 @@ export default function LikeCard({
           aria-label={courseName}
           className="absolute inset-0 h-full w-full rounded-lg"
           style={{
-            background: `linear-gradient(180deg, rgba(255, 255, 255, 0.00) 50%, #555555 100%), url(${imageUrl}) lightgray 50% / cover no-repeat`,
+            background: `linear-gradient(180deg, rgba(255, 255, 255, 0.25) 0%, #000 100%), url(${imageUrl}) lightgray 50% / cover no-repeat`,
           }}
         />
       )}
@@ -77,17 +77,17 @@ export default function LikeCard({
         </button>
       ) : null}
 
-      <div className="relative z-10 flex h-full flex-col items-start justify-end gap-2 px-3 pt-[54px] pb-4">
+      <div className="relative z-10 flex h-full flex-col items-start justify-end gap-1 px-3 pt-[95px] pb-4">
         <div className="flex items-center justify-center gap-1">
           <LineBadge line={lineId} />
           <p
-            className={`text-body-02 ${textColorClass} leading-[1.4] tracking-[-0.025em] break-keep`}
+            className={`text-caption ${textColorClass} leading-[1.4] tracking-[-0.25px] break-keep`}
           >
             {stationName}
           </p>
         </div>
         <p
-          className={`text-body-01 font-semibold ${textColorClass} leading-[1.4] tracking-[-0.025em] break-keep`}
+          className={`min-h-[33.6px] text-body-02 font-semibold ${textColorClass} leading-[1.4] tracking-[-0.3px] line-clamp-2 break-keep`}
         >
           {courseName}
         </p>

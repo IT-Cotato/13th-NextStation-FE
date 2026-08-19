@@ -8,12 +8,13 @@ import {
   uploadFileToPresignedUrl,
 } from "@/api/image";
 import { showToast } from "./ShowToast";
+import type { EditPhoto } from "./JournalEditForm";
 
 const MAX_PHOTO_COUNT = 3;
 
 interface JournalEditPhotoUploaderProps {
-  photos: string[];
-  onChange: (photos: string[]) => void;
+  photos: EditPhoto[];
+  onChange: (photos: EditPhoto[]) => void;
 }
 
 export default function JournalEditPhotoUploader({
@@ -50,7 +51,7 @@ export default function JournalEditPhotoUploader({
         presignedItem.contentType,
       );
 
-      onChange([...photos, presignedItem.imageUrl]);
+      onChange([...photos, { imageUrl: presignedItem.imageUrl }]);
     } catch (error) {
       showToast({
         message:
@@ -71,7 +72,7 @@ export default function JournalEditPhotoUploader({
     if (!targetPhoto) return;
 
     try {
-      await deleteImage(targetPhoto);
+      await deleteImage(targetPhoto.imageUrl);
       onChange(photos.filter((_, index) => index !== targetIndex));
     } catch (error) {
       showToast({
@@ -88,11 +89,11 @@ export default function JournalEditPhotoUploader({
       <div className="flex w-full items-center gap-4 overflow-x-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
         {photos.map((photo, index) => (
           <div
-            key={`${photo}-${index}`}
+            key={`${photo.imageUrl}-${index}`}
             className="relative h-[260px] w-[260px] shrink-0 overflow-hidden rounded-lg"
           >
             <img
-              src={photo}
+              src={photo.imageUrl}
               alt={`upload-${index + 1}`}
               className="h-full w-full object-cover"
             />

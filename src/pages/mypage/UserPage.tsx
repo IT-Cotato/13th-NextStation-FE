@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useInView } from "react-intersection-observer";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import * as motion from "motion/react-client";
 import BaseLoading from "@/components/BaseLoading";
 import PublicJournalEmpty from "@/assets/public-journal-empty.svg?react";
@@ -19,19 +19,32 @@ import StampListView from "./components/StampListView";
 
 export default function UserPage() {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { memberId: memberIdParam } = useParams();
   const memberId = Number(memberIdParam);
   const hasValidMemberId = Number.isSafeInteger(memberId) && memberId > 0;
   const [profile, setProfile] = useState<PublicMemberProfile | null>(null);
   const [stamps, setStamps] = useState<Stamp[]>([]);
   const [journals, setJournals] = useState<PublicMemberCourse[]>([]);
-  const [isStampMode, setIsStampMode] = useState(true);
+  const isStampMode = searchParams.get("tab") !== "journal";
   const [nextCursor, setNextCursor] = useState<string | null>(null);
   const [hasNext, setHasNext] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [loadMoreError, setLoadMoreError] = useState<string | null>(null);
+
+  const handleTabChange = (tab: "stamp" | "journal") => {
+    const nextSearchParams = new URLSearchParams(searchParams);
+
+    if (tab === "journal") {
+      nextSearchParams.set("tab", "journal");
+    } else {
+      nextSearchParams.delete("tab");
+    }
+
+    setSearchParams(nextSearchParams, { replace: true });
+  };
 
   useEffect(() => {
     if (!hasValidMemberId) return;
@@ -138,7 +151,7 @@ export default function UserPage() {
         <div className="flex w-[358px] items-center rounded-[36px] bg-gray-30 p-1">
           <button
             type="button"
-            onClick={() => setIsStampMode(true)}
+            onClick={() => handleTabChange("stamp")}
             className="relative z-10 flex-1 rounded-[28px] py-2 text-center"
           >
             {isStampMode && (
@@ -161,7 +174,7 @@ export default function UserPage() {
 
           <button
             type="button"
-            onClick={() => setIsStampMode(false)}
+            onClick={() => handleTabChange("journal")}
             className="relative z-10 flex-1 rounded-[28px] py-2 text-center"
           >
             {!isStampMode && (
