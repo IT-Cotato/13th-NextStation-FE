@@ -1,3 +1,4 @@
+import { fetchWithOptionalAuth } from "@/api/auth";
 import type { SubwayLine } from "@/types/subway";
 export interface RandomStationLineResponse {
   id: SubwayLine;
@@ -49,7 +50,7 @@ export class RandomDrawNotFoundError extends Error {
 }
 
 export async function drawRandomStation(): Promise<RandomDrawResponseData> {
-  const response = await fetch(`${API_BASE_URL}/api/v1/random`, {
+  const response = await fetchWithOptionalAuth(`${API_BASE_URL}/api/v1/random`, {
     method: "POST",
   });
 
@@ -99,7 +100,7 @@ export async function drawRandomStation(): Promise<RandomDrawResponseData> {
 export async function rerollRandomCourse(
   stationId: number,
 ): Promise<RandomCourseResponse> {
-  const response = await fetch(`${API_BASE_URL}/api/v1/random/${stationId}/course`, {
+  const response = await fetchWithOptionalAuth(`${API_BASE_URL}/api/v1/random/${stationId}/course`, {
     method: "POST",
   });
 
