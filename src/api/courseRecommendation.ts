@@ -95,6 +95,7 @@ export async function getStationCourseRecommendation(
 export interface CreatedCourse {
   courseId: number;
   name: string;
+  shareToken: string;
   createdAt: string;
 }
 

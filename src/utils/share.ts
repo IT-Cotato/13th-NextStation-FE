@@ -17,8 +17,10 @@ export const share = async (
     }
   }
 
-  if (data.url) {
-    const result = await copyToClipboard(data.url);
+  const clipboardText = data.text ?? data.url;
+
+  if (clipboardText) {
+    const result = await copyToClipboard(clipboardText);
 
     if (result) {
       return "copiedToClipboard";

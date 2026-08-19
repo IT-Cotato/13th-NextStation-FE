@@ -75,7 +75,7 @@ function ResultPage() {
       </section>
 
       {/* CTA 버튼 */}
-      <section className='absolute bottom-[calc(var(--safe-bottom)+10px)] z-10 flex w-full items-center justify-between px-5'>
+      <section className='absolute bottom-[calc(var(--safe-bottom)+10px)] z-10 flex w-full items-center justify-between px-6'>
         <Button
           direction="left"
           onClick={() =>
@@ -111,7 +111,7 @@ function ResultPage() {
                 })
           }
         >
-          {isRecommendResult ? "코스 만들기" : "코스 확인하기"}
+          {isRecommendResult ? "코스 만들기" : "코스 확인"}
         </Button>
       </section>     
     </main>

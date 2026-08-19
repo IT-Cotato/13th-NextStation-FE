@@ -153,6 +153,10 @@ function App() {
                 path="/course/:courseId?/verify"
                 element={<VerifyPage />}
               />
+              <Route
+                path="/course/share/:shareToken/verify"
+                element={<VerifyPage />}
+              />
               <Route path="/course/saved" element={<SavedPage />} />
               <Route path="/course/:courseId" element={<CourseDetailPage />} />
               <Route
