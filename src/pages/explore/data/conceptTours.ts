@@ -152,11 +152,16 @@ function findMatchingConceptTour(
   design: ConceptTourDesign,
   tours: ConceptTour[],
   usedIds: Set<number>,
+  matchById = true,
 ) {
-  const byId = tours.find(
-    (tour) => !usedIds.has(tour.conceptTourId) && tour.conceptTourId === design.conceptTourId,
-  );
-  if (byId) return byId;
+  if (matchById) {
+    const byId = tours.find(
+      (tour) =>
+        !usedIds.has(tour.conceptTourId) &&
+        tour.conceptTourId === design.conceptTourId,
+    );
+    if (byId) return byId;
+  }
 
   const designNames = new Set([
     normalizeConceptText(design.title),
@@ -207,6 +212,13 @@ export function getDisplayedConceptTours(tours: ConceptTour[] = []) {
   const usedIds = new Set<number>();
 
   return tours.map((tour, index) => {
+    const matchedByName =
+      conceptTours.find((design) => {
+        if (usedIds.has(design.conceptTourId)) return false;
+
+        return !!findMatchingConceptTour(design, [tour], new Set(), false);
+      }) ?? null;
+
     const matchedById =
       conceptTours.find(
         (design) =>
@@ -215,12 +227,8 @@ export function getDisplayedConceptTours(tours: ConceptTour[] = []) {
       ) ?? null;
 
     const matchedDesign =
+      matchedByName ??
       matchedById ??
-      conceptTours.find((design) => {
-        if (usedIds.has(design.conceptTourId)) return false;
-
-        return !!findMatchingConceptTour(design, [tour], new Set());
-      }) ??
       conceptTours.find(
         (design) => !usedIds.has(design.conceptTourId),
       ) ??
