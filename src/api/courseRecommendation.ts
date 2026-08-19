@@ -117,7 +117,11 @@ export async function createCourse(
   });
 
   if (!response.ok) {
-    throw new Error("코스 생성 실패");
+    const errorJson = await response.json().catch(() => null);
+    const reason = errorJson?.reasons
+      ? Object.values(errorJson.reasons)[0]
+      : undefined;
+    throw new Error(reason ?? errorJson?.message ?? "코스 생성 실패");
   }
 
   const json = await response.json();

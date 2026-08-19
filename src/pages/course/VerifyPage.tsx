@@ -68,9 +68,7 @@ function ensureCopyCourseName(name: string) {
     return "(사본)";
   }
 
-  return trimmedName.endsWith("(사본)")
-    ? trimmedName
-    : `${trimmedName} (사본)`;
+  return trimmedName.endsWith("(사본)") ? trimmedName : `${trimmedName} (사본)`;
 }
 
 function draftToPlaces(draft: DraftCourseState): Place[] {
@@ -199,46 +197,41 @@ export default function VerifyPage() {
   const handleSave = async (): Promise<number | null> => {
     if (!course) return null;
 
-    try {
-      if (course.courseId) {
-        const updated = await patchCourseDetail(course.courseId, {
-          name: courseName,
-          placeIds: places.map((place) => place.placeId),
-        });
-        setCourseName(updated.name);
-        setHasUnsavedChanges(false);
-        return course.courseId;
-      }
+    if (course.courseId) {
+      const updated = await patchCourseDetail(course.courseId, {
+        name: courseName,
+        placeIds: places.map((place) => place.placeId),
+      });
+      setCourseName(updated.name);
+      setHasUnsavedChanges(false);
+      return course.courseId;
+    }
 
-      if (course.sourceCourseId) {
-        const copiedCourseName = ensureCopyCourseName(courseName);
-        const copied = await copyCourse(
-          course.sourceCourseId,
-          copiedCourseName,
-          places.map((place) => place.placeId),
-        );
-        setCourse((prev) =>
-          prev ? { ...prev, courseId: copied.courseId } : prev,
-        );
-        setCourseName(ensureCopyCourseName(copied.name));
-        setHasUnsavedChanges(false);
-        return copied.courseId;
-      }
-
-      const created = await createCourse(
-        course.stationId,
-        courseName,
+    if (course.sourceCourseId) {
+      const copiedCourseName = ensureCopyCourseName(courseName);
+      const copied = await copyCourse(
+        course.sourceCourseId,
+        copiedCourseName,
         places.map((place) => place.placeId),
       );
       setCourse((prev) =>
-        prev ? { ...prev, courseId: created.courseId } : prev,
+        prev ? { ...prev, courseId: copied.courseId } : prev,
       );
+      setCourseName(ensureCopyCourseName(copied.name));
       setHasUnsavedChanges(false);
-      return created.courseId;
-    } catch (e) {
-      console.error(e);
-      return null;
+      return copied.courseId;
     }
+
+    const created = await createCourse(
+      course.stationId,
+      courseName,
+      places.map((place) => place.placeId),
+    );
+    setCourse((prev) =>
+      prev ? { ...prev, courseId: created.courseId } : prev,
+    );
+    setHasUnsavedChanges(false);
+    return created.courseId;
   };
 
   const [isSaving, setIsSaving] = useState(false);
@@ -253,18 +246,25 @@ export default function VerifyPage() {
     if (isSaving || isRerolling) return;
 
     setIsSaving(true);
-    const savedCourseId = await handleSave();
-    setIsSaving(false);
 
-    if (savedCourseId === null) {
-      showToast({ message: "코스 저장에 실패했습니다." });
-      return;
+    try {
+      const savedCourseId = await handleSave();
+
+      if (savedCourseId === null) {
+        showToast({ message: "코스 저장에 실패했습니다." });
+        return;
+      }
+      isLeavingRef.current = true;
+      navigate("/course/saved", {
+        state: { courseName, courseId: savedCourseId },
+      });
+    } catch (e) {
+      showToast({
+        message: e instanceof Error ? e.message : "코스 저장에 실패했습니다.",
+      });
+    } finally {
+      setIsSaving(false);
     }
-
-    isLeavingRef.current = true;
-    navigate("/course/saved", {
-      state: { courseName, courseId: savedCourseId },
-    });
   };
 
   const handleSaveOnly = async () => {
@@ -276,13 +276,22 @@ export default function VerifyPage() {
     if (isSaving || isRerolling) return;
 
     setIsSaving(true);
-    const savedCourseId = await handleSave();
-    setIsSaving(false);
 
-    navigate("/course");
+    try {
+      const savedCourseId = await handleSave();
 
-    if (savedCourseId === null) {
-      showToast({ message: "코스 저장에 실패했습니다." });
+      if (savedCourseId === null) {
+        showToast({ message: "코스 저장에 실패했습니다." });
+        return;
+      }
+
+      navigate("/course");
+    } catch (e) {
+      showToast({
+        message: e instanceof Error ? e.message : "코스 저장에 실패했습니다.",
+      });
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -446,7 +455,10 @@ export default function VerifyPage() {
                 {places.map((place, i) => (
                   <CustomOverlayMap
                     key={place.placeId}
-                    position={{ lat: place.yCoordinate, lng: place.xCoordinate }}
+                    position={{
+                      lat: place.yCoordinate,
+                      lng: place.xCoordinate,
+                    }}
                     yAnchor={1}
                   >
                     <MapMarker number={i + 1} />

@@ -196,7 +196,8 @@ export async function copyCourse(
   const json = await response.json().catch(() => null);
 
   if (!response.ok) {
-    throw new Error(json?.message ?? "코스를 복제하지 못했습니다.");
+    const reason = json?.reasons ? Object.values(json.reasons)[0] : undefined;
+    throw new Error(reason ?? json?.message ?? "코스를 복제하지 못했습니다.");
   }
 
   return json.data;
@@ -220,7 +221,11 @@ export async function patchCourseDetail(
   });
 
   if (!response.ok) {
-    throw new Error("코스 수정 실패");
+    const errorJson = await response.json().catch(() => null);
+    const reason = errorJson?.reasons
+      ? Object.values(errorJson.reasons)[0]
+      : undefined;
+    throw new Error(reason ?? errorJson?.message ?? "코스 수정 실패");
   }
 
   const json = await response.json();
