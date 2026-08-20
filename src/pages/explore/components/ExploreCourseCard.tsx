@@ -17,7 +17,7 @@ interface ExploreCourseCardProps {
 }
 
 const CARD_GRADIENT =
-  "linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.68) 100%)";
+  "linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.75) 100%)";
 
 function getSubwayLine(code: string): SubwayLine | null {
   const matchedLine = /^LINE_([1-9])$/.exec(code);
