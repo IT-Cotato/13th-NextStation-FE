@@ -303,7 +303,7 @@ export default function TermsAgreementPage() {
         </section>
       </section>
 
-      <section className="mt-auto flex flex-col items-center gap-2 px-[15px] pb-[calc(var(--safe-bottom)+50px)]">
+      <section className="mt-auto flex flex-col items-center gap-2 px-[15px] pb-[calc(var(--safe-bottom)+10px)]">
         {submitError && (
           <p className="text-body-02 font-regular text-primary-60">
             {submitError}

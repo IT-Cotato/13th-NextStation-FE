@@ -340,7 +340,7 @@ export default function SignUpPage() {
         )}
       </section>
 
-      <section className="mt-auto flex justify-center px-[15px] pb-[calc(var(--safe-bottom)+50px)]">
+      <section className="mt-auto flex justify-center px-[15px] pb-[calc(var(--safe-bottom)+10px)]">
         <CTAButton
           submitOnEnter
           disabled={isNextDisabled}

@@ -6,7 +6,7 @@ import { STATION_STAMP_MAP } from "@/data/stampMaps";
 import type { StampDetail } from "@/api/stamp";
 import type { SubwayLine } from "@/types/subway";
 import { useRef } from "react";
-import { toPng } from "html-to-image";
+import { toBlob, toPng } from "html-to-image";
 import Star1 from "@/assets/Star1.svg?react";
 import Star2 from "@/assets/Star2.svg?react";
 import Star3 from "@/assets/Star3.svg?react";
@@ -39,12 +39,34 @@ export default function StampDetailModal({
     if (!targetRef.current) return;
 
     try {
+      const blob = await toBlob(targetRef.current);
+
+      if (blob) {
+        const file = new File([blob], `${stamp.stationName}_스탬프.png`, {
+          type: "image/png",
+        });
+
+        if (
+          typeof navigator.share === "function" &&
+          (!navigator.canShare || navigator.canShare({ files: [file] }))
+        ) {
+          await navigator.share({
+            files: [file],
+            title: `${stamp.stationName} 스탬프`,
+          });
+          return;
+        }
+      }
+
       const dataUrl = await toPng(targetRef.current);
       const link = document.createElement("a");
       link.download = `${stamp.stationName}_스탬프.png`;
       link.href = dataUrl;
       link.click();
     } catch (e) {
+      if (e instanceof Error && e.name === "AbortError") {
+        return;
+      }
       console.error(e);
     }
   };
@@ -61,6 +83,7 @@ export default function StampDetailModal({
         <StationTitle
           line={stamp.line.id as SubwayLine}
           stationName={stamp.stationName}
+          className="w-[286px] shadow-none"
         />
         {StampIcon && <StampIcon className="size-[208px]" />}
         <span className="text-body-01 text-gray-80 leading-[1.4] tracking-[-0.35px]">

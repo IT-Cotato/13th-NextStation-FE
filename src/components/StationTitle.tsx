@@ -12,6 +12,7 @@ import type { SubwayLine } from '@/types/subway';
 interface StationTitleProps {
   line: SubwayLine;
   stationName: string;
+  className?: string;
 }
 
 const LINE_STYLES = {
@@ -62,13 +63,17 @@ const LINE_STYLES = {
   }
 } as const;
 
-export default function StationTitle({ line, stationName }: StationTitleProps) {
+export default function StationTitle({
+  line,
+  stationName,
+  className = "",
+}: StationTitleProps) {
   const { border, shadow, icon:Icon } = LINE_STYLES[line];
   return (
       <div className={`
           flex w-[316px] items-center justify-start rounded-full gap-6 
           bg-white border-[10px] py-3 pl-3 pr-9
-          ${border} ${shadow}
+          ${border} ${shadow} ${className}
         `}
       >
         <Icon className="size-[52px] shrink-0"/>

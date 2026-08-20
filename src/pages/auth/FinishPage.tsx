@@ -22,7 +22,7 @@ export default function FinishPage() {
         </h1>
       </section>
 
-      <section className="flex justify-center px-[15px] pb-[calc(var(--safe-bottom)+50px)]">
+      <section className="flex justify-center px-[15px] pb-[calc(var(--safe-bottom)+10px)]">
         <CTAButton submitOnEnter onClick={() => navigate('/')}>
           환승여행 바로 시작하기
         </CTAButton>

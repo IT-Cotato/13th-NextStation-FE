@@ -101,7 +101,7 @@ export default function WelcomePage() {
         </div>
       </div>
 
-      <section className="relative z-10 flex min-h-0 flex-1 flex-col items-center px-[15px] pb-[50px]">
+      <section className="relative z-10 flex min-h-0 flex-1 flex-col items-center px-[15px] pb-[calc(var(--safe-bottom)+10px)]">
         <h1 className="sr-only">환승여행</h1>
 
         <p className="mt-[calc(var(--welcome-track-top)-28.67dvh-90px)] w-[min(184px,max(164px,42.05%))] text-center text-title-02 font-semibold leading-[1.35] tracking-[-0.025em] text-gray-80">
