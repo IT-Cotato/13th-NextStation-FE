@@ -199,10 +199,11 @@ export default function MyPage() {
       {isWithdrawalModalOpen && (
         <ConfirmModal
           message={`계정을 영구적으로\n삭제하시겠습니까?`}
-          leftButtonText="삭제"
-          rightButtonText="취소"
-          onClose={handleWithdrawal}
-          onConfirm={() => setIsWithdrawalModalOpen(false)}
+          subtitle={`탈퇴 요청 후 7일 이내에 다시 로그인하면 계정이 자동으로\n복구되며, 7일이 지나면 회원 정보가 완전히 삭제됩니다.`}
+          leftButtonText="아니오"
+          rightButtonText="예"
+          onClose={() => setIsWithdrawalModalOpen(false)}
+          onConfirm={handleWithdrawal}
         />
       )}
       {isCreateJournalModalOpen && (
@@ -264,7 +265,9 @@ export default function MyPage() {
         <div className="flex relative items-center w-[358px] rounded-[36px] bg-gray-30 p-1">
           <button
             onClick={() => setIsStampMode(true)}
-            className={"relative z-10 flex-1 rounded-[28px] text-center py-2 outline-none"}
+            className={
+              "relative z-10 flex-1 rounded-[28px] text-center py-2 outline-none"
+            }
           >
             {isStampMode && (
               <motion.div
@@ -286,7 +289,9 @@ export default function MyPage() {
 
           <button
             onClick={() => setIsStampMode(false)}
-            className={"relative z-10 flex-1 rounded-[28px] text-center py-2 outline-none"}
+            className={
+              "relative z-10 flex-1 rounded-[28px] text-center py-2 outline-none"
+            }
           >
             {!isStampMode && (
               <motion.div
