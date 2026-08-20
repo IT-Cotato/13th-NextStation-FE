@@ -14,6 +14,7 @@ export default function NameEditInput({
 }) {
   const [isEditing, setIsEditing] = useState(false);
   const [placeholder, setPlaceholder] = useState("");
+  const [prevDisabled, setPrevDisabled] = useState(disabled);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleEditToggle = () => {
@@ -26,11 +27,10 @@ export default function NameEditInput({
     });
   };
 
-  useEffect(() => {
-    if (disabled) {
-      setIsEditing(false);
-    }
-  }, [disabled]);
+  if (disabled !== prevDisabled) {
+    setPrevDisabled(disabled);
+    if (disabled) setIsEditing(false);
+  }
 
   useEffect(() => {
     if (isEditing) {
