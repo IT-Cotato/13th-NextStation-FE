@@ -31,10 +31,7 @@ import { createCourse } from "@/api/courseRecommendation";
 import { rerollRandomCourse, type RandomCourseResponse } from "@/api/random";
 import Button from "@/components/Button";
 import CTAButton from "@/components/CTAButton";
-import {
-  buildSharedCourseMessage,
-  buildSharedCourseUrl,
-} from "@/utils/courseShare";
+import { buildSharedCourseUrl } from "@/utils/courseShare";
 import share from "@/utils/share";
 import { showToast } from "./components/ShowToast";
 import { getAccessToken } from "@/api/auth";
@@ -318,7 +315,6 @@ export default function VerifyPage() {
       isLeavingRef.current = true;
       navigate("/course/saved", {
         state: {
-          courseName,
           courseId: savedCourse.courseId,
           shareToken: savedCourse.shareToken,
         },
@@ -425,10 +421,9 @@ export default function VerifyPage() {
     }
 
     const shareUrl = buildSharedCourseUrl(currentShareToken);
-    const shareMessage = buildSharedCourseMessage(courseName, shareUrl);
 
     await share({
-      text: shareMessage,
+      url: shareUrl,
     });
   };
 

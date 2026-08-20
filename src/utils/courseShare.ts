@@ -16,7 +16,3 @@ export function buildSharedCourseUrl(
 
   return `${normalizedOrigin}${buildSharedCoursePath(shareToken)}`;
 }
-
-export function buildSharedCourseMessage(courseName: string, url: string) {
-  return `${courseName}를 확인해보세요!\n${url}`;
-}

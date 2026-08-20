@@ -3,14 +3,10 @@ import Header from "@/components/Header";
 import CourseSaved from "@/assets/course-saved.svg?react";
 import { useLocation, useNavigate } from "react-router-dom";
 import share from "@/utils/share";
-import {
-  buildSharedCourseMessage,
-  buildSharedCourseUrl,
-} from "@/utils/courseShare";
+import { buildSharedCourseUrl } from "@/utils/courseShare";
 import { showToast } from "./components/ShowToast";
 
 interface SavedCourseState {
-  courseName: string;
   courseId: number | null;
   shareToken: string | null;
 }
@@ -29,13 +25,9 @@ export default function SavedPage() {
     }
 
     const shareUrl = buildSharedCourseUrl(courseInfo.shareToken);
-    const shareMessage = buildSharedCourseMessage(
-      courseInfo.courseName,
-      shareUrl,
-    );
 
     const result = await share({
-      text: shareMessage,
+      url: shareUrl,
     });
 
     if (result === "copiedToClipboard") {
