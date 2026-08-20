@@ -37,11 +37,13 @@ export default function CoursePreviewCard({
           <LineBadge line={line as SubwayLine} />
 
           {/* course info */}
-          <p
-            className={`min-h-[39.2px] ${titleColorClass} text-body-01 font-semibold line-clamp-2 break-keep leading-[1.4] tracking-[-0.35px]`}
-          >
-            {name}
-          </p>
+          <div className="flex w-full">
+            <p
+              className={`min-h-[39.2px] ${titleColorClass} text-body-01 font-semibold line-clamp-2 break-keep break-words leading-[1.4] tracking-[-0.35px]`}
+            >
+              {name}
+            </p>
+          </div>
         </div>
       </div>
     </div>
