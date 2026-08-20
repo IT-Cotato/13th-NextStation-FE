@@ -55,7 +55,7 @@ export default function ReviewCard({
             <div className="flex w-11 h-11 shrink-0 rounded-full border border-primary-20 overflow-hidden">
               <img
                 src={writerProfileImageUrl}
-                className="object-cover"
+                className="w-full h-full object-cover"
                 alt={`${writerNickname} 프로필 사진`}
               />
             </div>
