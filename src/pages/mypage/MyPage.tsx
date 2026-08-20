@@ -186,7 +186,7 @@ export default function MyPage() {
   };
 
   return (
-    <main className="flex flex-col h-dvh  bg-gray-10 pt-[calc(var(--safe-top)+12px)] overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden gap-2.5">
+    <main className="flex flex-col h-dvh  bg-gray-10 pt-[calc(var(--safe-top)+12px)] pb-[var(--bottom-nav-offset)] overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden gap-2.5">
       {isLogoutModalOpen && (
         <ConfirmModal
           message="로그아웃 하시겠습니까?"
@@ -309,7 +309,7 @@ export default function MyPage() {
       </section>
 
       {/* list */}
-      <section className="flex justify-center pb-20">
+      <section className="flex justify-center pb-4">
         {isStampMode ? (
           <StampListView />
         ) : isJournalsLoading ? (

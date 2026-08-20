@@ -142,7 +142,7 @@ export default function MainPage() {
   };
 
   return (
-    <main className="flex h-dvh flex-col overflow-y-auto bg-gray-10 pt-[calc(var(--safe-top)+12px)] [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+    <main className="flex h-dvh flex-col overflow-y-auto bg-gray-10 pt-[calc(var(--safe-top)+12px)] pb-[var(--bottom-nav-offset)] [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
       <header className="flex w-full items-center justify-between px-[15px]">
         <span className="text-title-02 font-semibold leading-[1.4] tracking-[-0.45px]">
           내가 만든 코스
@@ -198,7 +198,7 @@ export default function MainPage() {
         </div>
       </section>
 
-      <section className="flex justify-center pb-25">
+      <section className="flex justify-center pb-4">
         {isCourseEmpty || isFilteredCoursesEmpty ? (
           <div className="flex flex-col gap-5 items-center justify-center pt-20">
             <CourseEmpty />
