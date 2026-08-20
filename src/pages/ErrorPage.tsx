@@ -18,7 +18,7 @@ export default function ErrorPage() {
             onClick={() => navigate(`/main`)}
             className="inline-flex items-center justify-center rounded-lg bg-secondary-10 hover:bg-secondary-20 px-3 py-2 text-body-01 text-primary-60"
           >
-            메인 홈으로 돌아가기
+            홈으로 돌아가기
           </button>
         </div>
       </div>
