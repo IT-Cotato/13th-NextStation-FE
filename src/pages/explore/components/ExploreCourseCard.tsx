@@ -38,6 +38,7 @@ export default function ExploreCourseCard({
   const backgroundImage = hasBackgroundImage
     ? `${CARD_GRADIENT}, url(${course.imageUrl})`
     : undefined;
+  const textColorClass = hasBackgroundImage ? "text-white" : "text-gray-100";
   const subwayLine = course.line ? getSubwayLine(course.line.code) : null;
 
   const handleLike = async () => {
@@ -83,27 +84,24 @@ export default function ExploreCourseCard({
       tabIndex={onClick ? 0 : undefined}
     >
       {!hasBackgroundImage && (
-        <>
-          <CardBG className="absolute inset-0 h-full w-full" aria-hidden="true" />
-          <div
-            className="absolute inset-0"
-            style={{ backgroundImage: CARD_GRADIENT }}
-            aria-hidden="true"
-          />
-        </>
+        <CardBG className="absolute inset-0 h-full w-full" aria-hidden="true" />
       )}
       <CourseRankBadge className="relative z-10 self-end" rank={rank} />
       <div className="relative z-10 flex w-[112px] flex-col gap-[9px]">
-        <div className="inline-flex items-center gap-1 whitespace-nowrap text-body-02 text-white">
+        <div
+          className={`inline-flex items-center gap-1 whitespace-nowrap text-body-02 ${textColorClass}`}
+        >
           {subwayLine && <LineBadge line={subwayLine} />}
           {course.stationName}
         </div>
-        <p className="line-clamp-2 break-keep break-words text-subtitle font-semibold leading-[1.4] tracking-[-0.025em] text-white">
+        <p
+          className={`line-clamp-2 break-keep break-words text-subtitle font-semibold leading-[1.4] tracking-[-0.025em] ${textColorClass}`}
+        >
           {course.name}
         </p>
         <button
           type="button"
-          className="inline-flex items-center gap-0.5 self-start border-0 bg-transparent p-0 text-caption text-white"
+          className={`inline-flex items-center gap-0.5 self-start border-0 bg-transparent p-0 text-caption ${textColorClass}`}
           aria-label={liked ? "좋아요 완료" : "좋아요"}
           aria-pressed={liked}
           disabled={isLikePending}
@@ -113,9 +111,15 @@ export default function ExploreCourseCard({
           }}
         >
           {liked ? (
-            <HeartFilled className="size-3" aria-hidden="true" />
+            <HeartFilled
+              className={`size-3 ${textColorClass} [&_path]:fill-current`}
+              aria-hidden="true"
+            />
           ) : (
-            <Heart className="size-3" aria-hidden="true" />
+            <Heart
+              className={`size-3 ${textColorClass} [&_path]:stroke-current`}
+              aria-hidden="true"
+            />
           )}
           {likeCount}
         </button>
