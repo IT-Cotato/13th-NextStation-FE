@@ -76,6 +76,12 @@
 
   --color-subway-9-light: #fffdd2;
   --color-subway-9-dark: #bfb85e;
+
+  --radius-sm: 4px; /* 작은 요소의 둥근 모서리. 버튼, 입력창 등에 사용 */
+  --radius-md: 8px; /* 중간 크기 요소의 둥근 모서리. 카드, 리스트 아이템 등에 사용 */
+  --radius-ml: 16px; /* 이미지 요소 등에 사용 */
+  --radius-lg: 20px; /* 큰 요소의 둥근 모서리. 큰 패널, 바텀시트 등에 사용 */
+  --radius-full: 9999px;
 }
 
 @layer base {
@@ -90,12 +96,6 @@
 
     --spacing-page-x: 20px; /* 페이지 좌우 기본 여백 */
     --spacing-page-y: 16px; /* 페이지 상하 기본 여백 */
-
-    --radius-sm: 4px; /* 작은 요소의 둥근 모서리. 버튼, 입력창 등에 사용 */
-    --radius-md: 8px; /* 중간 크기 요소의 둥근 모서리. 카드, 리스트 아이템 등에 사용 */
-    --radius-ml: 16px; /* 이미지 요소 등에 사용 */
-    --radius-lg: 20px; /* 큰 요소의 둥근 모서리. 큰 패널, 바텀시트 등에 사용 */
-    --radius-full: 9999px;
 
     --header-height: 44px; /* 상단 헤더의 기본 높이 */
     --bottom-nav-height: 72px; /* 하단 네비게이션 바의 기본 높이 */
