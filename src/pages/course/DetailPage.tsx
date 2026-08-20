@@ -622,9 +622,9 @@ export default function DetailPage() {
       )}
 
       {!isEditMode && (
-        <section className="flex items-start px-[15px] pb-7 pt-0">
+        <section className="flex items-start px-[15px] pb-7">
           <StarOne className="size-[68px] shrink-0" aria-hidden="true" />
-          <p className="-ml-[47px] mt-12 whitespace-pre-line px-[21px] text-body-01 leading-[1.8] tracking-[-0.025em] break-keep z-10">
+          <p className="-ml-[50px] mt-12 whitespace-pre-line text-body-01 leading-[1.8] tracking-[-0.025em] break-keep z-10">
             {course.review}
           </p>
         </section>
