@@ -26,9 +26,9 @@ export default function BottomNav({ mode, activeTab = 'save' }: BottomNavProps) 
 
   return (
     <>
-      <nav className="absolute left-1/2 bottom-[calc(var(--safe-bottom)+0px)] z-50 -translate-x-1/2">
+      <nav className="pointer-events-none fixed inset-x-0 bottom-[calc(var(--safe-bottom)+0px)] z-50 flex justify-center">
         {mode === 'main' ? (
-        <div className={`${glassPillClassName} gap-1 p-1`}>
+        <div className={`${glassPillClassName} pointer-events-auto gap-1 p-1`}>
           <div className="pointer-events-none absolute inset-x-3 top-1 h-[16px] rounded-full bg-white/25 blur-md" />
           <button className={`relative flex flex-col items-center gap-1 rounded-[38px] px-10 py-2 text-body-02 font-semibold leading-none whitespace-nowrap tracking-[-0.025em] text-center outline-none ${activeTabClassName}`}>
             <DrawIcon className="size-[30px]"/>
@@ -55,7 +55,7 @@ export default function BottomNav({ mode, activeTab = 'save' }: BottomNavProps) 
         </div>
         ) : (
         // 코스 Nav
-        <div className="flex items-center gap-4">
+        <div className="pointer-events-auto flex items-center gap-4">
 
           <button 
             onClick={() => navigate(`/main`)}
