@@ -14,6 +14,7 @@ export default function NameEditInput({
 }) {
   const [isEditing, setIsEditing] = useState(false);
   const [placeholder, setPlaceholder] = useState("");
+  const [prevDisabled, setPrevDisabled] = useState(disabled);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleEditToggle = () => {
@@ -26,11 +27,10 @@ export default function NameEditInput({
     });
   };
 
-  useEffect(() => {
-    if (disabled) {
-      setIsEditing(false);
-    }
-  }, [disabled]);
+  if (disabled !== prevDisabled) {
+    setPrevDisabled(disabled);
+    if (disabled) setIsEditing(false);
+  }
 
   useEffect(() => {
     if (isEditing) {
@@ -44,7 +44,7 @@ export default function NameEditInput({
       className={`flex relative items-center rounded-lg p-2.5 bg-white border border-gray-40 font-semibold placeholder:text-gray-50 ${className} `}
     >
       <input
-        className="w-full text-center outline-none text-subtitle font-semibold leading-[1.4] tracking-[-0.4px] placeholder:text-gray-50 caret-primary-50"
+        className="w-full text-center pr-8 outline-none text-subtitle font-semibold leading-[1.4] tracking-[-0.4px] placeholder:text-gray-50 caret-primary-50"
         readOnly={!isEditing || disabled}
         disabled={disabled}
         ref={inputRef}

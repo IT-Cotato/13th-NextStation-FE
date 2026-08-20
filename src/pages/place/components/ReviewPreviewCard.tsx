@@ -20,7 +20,7 @@ export default function ReviewPreviewCard({
             <img
               src={writerProfileImageUrl}
               alt={`${writerNickname} 프로필 사진`}
-              className="object-cover"
+              className="w-full h-full object-cover"
             />
           </div>
         )}
