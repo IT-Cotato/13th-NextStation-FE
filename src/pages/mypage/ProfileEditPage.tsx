@@ -117,10 +117,10 @@ export default function ProfileEditPage() {
   };
 
   return (
-    <main className="relative flex flex-col h-dvh overflow-hidden bg-white gap-8 pt-[calc(var(--safe-top)+12px)]">
+    <main className="relative flex flex-col h-dvh overflow-hidden bg-white pt-[calc(var(--safe-top)+12px)]">
       <Header showBack />
 
-      <section className="flex justify-center">
+      <section className="flex justify-center pb-12">
         <div className="flex w-[360px]">
           <span className="text-title-01 text-gray-100 font-semibold leading-[1.4] tracking-[-0.5px]">
             프로필 수정
@@ -129,7 +129,7 @@ export default function ProfileEditPage() {
       </section>
 
       {/* profile image */}
-      <section className="flex justify-center">
+      <section className="flex justify-center pb-12">
         <div className="flex flex-col w-[360px] gap-4">
           <span className="text-subtitle text-gray-100 font-semibold leading-[1.4] tracking-[-0.4px]">
             프로필 사진 (선택)
@@ -155,7 +155,7 @@ export default function ProfileEditPage() {
       </section>
 
       {/* button */}
-      <section className="flex justify-center">
+      <section className="mt-auto flex justify-center px-[15px] pb-[calc(var(--safe-bottom)+10px)]">
         <div className="flex flex-col items-center gap-2 w-[360px]">
           {profileError && (
             <p className="text-body-02 leading-[1.4] tracking-[-0.3px] text-primary-60">
