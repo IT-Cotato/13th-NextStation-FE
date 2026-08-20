@@ -1,0 +1,32 @@
+name: Discord Alert
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Send Discord message
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            CONTENT="PR 알림
+제목: ${{ github.event.pull_request.title }}
+작성자: ${{ github.event.pull_request.user.login }}
+링크: ${{ github.event.pull_request.html_url }}"
+          else
+            CONTENT="Push 알림
+브랜치: ${{ github.ref_name }}
+커밋: ${{ github.event.head_commit.message }}
+링크: https://github.com/${{ github.repository }}/commit/${{ github.sha }}"
+          fi
+
+          curl -H "Content-Type: application/json" \
+            -d "$(jq -n --arg content "$CONTENT" '{content: $content}')" \
+            "$DISCORD_WEBHOOK"
