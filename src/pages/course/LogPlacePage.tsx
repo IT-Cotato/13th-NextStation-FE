@@ -42,7 +42,7 @@ function LogPlacePage() {
 
       <section className="flex flex-col w-[360px] gap-4">
         <div className="flex flex-col items-start gap-2">
-          <div className="flex justify-center gap-1">
+          <div className="flex items-center justify-center gap-1">
             <p className="text-subtitle font-semibold text-gray-100 leading-[1.4] tracking-[-0.025em]">
               다녀온 장소 후기
             </p>

@@ -61,7 +61,7 @@ export default function SavedPage() {
         </div>
       </section>
 
-      <section className="flex flex-col gap-4 pb-[10px]">
+      <section className="flex flex-col gap-4 pb-[calc(var(--safe-bottom)+10px)]">
         <span className="text-gray-70 text-body-01 text-center leading-[1.4] tracking-[-0.35px]">
           같이 떠날 친구에게 코스를 공유해 보세요!
         </span>
