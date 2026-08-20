@@ -120,7 +120,7 @@ export default function LoginPage() {
         </div>
       </section>
 
-      <div className="mt-auto flex justify-center px-[15px] pb-[calc(var(--safe-bottom)+50px)]">
+      <div className="mt-auto flex justify-center px-[15px] pb-[calc(var(--safe-bottom)+10px)]">
         <CTAButton
           submitOnEnter
           disabled={isLoginDisabled}

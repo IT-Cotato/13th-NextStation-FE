@@ -315,7 +315,7 @@ export default function PasswordResetPage() {
         )}
       </section>
 
-      <section className="mt-auto flex justify-center px-[15px] pb-[calc(var(--safe-bottom)+50px)]">
+      <section className="mt-auto flex justify-center px-[15px] pb-[calc(var(--safe-bottom)+10px)]">
         <div className="flex w-full flex-col items-center gap-2">
           {submitError && (
             <p className="text-body-02 font-regular leading-[1.4] text-primary-60">
