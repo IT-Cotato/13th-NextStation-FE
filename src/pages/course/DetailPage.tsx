@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import BackIcon from "@/assets/back.svg?react";
 import HeartIcon from "@/assets/heart.svg?react";
@@ -120,10 +120,9 @@ export default function DetailPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [isCopying, setIsCopying] = useState(false);
   const [isJournalSettingOpen, setIsJournalSettingOpen] = useState(false);
-  const slideImages = course?.images;
-  const isImageEmpty = (slideImages?.length ?? 0) < 1;
-  const [, setIndex] = useState(0);
-  const sliderRef = useRef<HTMLDivElement>(null);
+  const journalImagesSrcs = course?.images.map((image) => image.src) ?? [];
+  const isImageEmpty = (course?.images?.length ?? 0) < 1;
+  const imageCount = course?.images?.length;
   const [isEditMode, setIsEditMode] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [editTitle, setEditTitle] = useState("");
@@ -215,12 +214,6 @@ export default function DetailPage() {
     }
   };
 
-  const handleSliderScroll = () => {
-    const slider = sliderRef.current;
-    if (!slider) return;
-    setIndex(Math.round(slider.scrollLeft / slider.clientWidth));
-  };
-
   if (!hasValidJournalId || isLoading || !course) {
     return (
       <main className="mx-auto min-h-dvh w-full max-w-[390px] bg-gray-10 text-gray-100">
@@ -307,7 +300,7 @@ export default function DetailPage() {
         .filter((id) => currentPhotoIds.includes(id))
         .map((photoId) => ({ photoId, imageAction: "KEEP" as const })),
 
-      //DELETE
+      // DELETE
       ...originalPhotoIds
         .filter((id) => !currentPhotoIds.includes(id))
         .map((photoId) => ({ photoId, imageAction: "DELETE" as const })),
@@ -594,29 +587,46 @@ export default function DetailPage() {
 
       {!isEditMode && !isImageEmpty && (
         <section
-          className="h-[292px] w-full shrink-0 touch-pan-x overflow-x-auto overflow-y-hidden overscroll-x-contain [scrollbar-width:none]"
+          className="px-[30px] py-4 shrink-0 items-center justify-center"
           aria-label="코스 사진"
           tabIndex={0}
         >
-          <div className="flex p-4">
-            <div
-              ref={sliderRef}
-              onScroll={handleSliderScroll}
-              className="flex gap-5 overflow-x-auto snap-x snap-mandatory [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
-            >
-              {slideImages?.map((image, i) => (
-                <div
-                  className="relative shrink-0 snap-start w-[260px] h-[260px]"
-                  key={i}
-                >
+          <div className="flex w-full h-[260px]">
+            {imageCount === 1 ? (
+              <div className="relative shrink-0 w-full h-full">
+                <img
+                  src={journalImagesSrcs[0]}
+                  className="rounded-2xl w-full h-full object-cover"
+                />
+              </div>
+            ) : imageCount === 2 ? (
+              <div className="flex relative shrink-0 gap-2 w-full h-full">
+                {journalImagesSrcs.map((image, index) => (
                   <img
-                    src={image.src}
-                    alt={image.alt}
-                    className="rounded-lg w-full h-full object-cover"
+                    src={image}
+                    key={index}
+                    className="flex-1 min-w-0 rounded-2xl h-full object-cover"
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="flex relative gap-2 w-full h-full">
+                <img
+                  src={journalImagesSrcs[0]}
+                  className="rounded-2xl min-w-0 flex-1 h-full object-cover"
+                />
+                <div className="flex flex-col gap-2 min-w-0 flex-1 h-full">
+                  <img
+                    src={journalImagesSrcs[1]}
+                    className="rounded-2xl w-full min-h-0 flex-1 object-cover"
+                  />
+                  <img
+                    src={journalImagesSrcs[2]}
+                    className="rounded-2xl w-full min-h-0 flex-1 object-cover"
                   />
                 </div>
-              ))}
-            </div>
+              </div>
+            )}
           </div>
         </section>
       )}
