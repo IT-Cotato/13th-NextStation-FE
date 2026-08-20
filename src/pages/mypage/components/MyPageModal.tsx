@@ -32,7 +32,7 @@ export default function MyPageModal({
             {content}
           </p>
           {subtitle && (
-            <p className="text-center text-gray-60 text-body-01 leading-[1.4] tracking-[-0.35px]">
+            <p className="text-center text-gray-60 text-body-01 leading-[1.4] tracking-[-0.35px] whitespace-pre-line">
               {subtitle}
             </p>
           )}

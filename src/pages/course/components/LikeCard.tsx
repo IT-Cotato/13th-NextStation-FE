@@ -86,11 +86,13 @@ export default function LikeCard({
             {stationName}
           </p>
         </div>
-        <p
-          className={`min-h-[33.6px] text-body-02 font-semibold ${textColorClass} leading-[1.4] tracking-[-0.3px] line-clamp-2 break-keep`}
-        >
-          {courseName}
-        </p>
+        <div className="flex w-full">
+          <p
+            className={`min-h-[33.6px] text-body-02 font-semibold ${textColorClass} leading-[1.4] tracking-[-0.3px] line-clamp-2 break-keep break-words`}
+          >
+            {courseName}
+          </p>
+        </div>
       </div>
     </div>
   );
