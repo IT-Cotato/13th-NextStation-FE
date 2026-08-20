@@ -1,5 +1,11 @@
 import { Component, lazy, Suspense, type ReactNode } from "react";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import {
+  BrowserRouter,
+  Route,
+  Routes,
+  useLocation,
+  type Location,
+} from "react-router-dom";
 import BaseLoading from "@/components/BaseLoading";
 import { AuthProvider } from "@/contexts/auth";
 import { LogDraftProvider } from "@/pages/course/contexts/LogDraftContext";
@@ -79,6 +85,7 @@ const UnwrittenJournalListPage = lazy(
 
 interface RouteErrorBoundaryProps {
   children: ReactNode;
+  location: Location;
 }
 
 interface RouteErrorBoundaryState {
@@ -97,6 +104,15 @@ class RouteErrorBoundary extends Component<
     return { hasError: true };
   }
 
+  componentDidUpdate(prevProps: RouteErrorBoundaryProps) {
+    if (
+      this.state.hasError &&
+      prevProps.location.pathname !== this.props.location.pathname
+    ) {
+      this.setState({ hasError: false });
+    }
+  }
+
   render() {
     if (this.state.hasError) {
       return <ErrorPage />;
@@ -106,110 +122,117 @@ class RouteErrorBoundary extends Component<
   }
 }
 
+function AppRoutes() {
+  const location = useLocation();
+
+  return (
+    <RouteErrorBoundary location={location}>
+      <Suspense fallback={<RouteFallback />}>
+        <Routes>
+        <Route path="/" element={<SplashPage />} />
+        <Route path="/main" element={<MainPage />} />
+        <Route path="/error" element={<ErrorPage />} />
+
+        {/* auth */}
+        <Route path="/auth" element={<WelcomePage />} />
+        <Route path="/auth/login" element={<LoginPage />} />
+        <Route
+          path="/auth/kakao/callback"
+          element={<KakaoCallbackPage />}
+        />
+        <Route path="/auth/sign-up" element={<SignUpPage />} />
+        <Route path="/auth/terms" element={<TermsAgreementPage />} />
+        <Route path="/auth/terms/:type" element={<TermDetailPage />} />
+        <Route
+          path="/auth/reset-password"
+          element={<PasswordResetPage />}
+        />
+        <Route path="/auth/profile" element={<ProfileSetupPage />} />
+        <Route path="/auth/finish" element={<FinishPage />} />
+
+        {/* draw */}
+        <Route path="/draw/loading" element={<LoadingPage />} />
+        <Route path="/draw/result" element={<ResultPage />} />
+        <Route path="/draw/recommend" element={<RecommendPage />} />
+        <Route path="/draw/condition" element={<ConditionPage />} />
+        <Route path="/draw/preference" element={<PreferencePage />} />
+
+        {/* course */}
+        <Route path="/course" element={<CourseMainPage />} />
+        <Route path="/course/like" element={<LikePage />} />
+        <Route
+          path="/course/:stationId/create"
+          element={<CreatePage />}
+        />
+        <Route
+          path="/course/:courseId?/verify"
+          element={<VerifyPage />}
+        />
+        <Route
+          path="/course/share/:shareToken/verify"
+          element={<VerifyPage />}
+        />
+        <Route path="/course/saved" element={<SavedPage />} />
+        <Route path="/course/:courseId" element={<CourseDetailPage />} />
+        <Route
+          path="/course/:courseId/stamp"
+          element={<StampAcquiredPage />}
+        />
+        <Route path="/course/:courseId/log" element={<LogIntroPage />} />
+        <Route
+          path="/course/:courseId/log/info"
+          element={<LogInfoPage />}
+        />
+        <Route
+          path="/course/:courseId/log/place"
+          element={<LogPlacePage />}
+        />
+        <Route
+          path="/course/:courseId/log/visibility"
+          element={<LogVisibilityPage />}
+        />
+
+        {/* explore */}
+        <Route path="/explore" element={<ExplorePage />} />
+        <Route path="/explore/popular" element={<PopularCoursesPage />} />
+        <Route path="/explore/concepts" element={<ConceptToursPage />} />
+        <Route
+          path="/explore/concepts/:conceptId"
+          element={<ConceptDetailPage />}
+        />
+        <Route path="/explore/search" element={<SearchResultsPage />} />
+        <Route path="/explore/lines" element={<LineCoursesPage />} />
+
+        {/* place */}
+        <Route path="/place/:placeId" element={<DetailPage />} />
+        <Route
+          path="/place/:placeId/reviews"
+          element={<ReviewListPage />}
+        />
+
+        {/* mypage */}
+        <Route path="/mypage" element={<MyPage />} />
+        <Route path="/mypage/edit" element={<ProfileEditPage />} />
+        <Route
+          path="/profile/:memberId"
+          element={<UserPage />}
+        />
+        <Route
+          path="/mypage/journal/unwritten"
+          element={<UnwrittenJournalListPage />}
+        />
+        </Routes>
+      </Suspense>
+    </RouteErrorBoundary>
+  );
+}
+
 function App() {
   return (
     <LogDraftProvider>
       <AuthProvider>
         <BrowserRouter>
-          <RouteErrorBoundary>
-            <Suspense fallback={<RouteFallback />}>
-              <Routes>
-              <Route path="/" element={<SplashPage />} />
-              <Route path="/main" element={<MainPage />} />
-              <Route path="/error" element={<ErrorPage />} />
-
-              {/* auth */}
-              <Route path="/auth" element={<WelcomePage />} />
-              <Route path="/auth/login" element={<LoginPage />} />
-              <Route
-                path="/auth/kakao/callback"
-                element={<KakaoCallbackPage />}
-              />
-              <Route path="/auth/sign-up" element={<SignUpPage />} />
-              <Route path="/auth/terms" element={<TermsAgreementPage />} />
-              <Route path="/auth/terms/:type" element={<TermDetailPage />} />
-              <Route
-                path="/auth/reset-password"
-                element={<PasswordResetPage />}
-              />
-              <Route path="/auth/profile" element={<ProfileSetupPage />} />
-              <Route path="/auth/finish" element={<FinishPage />} />
-
-              {/* draw */}
-              <Route path="/draw/loading" element={<LoadingPage />} />
-              <Route path="/draw/result" element={<ResultPage />} />
-              <Route path="/draw/recommend" element={<RecommendPage />} />
-              <Route path="/draw/condition" element={<ConditionPage />} />
-              <Route path="/draw/preference" element={<PreferencePage />} />
-
-              {/* course */}
-              <Route path="/course" element={<CourseMainPage />} />
-              <Route path="/course/like" element={<LikePage />} />
-              <Route
-                path="/course/:stationId/create"
-                element={<CreatePage />}
-              />
-              <Route
-                path="/course/:courseId?/verify"
-                element={<VerifyPage />}
-              />
-              <Route
-                path="/course/share/:shareToken/verify"
-                element={<VerifyPage />}
-              />
-              <Route path="/course/saved" element={<SavedPage />} />
-              <Route path="/course/:courseId" element={<CourseDetailPage />} />
-              <Route
-                path="/course/:courseId/stamp"
-                element={<StampAcquiredPage />}
-              />
-              <Route path="/course/:courseId/log" element={<LogIntroPage />} />
-              <Route
-                path="/course/:courseId/log/info"
-                element={<LogInfoPage />}
-              />
-              <Route
-                path="/course/:courseId/log/place"
-                element={<LogPlacePage />}
-              />
-              <Route
-                path="/course/:courseId/log/visibility"
-                element={<LogVisibilityPage />}
-              />
-
-              {/* explore */}
-              <Route path="/explore" element={<ExplorePage />} />
-              <Route path="/explore/popular" element={<PopularCoursesPage />} />
-              <Route path="/explore/concepts" element={<ConceptToursPage />} />
-              <Route
-                path="/explore/concepts/:conceptId"
-                element={<ConceptDetailPage />}
-              />
-              <Route path="/explore/search" element={<SearchResultsPage />} />
-              <Route path="/explore/lines" element={<LineCoursesPage />} />
-
-              {/* place */}
-              <Route path="/place/:placeId" element={<DetailPage />} />
-              <Route
-                path="/place/:placeId/reviews"
-                element={<ReviewListPage />}
-              />
-
-              {/* mypage */}
-              <Route path="/mypage" element={<MyPage />} />
-              <Route path="/mypage/edit" element={<ProfileEditPage />} />
-              <Route
-                path="/profile/:memberId"
-                element={<UserPage />}
-              />
-              <Route
-                path="/mypage/journal/unwritten"
-                element={<UnwrittenJournalListPage />}
-              />
-              </Routes>
-            </Suspense>
-          </RouteErrorBoundary>
-
+          <AppRoutes />
           <Toast />
         </BrowserRouter>
       </AuthProvider>
