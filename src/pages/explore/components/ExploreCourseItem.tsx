@@ -92,7 +92,11 @@ export default function ExploreCourseItem({
           />
         )}
         {rank && (
-          <CourseRankBadge className="col-start-1 row-start-1" rank={rank} />
+          <CourseRankBadge
+            className="col-start-1 row-start-1"
+            rank={rank}
+            variant="list"
+          />
         )}
       </div>
       <div className="flex min-w-0 flex-1 flex-col justify-center gap-2.5">

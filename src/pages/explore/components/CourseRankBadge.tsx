@@ -1,20 +1,25 @@
 import RankStar from "@/assets/explore/rank-star.svg?react";
+import RankStar2 from "@/assets/explore/rank-star2.svg?react";
 
 interface CourseRankBadgeProps {
   rank: number;
   className?: string;
+  variant?: "card" | "list";
 }
 
 export default function CourseRankBadge({
   rank,
   className = "",
+  variant = "card",
 }: CourseRankBadgeProps) {
+  const RankIcon = variant === "list" ? RankStar2 : RankStar;
+
   return (
     <span
       className={`relative grid size-[42px] place-items-center ${className}`}
       aria-label={`${rank}위`}
     >
-      <RankStar
+      <RankIcon
         className="col-start-1 row-start-1 h-10 w-[35px]"
         aria-hidden="true"
       />
