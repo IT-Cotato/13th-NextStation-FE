@@ -84,7 +84,7 @@ export default function ExplorePage() {
   );
 
   return (
-    <main className="flex h-dvh flex-col bg-gray-10 gap-3 pt-[calc(var(--safe-top)+12px)] text-gray-100 overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+    <main className="flex h-dvh flex-col bg-gray-10 gap-3 pt-[calc(var(--safe-top)+12px)] pb-[var(--bottom-nav-offset)] text-gray-100 overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
       <header className="flex items-start justify-between px-[15px]">
         <h1 className="text-title-01 font-semibold leading-[1.4] tracking-[-0.025em]">
           오늘은 어떤 환승여행을
@@ -187,7 +187,7 @@ export default function ExplorePage() {
         </div>
       </section>
 
-      <section className="pb-25">
+      <section className="pb-6">
         <div className="flex items-center justify-between px-[15px]">
           <h2 className="text-title-02 font-semibold leading-[1.4] tracking-[-0.025em]">
             노선 따라 둘러보기
