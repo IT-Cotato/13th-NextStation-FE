@@ -2,7 +2,6 @@
 @import "tailwindcss";
 
 @theme {
-
   /* font-size */
   --text-headline: 24px;
   --text-title-01: 20px;
@@ -22,61 +21,61 @@
   /* color  */
   --color-white: #fff;
 
-  --color-primary-10: #FFF6EB;
-  --color-primary-20: #FFEAD8;
-  --color-primary-30: #FFDCC5;
-  --color-primary-40: #FFCEB7;
-  --color-primary-50: #FFB89F; /* main */
-  --color-primary-60: #DB8774;
-  --color-primary-70: #B75C50;
+  --color-primary-10: #fff6eb;
+  --color-primary-20: #ffead8;
+  --color-primary-30: #ffdcc5;
+  --color-primary-40: #ffceb7;
+  --color-primary-50: #ffb89f; /* main */
+  --color-primary-60: #db8774;
+  --color-primary-70: #b75c50;
   --color-primary-80: #933732;
-  --color-primary-90: #7A1E20;
+  --color-primary-90: #7a1e20;
   --color-primary-100: #551618;
 
-  --color-secondary-10: #FFF5F0;
-  --color-secondary-20: #FFE9E2;
-  --color-secondary-30: #FFDBD4;
-  --color-secondary-40: #FFCEC9;
-  --color-secondary-50: #FFB8B8;
-  --color-secondary-60: #DB868D;
+  --color-secondary-10: #fff5f0;
+  --color-secondary-20: #ffe9e2;
+  --color-secondary-30: #ffdbd4;
+  --color-secondary-40: #ffcec9;
+  --color-secondary-50: #ffb8b8;
+  --color-secondary-60: #db868d;
 
-  --color-gray-10: #F8F8F8;
-  --color-gray-20: #F0F0F0;
-  --color-gray-30: #E6E6E6;
-  --color-gray-40: #D5D5D5;
-  --color-gray-50: #B1B1B1;
+  --color-gray-10: #f8f8f8;
+  --color-gray-20: #f0f0f0;
+  --color-gray-30: #e6e6e6;
+  --color-gray-40: #d5d5d5;
+  --color-gray-50: #b1b1b1;
   --color-gray-60: #909090;
   --color-gray-70: #696969;
   --color-gray-80: #555555;
   --color-gray-90: #373737;
   --color-gray-100: #171717;
 
-  --color-subway-1-light: #D7E7FF;
-  --color-subway-1-dark: #7BA1FF;
+  --color-subway-1-light: #d7e7ff;
+  --color-subway-1-dark: #7ba1ff;
 
-  --color-subway-2-light: #E6FCE9;
-  --color-subway-2-dark: #73BF7D;
+  --color-subway-2-light: #e6fce9;
+  --color-subway-2-dark: #73bf7d;
 
-  --color-subway-3-light: #FFE8CA;
-  --color-subway-3-dark: #F78B69;
+  --color-subway-3-light: #ffe8ca;
+  --color-subway-3-dark: #f78b69;
 
-  --color-subway-4-light: #D7F4FF;
-  --color-subway-4-dark: #68B8EA;
+  --color-subway-4-light: #d7f4ff;
+  --color-subway-4-dark: #68b8ea;
 
-  --color-subway-5-light: #EBE9FF;
-  --color-subway-5-dark: #9898ED;
+  --color-subway-5-light: #ebe9ff;
+  --color-subway-5-dark: #9898ed;
 
-  --color-subway-6-light: #FCDBD4;
-  --color-subway-6-dark: #ED8A72;
+  --color-subway-6-light: #fcdbd4;
+  --color-subway-6-dark: #ed8a72;
 
-  --color-subway-7-light: #E4FFC7;
-  --color-subway-7-dark: #83AB73;
+  --color-subway-7-light: #e4ffc7;
+  --color-subway-7-dark: #83ab73;
 
-  --color-subway-8-light: #FCE3F4;
-  --color-subway-8-dark: #EA92D1;
+  --color-subway-8-light: #fce3f4;
+  --color-subway-8-dark: #ea92d1;
 
-  --color-subway-9-light: #FFFDD2;
-  --color-subway-9-dark: #BFB85E;
+  --color-subway-9-light: #fffdd2;
+  --color-subway-9-dark: #bfb85e;
 }
 
 @layer base {
@@ -94,15 +93,22 @@
 
     --radius-sm: 4px; /* 작은 요소의 둥근 모서리. 버튼, 입력창 등에 사용 */
     --radius-md: 8px; /* 중간 크기 요소의 둥근 모서리. 카드, 리스트 아이템 등에 사용 */
+    --radius-ml: 16px; /* 이미지 요소 등에 사용 */
     --radius-lg: 20px; /* 큰 요소의 둥근 모서리. 큰 패널, 바텀시트 등에 사용 */
     --radius-full: 9999px;
 
     --header-height: 44px; /* 상단 헤더의 기본 높이 */
     --bottom-nav-height: 72px; /* 하단 네비게이션 바의 기본 높이 */
-    --bottom-nav-offset: calc(var(--bottom-nav-height) + var(--safe-bottom) + 24px);
+    --bottom-nav-offset: calc(
+      var(--bottom-nav-height) + var(--safe-bottom) + 24px
+    );
 
-    --safe-top: env(safe-area-inset-top); /* 아이폰 노치 등 상단 안전 영역 여백 */
-    --safe-bottom: env(safe-area-inset-bottom); /* 아이폰 홈 인디케이터 등 하단 안전 영역 여백 */
+    --safe-top: env(
+      safe-area-inset-top
+    ); /* 아이폰 노치 등 상단 안전 영역 여백 */
+    --safe-bottom: env(
+      safe-area-inset-bottom
+    ); /* 아이폰 홈 인디케이터 등 하단 안전 영역 여백 */
   }
 
   * {
@@ -113,7 +119,13 @@
     margin: 0;
     min-width: 320px;
     min-height: var(--app-min-height);
-    font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    font-family:
+      "Pretendard Variable",
+      Pretendard,
+      -apple-system,
+      BlinkMacSystemFont,
+      system-ui,
+      sans-serif;
     font-weight: var(--font-weight-regular);
     font-size: var(--text-body-01);
     overscroll-behavior-y: contain;

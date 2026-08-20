@@ -16,6 +16,9 @@ interface ExploreCourseCardProps {
   rank: number;
 }
 
+const CARD_GRADIENT =
+  "linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.75) 100%)";
+
 function getSubwayLine(code: string): SubwayLine | null {
   const matchedLine = /^LINE_([1-9])$/.exec(code);
   return matchedLine ? (Number(matchedLine[1]) as SubwayLine) : null;
@@ -33,8 +36,9 @@ export default function ExploreCourseCard({
     course.likeCount + (liked === originalLiked ? 0 : liked ? 1 : -1);
   const hasBackgroundImage = Boolean(course.imageUrl);
   const backgroundImage = hasBackgroundImage
-    ? `linear-gradient(to bottom, transparent 30%, rgb(255 255 255 / 60%) 66%, white), url(${course.imageUrl})`
+    ? `${CARD_GRADIENT}, url(${course.imageUrl})`
     : undefined;
+  const textColorClass = hasBackgroundImage ? "text-white" : "text-gray-100";
   const subwayLine = course.line ? getSubwayLine(course.line.code) : null;
 
   const handleLike = async () => {
@@ -58,7 +62,7 @@ export default function ExploreCourseCard({
 
   return (
     <article
-      className="relative flex h-[200px] w-36 shrink-0 flex-col justify-between overflow-hidden rounded-lg px-4 pb-3 pt-[13px] bg-secondary-20 shadow-[0_0_20px_rgb(118_118_118/20%)]"
+      className="relative flex h-[200px] w-36 shrink-0 flex-col justify-between overflow-hidden rounded-lg bg-secondary-20 pb-4 pl-4 pr-2 pt-4 shadow-[0_0_20px_rgb(118_118_118/20%)]"
       style={
         backgroundImage
           ? {
@@ -83,17 +87,21 @@ export default function ExploreCourseCard({
         <CardBG className="absolute inset-0 h-full w-full" aria-hidden="true" />
       )}
       <CourseRankBadge className="relative z-10 self-end" rank={rank} />
-      <div className="relative z-10 flex flex-col gap-2">
-        <div className="inline-flex items-center gap-1 whitespace-nowrap text-body-02 text-gray-100">
+      <div className="relative z-10 flex w-[112px] flex-col gap-[9px]">
+        <div
+          className={`inline-flex items-center gap-1 whitespace-nowrap text-body-02 ${textColorClass}`}
+        >
           {subwayLine && <LineBadge line={subwayLine} />}
           {course.stationName}
         </div>
-        <p className="text-subtitle font-semibold leading-[1.4] tracking-[-0.025em] text-gray-100">
+        <p
+          className={`line-clamp-2 break-keep break-words text-subtitle font-semibold leading-[1.4] tracking-[-0.025em] ${textColorClass}`}
+        >
           {course.name}
         </p>
         <button
           type="button"
-          className="inline-flex items-center gap-0.5 self-start border-0 bg-transparent p-0 text-caption text-gray-70"
+          className={`inline-flex items-center gap-0.5 self-start border-0 bg-transparent p-0 text-caption ${textColorClass}`}
           aria-label={liked ? "좋아요 완료" : "좋아요"}
           aria-pressed={liked}
           disabled={isLikePending}
@@ -103,9 +111,15 @@ export default function ExploreCourseCard({
           }}
         >
           {liked ? (
-            <HeartFilled className="size-3" aria-hidden="true" />
+            <HeartFilled
+              className={`size-3 ${textColorClass} [&_path]:fill-current`}
+              aria-hidden="true"
+            />
           ) : (
-            <Heart className="size-3" aria-hidden="true" />
+            <Heart
+              className={`size-3 ${textColorClass} [&_path]:stroke-current`}
+              aria-hidden="true"
+            />
           )}
           {likeCount}
         </button>
