@@ -98,7 +98,7 @@ export default function ExploreCourseCard({
           {subwayLine && <LineBadge line={subwayLine} />}
           {course.stationName}
         </div>
-        <p className="text-subtitle font-semibold leading-[1.4] tracking-[-0.025em] text-white">
+        <p className="line-clamp-2 text-subtitle font-semibold leading-[1.4] tracking-[-0.025em] text-white">
           {course.name}
         </p>
         <button
