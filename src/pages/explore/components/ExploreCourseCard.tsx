@@ -16,6 +16,9 @@ interface ExploreCourseCardProps {
   rank: number;
 }
 
+const CARD_GRADIENT =
+  "linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.68) 100%)";
+
 function getSubwayLine(code: string): SubwayLine | null {
   const matchedLine = /^LINE_([1-9])$/.exec(code);
   return matchedLine ? (Number(matchedLine[1]) as SubwayLine) : null;
@@ -33,7 +36,7 @@ export default function ExploreCourseCard({
     course.likeCount + (liked === originalLiked ? 0 : liked ? 1 : -1);
   const hasBackgroundImage = Boolean(course.imageUrl);
   const backgroundImage = hasBackgroundImage
-    ? `linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.68) 100%),  url(${course.imageUrl})`
+    ? `${CARD_GRADIENT}, url(${course.imageUrl})`
     : undefined;
   const subwayLine = course.line ? getSubwayLine(course.line.code) : null;
 
@@ -83,7 +86,8 @@ export default function ExploreCourseCard({
         <>
           <CardBG className="absolute inset-0 h-full w-full" aria-hidden="true" />
           <div
-            className="absolute inset-0 bg-[linear-gradient(to_bottom,transparent_0%,rgba(0,0,0,0.68)_100%)]"
+            className="absolute inset-0"
+            style={{ backgroundImage: CARD_GRADIENT }}
             aria-hidden="true"
           />
         </>
