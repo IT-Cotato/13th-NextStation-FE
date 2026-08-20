@@ -596,7 +596,7 @@ export default function DetailPage() {
               <div className="relative shrink-0 w-full h-full">
                 <img
                   src={journalImagesSrcs[0]}
-                  className="rounded-2xl w-full h-full object-cover"
+                  className="rounded-ml w-full h-full object-cover"
                 />
               </div>
             ) : imageCount === 2 ? (
@@ -605,7 +605,7 @@ export default function DetailPage() {
                   <img
                     src={image}
                     key={index}
-                    className="flex-1 min-w-0 rounded-2xl h-full object-cover"
+                    className="flex-1 min-w-0 rounded-ml h-full object-cover"
                   />
                 ))}
               </div>
@@ -613,16 +613,16 @@ export default function DetailPage() {
               <div className="flex relative gap-2 w-full h-full">
                 <img
                   src={journalImagesSrcs[0]}
-                  className="rounded-2xl min-w-0 flex-1 h-full object-cover"
+                  className="rounded-ml min-w-0 flex-1 h-full object-cover"
                 />
                 <div className="flex flex-col gap-2 min-w-0 flex-1 h-full">
                   <img
                     src={journalImagesSrcs[1]}
-                    className="rounded-2xl w-full min-h-0 flex-1 object-cover"
+                    className="rounded-ml w-full min-h-0 flex-1 object-cover"
                   />
                   <img
                     src={journalImagesSrcs[2]}
-                    className="rounded-2xl w-full min-h-0 flex-1 object-cover"
+                    className="rounded-ml w-full min-h-0 flex-1 object-cover"
                   />
                 </div>
               </div>
