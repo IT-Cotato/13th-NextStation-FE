@@ -79,7 +79,7 @@ export default function LikeCard({
 
       <div className="relative z-10 flex h-full flex-col items-start justify-end gap-1 px-3 pt-[95px] pb-4">
         <div className="flex items-center justify-center gap-1">
-          <LineBadge line={lineId} />
+          <LineBadge line={lineId} size="small" />
           <p
             className={`text-caption ${textColorClass} leading-[1.4] tracking-[-0.25px] break-keep`}
           >

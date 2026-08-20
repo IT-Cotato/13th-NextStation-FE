@@ -12,12 +12,30 @@ const LINE_STYLES: Record<SubwayLine, string> = {
   "9": "bg-subway-9-dark text-subway-9-light",
 };
 
-export default function LineBadge({ line }: { line: SubwayLine }) {
-  return (
-    <div className={`flex px-[6px] rounded-full w-fit ${LINE_STYLES[line]}`}>
-      <span className="flex items-center justify-center text-body-01 font-semibold leading-[1.4]">
-        {line}
-      </span>
-    </div>
-  );
+export default function LineBadge({
+  line,
+  size = "large",
+}: {
+  line: SubwayLine;
+  size?: "small" | "large";
+}) {
+  if (size === "large") {
+    return (
+      <div className={`flex px-[6px] rounded-full w-fit ${LINE_STYLES[line]}`}>
+        <span className="flex items-center justify-center text-body-01 font-semibold leading-[1.4]">
+          {line}
+        </span>
+      </div>
+    );
+  } else {
+    return (
+      <div
+        className={`flex px-[4.25px] rounded-full w-fit ${LINE_STYLES[line]}`}
+      >
+        <span className="flex items-center justify-center text-caption font-semibold leading-[1.4] trakcing-[-0.25px]">
+          {line}
+        </span>
+      </div>
+    );
+  }
 }

@@ -1,6 +1,6 @@
 import CardBG from "@/assets/card-default.svg?react";
 import type { SubwayLine } from "@/types/subway";
-import MyPageLineBadge from "./MyPageLineBadge";
+import LineBadge from "@/components/LineBadge";
 
 export default function JournalPreviewCard({
   lineId,
@@ -36,7 +36,7 @@ export default function JournalPreviewCard({
         {/* station info */}
         <div className="flex gap-1 z-10 items-center">
           {lineId !== undefined && (
-            <MyPageLineBadge line={lineId as SubwayLine} />
+            <LineBadge line={lineId as SubwayLine} size="small" />
           )}
           <span
             className={`text-caption justify-center ${textColorClass} leading-[1.4] tracking-[-0.25px] break-keep`}
