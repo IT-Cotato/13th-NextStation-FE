@@ -108,6 +108,10 @@ export default function MyPage() {
           label: "마케팅 정보 수신 동의",
           onClick: () => navigate("/auth/terms/MARKETING"),
         },
+         {
+          label: "문의/건의하기",
+          onClick: () => window.open("https://docs.google.com/forms/d/e/1FAIpQLSdzKvZM3iOm8RFci4vdA0vjJAfciwrfB5RfWDNJhRR79FUm2g/viewform?usp=sharing&ouid=107704491380281978729", "_blank", "noopener,noreferrer"),
+        },
       ],
     },
   ];
