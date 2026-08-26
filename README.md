@@ -84,7 +84,7 @@ npm run dev
 ```
 
 ## 배포 주소
-🔗 [nextstation.kr](https://nextstation-eta.vercel.app/)
+🔗 [nextstation.kr](www.nextstation.kr)
 
 ## Contact
 📧 [Gmail](mailto:nextstation.app@gmail.com)
